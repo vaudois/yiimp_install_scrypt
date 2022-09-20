@@ -164,7 +164,7 @@ function package_daemonbuilder
 
 	echo '
 	#!/usr/bin/env bash
-	source /etc/$FUNCTIONFILE # load our functions
+	source /etc/functions.sh # load our functions
 	cd $HOME/utils/daemon_builder
 	bash start.sh
 	cd ~
