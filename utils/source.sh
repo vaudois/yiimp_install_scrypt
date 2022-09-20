@@ -394,20 +394,22 @@ if [[ ("$precompiled" == "true") ]]; then
 	
 	coind=$(basename $COINDFIND)
 
-	sudo chmod 755 $COINDFIND
 	sudo strip $COINDFIND
 	sudo cp $COINDFIND /usr/bin
+	sudo chmod +x /usr/bin/${coind}
 	
 	if [[ -f "$COINCLIFIND" ]]; then
-		sudo chmod 755 $COINCLIFIND
+		coincli=$(basename $COINCLIFIND)
 		sudo strip $COINCLIFIND
 		sudo cp $COINCLIFIND /usr/bin
+		sudo chmod +x /usr/bin/${coincli}
 	fi
 
 	if [[ -f "$COINTXFIND" ]]; then
-		sudo chmod 755 $COINTXFIND
+		cointx=$(basename $COINTXFIND)
 		sudo strip $COINTXFIND
 		sudo cp $COINTXFIND /usr/bin
+		sudo chmod +x /usr/bin/${cointx}
 	fi
 else
 	sudo strip $HOME/utils/daemon_builder/temp_coin_builds/${coindir}/src/${coind}
