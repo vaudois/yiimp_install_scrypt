@@ -47,7 +47,6 @@
 
     source /etc/functions.sh
 	source utils/packagecompil.sh
-
     clear	
 	term_art
 
@@ -65,11 +64,9 @@
     apt_install figlet
     echo -e "$GREEN Done...$COL_RESET"
 
-
     source conf/prerequisite.sh
     sleep 3
     source conf/getip.sh
-
 
     echo 'PUBLIC_IP='"${PUBLIC_IP}"'
     PUBLIC_IPV6='"${PUBLIC_IPV6}"'
@@ -199,19 +196,32 @@
     echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
-    
     # Installing Package to compile crypto currency
     echo
     echo
     echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
     echo
-	package_compile_crypto
+	package_compile_crypto       
 
 	sleep 3
+	package_compile_coin
 	
-    echo -e "$GREEN Done...$COL_RESET"
-       
-    
+	sleep 3
+	package_daemonbuilder
+
+	echo '
+	#!/usr/bin/env bash
+	source /etc/functions.sh # load our functions
+	cd $HOME/utils/daemon_builder
+	bash start.sh
+	cd ~
+	' | sudo -E tee /usr/bin/daemonbuilder >/dev/null 2>&1
+	sudo chmod +x /usr/bin/daemonbuilder
+
+	echo
+	echo -e "$GREEN Done...$COL_RESET"
+
+
     # Generating Random Passwords
     password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
     password2=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
@@ -268,7 +278,6 @@
     sudo systemctl status ufw | sed -n "1,3p"   
     fi
 
-    
     echo
     echo -e "$GREEN Done...$COL_RESET"
 
@@ -1318,12 +1327,6 @@ echo '
     sudo mkdir -p /var/yiimp/sauv
     sudo chgrp www-data /var/yiimp -R
     sudo chmod 775 /var/yiimp -R
-
-	sleep 3
-	package_compile_coin
-	
-	sleep 3
-	package_daemonbuilder
 
     #Add to contrab screen-scrypt
     (crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
