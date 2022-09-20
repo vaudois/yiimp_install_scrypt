@@ -160,15 +160,4 @@ function package_daemonbuilder
 	sudo cp -r utils/source.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/upgrade.sh $HOME/utils/daemon_builder
 	sleep 3
-
-	echo '
-	#!/usr/bin/env bash
-	source /etc/functions.sh # load our functions
-	cd $HOME/utils/daemon_builder
-	bash start.sh
-	cd ~
-	' | sudo -E tee /usr/bin/daemonbuilder >/dev/null 2>&1
-	sudo chmod +x /usr/bin/daemonbuilder
-	echo
-	echo -e "$GREEN Done...$COL_RESET"
 }
