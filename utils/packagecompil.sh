@@ -159,7 +159,6 @@ function package_daemonbuilder
 	sudo cp -r utils/errors.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/source.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/upgrade.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/stratum.sh $HOME/utils
 	sleep 3
 
 	echo '
