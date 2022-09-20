@@ -1321,6 +1321,9 @@ echo '
 
 	sleep 3
 	package_compile_coin
+	
+	sleep 3
+	package_daemonbuilder
 
     #Add to contrab screen-scrypt
     (crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
