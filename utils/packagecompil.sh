@@ -43,17 +43,20 @@ function package_compile_crypto
 
 function package_compile_coin
 {
+	sudo mkdir -p $HOME/tmp
+	sleep 3
 	echo
 	echo -e "$YELLOW Building Berkeley 4.8, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
+	cd $HOME/tmp
 	sudo mkdir -p $HOME/utils/berkeley/db4/
 	hide_output sudo wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
 	hide_output sudo tar -xzvf db-4.8.30.NC.tar.gz
 	cd db-4.8.30.NC/build_unix/
 	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db4/
 	hide_output sudo make install
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	sudo rm -r db-4.8.30.NC.tar.gz db-4.8.30.NC
 	echo -e "$GREEN Berkeley 4.8 Completed...$COL_RESET"
 
@@ -61,13 +64,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building Berkeley 5.1, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
+	cd $HOME/tmp
 	sudo mkdir -p $HOME/utils/berkeley/db5/
 	hide_output sudo wget 'http://download.oracle.com/berkeley-db/db-5.1.29.tar.gz'
 	hide_output sudo tar -xzvf db-5.1.29.tar.gz
 	cd db-5.1.29/build_unix/
 	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db5/
 	hide_output sudo make install
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	sudo rm -r db-5.1.29.tar.gz db-5.1.29
 	echo -e "$GREEN Berkeley 5.1 Completed...$COL_RESET"
 
@@ -75,13 +79,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building Berkeley 5.3, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
+	cd $HOME/tmp
 	sudo mkdir -p $HOME/utils/berkeley/db5.3/
 	hide_output sudo wget 'http://anduin.linuxfromscratch.org/BLFS/bdb/db-5.3.28.tar.gz'
 	hide_output sudo tar -xzvf db-5.3.28.tar.gz
 	cd db-5.3.28/build_unix/
 	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db5.3/
 	hide_output sudo make install
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	sudo rm -r db-5.3.28.tar.gz db-5.3.28
 	echo -e "$GREEN Berkeley 5.3 Completed...$COL_RESET"
 
@@ -89,13 +94,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building Berkeley 6.2, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
+	cd $HOME/tmp
 	sudo mkdir -p $HOME/utils/berkeley/db6.2/
 	hide_output sudo wget 'http://download.oracle.com/berkeley-db/db-6.2.23.tar.gz'
 	hide_output sudo tar -xzvf db-6.2.23.tar.gz
 	cd db-6.2.23/build_unix/
 	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db6.2/
 	hide_output sudo make install
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	sudo rm -r db-6.2.23.tar.gz db-6.2.23
 	echo -e "$GREEN Berkeley 6.2 Completed...$COL_RESET"
 
@@ -103,14 +109,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building OpenSSL 1.0.2g, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	hide_output sudo wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2g.tar.gz --no-check-certificate
 	hide_output sudo tar -xf openssl-1.0.2g.tar.gz
 	cd openssl-1.0.2g
 	hide_output sudo ./config --prefix=$HOME/utils/openssl --openssldir=$HOME/utils/openssl shared zlib
 	hide_output sudo make
 	hide_output sudo make install
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	sudo rm -r openssl-1.0.2g.tar.gz openssl-1.0.2g
 	echo -e "$GREEN OpenSSL 1.0.2g Completed...$COL_RESET"
 
@@ -118,16 +124,18 @@ function package_compile_coin
 	echo -e "$YELLOW Building bls-signatures, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	hide_output sudo wget 'https://github.com/codablock/bls-signatures/archive/v20181101.zip'
 	hide_output sudo unzip v20181101.zip
 	cd bls-signatures-20181101
 	hide_output sudo cmake .
 	hide_output sudo make install
-	cd $HOME/daemon_setup/tmp
+	cd $HOME/tmp
 	sudo rm -r v20181101.zip bls-signatures-20181101
 	echo -e "$GREEN bls-signatures Completed...$COL_RESET"
 	
+	sleep 3
+	sudo rm -rf $HOME/tmp
 	echo
 	echo
 	echo -e "$GREEN Done...$COL_RESET"
