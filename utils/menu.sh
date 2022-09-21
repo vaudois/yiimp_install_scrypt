@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #####################################################
 # Source code https://github.com/end222/pacmenu
-# Updated by afiniel for crypto use...
+# Updated by Vaudois for crypto use...
 #####################################################
 
 source /etc/functions.sh
