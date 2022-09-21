@@ -151,6 +151,8 @@ function package_daemonbuilder
 
 	echo -e "$CYAN => Installing DaemonBuilder $COL_RESET"
 	
+	absolutepath=$HOME
+	
 	cd ~
 	cd $HOME/yiimp_install_scrypt
 	sudo mkdir -p $HOME/utils/daemon_builder	
@@ -161,6 +163,16 @@ function package_daemonbuilder
 	sudo cp -r utils/errors.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/source.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/upgrade.sh $HOME/utils/daemon_builder
+	sleep 3
+
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
+	sleep 3
 
 	echo '
 	#!/usr/bin/env bash
