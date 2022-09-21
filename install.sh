@@ -1065,6 +1065,7 @@
 		# Afiniel
 
 		# Import sql dump
+		# sudo zcat 2021-06-21-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		sudo zcat 2021-06-21-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		
 		# Oh the humanity!
@@ -1097,8 +1098,8 @@
 		sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
 		sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
 		sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
-		#sudo mysql --defaults-group-suffix=host1 --force < 2020-11-10-yaamp.sql.gz
-		#sudo mysql --defaults-group-suffix=host1 --force < 2021-06-21-yaamp.sql.gz
+		# sudo mysql --defaults-group-suffix=host1 --force < 2020-11-10-yaamp.sql.gz
+		# sudo mysql --defaults-group-suffix=host1 --force < 2021-06-21-yaamp.sql.gz
 	fi
 
     echo -e "$GREEN Done...$COL_RESET"    
