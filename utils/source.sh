@@ -478,39 +478,39 @@ sudo rm -r absolutepath/utils/daemon_builder/.my.cnf
 clear
 echo
 echo
-figlet -f slant -w 100 "Yeah!"
+figlet -f slant -w 100 "   Yeah!"
 
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$GREEN Installation of ${coind::-1} is completed and running. $COL_RESET"
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN   Installation of ${coind::-1} is completed and running. $COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
 echo
 echo
 echo
-if [[ "coindmv" == "true" ]] ; then
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$GREEN Name of COIND : ${coind} $COL_RESET"
-echo -e "$GREEN path in : /usr/bin/${coind} $COL_RESET"
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo
-echo
-fi
-if [[ "coinclimv" == "true" ]] ; then
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$GREEN Name of COIN-CLI : ${coincli} $COL_RESET"
-echo -e "$GREEN path in : /usr/bin/${coincli} $COL_RESET"
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+if [[ "$coindmv" == "true" ]] ; then
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN   Name of COIND : ${coind} $COL_RESET"
+echo -e "$GREEN   path in : /usr/bin/${coind} $COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
 echo
 echo
 fi
-if [[ "cointxmv" == "true" ]] ; then
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$GREEN Name of COIN-TX : ${cointx} $COL_RESET"
-echo -e "$GREEN path in : /usr/bin/${cointx} $COL_RESET"
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+if [[ "$coinclimv" == "true" ]] ; then
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN   Name of COIN-CLI : ${coincli} $COL_RESET"
+echo -e "$GREEN   path in : /usr/bin/${coincli} $COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
 echo
 echo
 fi
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$RED Type daemonbuilder at anytime to install a new coin! 				$COL_RESET"
-echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+if [[ "$cointxmv" == "true" ]] ; then
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN   Name of COIN-TX : ${cointx} $COL_RESET"
+echo -e "$GREEN   path in : /usr/bin/${cointx} $COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo
+echo
+fi
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$RED    Type daemonbuilder at anytime to install a new coin! 				$COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
 exit
