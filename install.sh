@@ -317,7 +317,7 @@
 	elif [[ "$yiimpver" == "3" ]]; then
 		cd ~
 		hide_output git clone $githubrepoAfinielTech
-	elif [[ "$yiimpver" == "3" ]]; then
+	elif [[ "$yiimpver" == "4" ]]; then
 		cd ~
 		hide_output git clone $githubrepoAfiniel -b next
 	fi
