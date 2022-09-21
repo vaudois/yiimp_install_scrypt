@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-source $HOME/utils/conf/info.sh
-source /etc/${FUNCTION_FILE}
+source /etc/functions.sh
+
+PATH_STRATUM=/var/stratum
 
 #####################################################
 # Dedicated Port config generator
