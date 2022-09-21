@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################
-# Created by afiniel for crypto use...
+# Created by Vaudois for crypto use...
 #####################################################
 
 FUNC=/etc/functionscoin.sh
@@ -397,12 +397,24 @@ if [[ ("$precompiled" == "true") ]]; then
 	sudo strip $COINDFIND
 	sudo cp $COINDFIND /usr/bin
 	sudo chmod +x /usr/bin/${coind}
+	coindmv=true
+
+	echo
+	echo
+	echo -e "$GREEN Coind moving to /usr/bin/$COL_RESET$YELLOW${coind} $COL_RESET"
+	sleep 3
 	
 	if [[ -f "$COINCLIFIND" ]]; then
 		coincli=$(basename $COINCLIFIND)
 		sudo strip $COINCLIFIND
 		sudo cp $COINCLIFIND /usr/bin
 		sudo chmod +x /usr/bin/${coincli}
+		coinclimv=true
+		
+		echo
+		echo
+		echo -e "$GREEN Coin-cli moving to /usr/bin/$COL_RESET$YELLOW${coincli} $COL_RESET"
+		sleep 3
 	fi
 
 	if [[ -f "$COINTXFIND" ]]; then
@@ -410,6 +422,12 @@ if [[ ("$precompiled" == "true") ]]; then
 		sudo strip $COINTXFIND
 		sudo cp $COINTXFIND /usr/bin
 		sudo chmod +x /usr/bin/${cointx}
+		cointxmv=true
+		
+		echo
+		echo
+		echo -e "$GREEN Coin-tx moving to /usr/bin/$COL_RESET$YELLOW${cointx} $COL_RESET"
+		sleep 3
 	fi
 else
 	sudo strip $HOME/utils/daemon_builder/temp_coin_builds/${coindir}/src/${coind}
@@ -458,6 +476,41 @@ sudo rm -r $HOME/utils/daemon_builder/.my.cnf
 
 
 clear
-echo "Installation of ${coind::-1} is completed and running."
-echo Type daemonbuilder at anytime to install a new coin!
+echo
+echo
+figlet -f slant -w 100 "Yeah!"
+
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN Installation of ${coind::-1} is completed and running. $COL_RESET"
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo
+echo
+echo
+if [[ "coindmv" == "true" ]] ; then
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN Name of COIND : ${coind} $COL_RESET"
+echo -e "$GREEN path in : /usr/bin/${coind} $COL_RESET"
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo
+echo
+fi
+if [[ "coinclimv" == "true" ]] ; then
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN Name of COIN-CLI : ${coincli} $COL_RESET"
+echo -e "$GREEN path in : /usr/bin/${coincli} $COL_RESET"
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo
+echo
+fi
+if [[ "cointxmv" == "true" ]] ; then
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN Name of COIN-TX : ${cointx} $COL_RESET"
+echo -e "$GREEN path in : /usr/bin/${cointx} $COL_RESET"
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo
+echo
+fi
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$RED Type daemonbuilder at anytime to install a new coin! 				$COL_RESET"
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
 exit
