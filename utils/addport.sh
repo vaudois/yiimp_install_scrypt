@@ -5,7 +5,7 @@ source /etc/${FUNCTION_FILE}
 
 #####################################################
 # Dedicated Port config generator
-# Created by afiniel for yiimpool
+# Created by Vaudois for yiimp
 # This generator will modify the main algo.conf file
 # Create the new coin.algo.conf file
 # And update the stratum start file
