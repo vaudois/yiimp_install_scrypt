@@ -4,18 +4,24 @@
 # Updated by afiniel for crypto use...
 #####################################################
 
-source /etc/functions.sh
-cd $HOME/utils/daemon_builder
+FUNC=/etc/functionscoin.sh
+if [[ ! -f "$FUNC" ]]; then
+	source /etc/functions.sh
+else
+	source /etc/functionscoin.sh
+fi
 
-RESULT=$(dialog --stdout --title "Daemon Builder Coin" --menu "Choose one" -1 60 7 \
+cd absolutepath/utils/daemon_builder
+
+RESULT=$(dialog --stdout --title "Daemon Builder Coin" --menu "Choose one" -1 60 8 \
 1 "Install Berkeley 4.x Coin with autogen file" \
 2 "Install Berkeley 5.1 Coin with autogen file" \
 3 "Install Berkeley 5.3 Coin with autogen file" \
 4 "Install Berkeley 6.2 Coin with build.sh file" \
 5 "Install Coin with makefile.unix file" \
 6 "Install Coin with CMake file" \
-
-7 Exit)
+7 "Install Coin precompiled linux version" \
+8 Exit)
 
 if [ $RESULT = ]
 then
@@ -28,7 +34,7 @@ clear;
 echo '
 autogen=true
 berkeley="4.8"
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi
 
@@ -38,7 +44,7 @@ clear;
 echo '
 autogen=true
 berkeley="5.1"
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi
 
@@ -48,7 +54,7 @@ clear;
 echo '
 autogen=true
 berkeley="5.3"
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi
 
@@ -58,7 +64,7 @@ clear;
 echo '
 autogen=true
 berkeley="6.2"
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi
 
@@ -67,7 +73,7 @@ then
 clear;
 echo '
 autogen=false
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi
 
@@ -77,11 +83,20 @@ clear;
 echo '
 autogen=false
 cmake=true
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi
 
 if [ $RESULT = 7 ]
+then
+clear;
+echo '
+precompiled=true
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+source source.sh;
+fi
+
+if [ $RESULT = 8 ]
 then
 clear;
 exit;

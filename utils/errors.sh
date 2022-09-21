@@ -4,10 +4,16 @@
 # Updated by afiniel for crypto use...
 #####################################################
 
-source /etc/functions.sh
-cd $HOME/utils/daemon_builder
+FUNC=/etc/functionscoin.sh
+if [[ ! -f "$FUNC" ]]; then
+	source /etc/functions.sh
+else
+	source /etc/functionscoin.sh
+fi
 
-RESULT=$(dialog --stdout --title "Daemon Installer v0.1" --menu "Choose one" -1 60 10 \
+cd absolutepath/utils/daemon_builder
+
+RESULT=$(dialog --stdout --title "Afiniel Yiimpool Daemon Installer v2.0" --menu "Choose one" -1 60 10 \
 1 "Make clean - does not build only cleans build dir" \
 2 "Fix invalid application of sizeof error" \
 3 "Fix openSSL 1.1x incompatibilities" \

@@ -5,9 +5,15 @@
 # Updated by afiniel for crypto use...
 #####################################################
 
-source /etc/functions.sh # load our functions
+FUNC=/etc/functionscoin.sh
+if [[ ! -f "$FUNC" ]]; then
+	source /etc/functions.sh
+else
+	source /etc/functionscoin.sh
+fi
+# load our functions
 
-cd $HOME/utils/daemon_builder
+cd absolutepath/utils/daemon_builder
 # Ensure Python reads/writes files in UTF-8. If the machine
 # triggers some other locale in Python, like ASCII encoding,
 # Python may not be able to read/write files. This is also
@@ -15,7 +21,7 @@ cd $HOME/utils/daemon_builder
 
 if ! locale -a | grep en_US.utf8 > /dev/null; then
 # Generate locale if not exists
-hide_output sudo locale-gen en_US.UTF-8
+hide_output locale-gen en_US.UTF-8
 fi
 
 export LANGUAGE=en_US.UTF-8
@@ -28,10 +34,10 @@ export NCURSES_NO_UTF8_ACS=1
 
 # Create the temporary installation directory if it doesn't already exist.
 echo Creating the temporary build folder...
-if [ ! -d $HOME/utils/daemon_builder/temp_coin_builds ]; then
-sudo mkdir -p $HOME/utils/daemon_builder/temp_coin_builds
+if [ ! -d absolutepath/utils/daemon_builder/temp_coin_builds ]; then
+sudo mkdir -p absolutepath/utils/daemon_builder/daemon_builder/temp_coin_builds
 fi
-sudo setfacl -m u:$USER:rwx $HOME/utils/daemon_builder/temp_coin_builds
+sudo setfacl -m u:$USER:rwx absolutepath/utils/daemon_builder/temp_coin_builds
 
 message_box "Daemon Installer" \
 "Warning! This version of the daemon installer only works with servers setup with the Yiimp!

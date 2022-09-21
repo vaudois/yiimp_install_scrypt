@@ -4,8 +4,15 @@
 # Updated by afiniel for crypto use...
 #####################################################
 
-source /etc/functions.sh
-cd $HOME/utils/daemon_builder
+
+FUNC=/etc/functionscoin.sh
+if [[ ! -f "$FUNC" ]]; then
+	source /etc/functions.sh
+else
+	source /etc/functionscoin.sh
+fi
+
+cd absolutepath/utils/daemon_builder
 
 RESULT=$(dialog --stdout --title "Daemon Builder Coin" --menu "Choose one" -1 60 4 \
 1 "Update Berkeley 4.x Coin with autogen file" \
@@ -25,7 +32,7 @@ clear;
 echo '
 autogen=true
 berkeley="4.8"
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source upgrade.sh;
 fi
 
@@ -35,7 +42,7 @@ clear;
 echo '
 autogen=true
 berkeley="5.3"
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source upgrade.sh;
 fi
 
@@ -44,7 +51,7 @@ then
 clear;
 echo '
 autogen=false
-' | sudo -E tee $HOME/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
+' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
 source upgrade.sh;
 fi
 
