@@ -166,11 +166,79 @@ function package_daemonbuilder
 	sleep 3
 
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
+	
+	
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
+	sleep 2
+	
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
+	sleep 2
+	
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
+	sleep 2
+	
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
+	sleep 2
+	
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
+	sleep 2
+	
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
+	sleep 1
+	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
+	sleep 1
 	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
 	sleep 3
 
