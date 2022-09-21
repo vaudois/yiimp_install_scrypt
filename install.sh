@@ -1375,7 +1375,8 @@ echo '
     sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
 
     #Misc
-    sudo mv $HOME/yiimp/ $HOME/yiimp-install-only-do-not-run-commands-from-this-folder
+    sudo rm -rf $HOME/yiimp
+    sudo rm -rf $HOME/yiimp_install_scrypt
     sudo rm -rf /var/log/nginx/*
 
     #Restart service
