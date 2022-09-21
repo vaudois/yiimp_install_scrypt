@@ -150,7 +150,8 @@ function package_daemonbuilder
 	echo
 
 	echo -e "$CYAN => Installing DaemonBuilder $COL_RESET"
-	sudo mkdir -p $HOME/utils/daemon_builder
+
+	sudo mkdir -p $HOME/utils/daemon_builder	
 	sudo cp -r utils/start.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/menu.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/menu2.sh $HOME/utils/daemon_builder
@@ -158,5 +159,15 @@ function package_daemonbuilder
 	sudo cp -r utils/errors.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/source.sh $HOME/utils/daemon_builder
 	sudo cp -r utils/upgrade.sh $HOME/utils/daemon_builder
+
+	echo '
+	#!/usr/bin/env bash
+	source /etc/functions.sh # load our functions
+	cd '"$HOME"'/utils/daemon_builder
+	bash start.sh
+	cd ~
+	' | sudo -E tee /usr/bin/daemonbuilder >/dev/null 2>&1
+	sudo chmod +x /usr/bin/daemonbuilder
+
 	sleep 3
 }
