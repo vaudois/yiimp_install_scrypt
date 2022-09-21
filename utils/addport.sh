@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-source /etc/functions.sh
+source $HOME/utils/conf/info.sh
+source /etc/${FUNCTION_FILE}
+
 #####################################################
 # Dedicated Port config generator
-# Created by Vaudois for DaemonBuilder coin
+# Created by afiniel for yiimpool
 # This generator will modify the main algo.conf file
 # Create the new coin.algo.conf file
 # And update the stratum start file
@@ -27,11 +29,11 @@ function EPHYMERAL_PORT(){
 
 coinport=$(EPHYMERAL_PORT)
 
-cd /var/stratum/config
+cd ${PATH_STRATUM}/config
 echo -e "$YELLOW Thanks for using the addport script by Vaudois. $COL_RESET"
 echo
 echo -e "$YELLOW addport will randomly selects an open port for the coin between ports 2768 and 6999 and open the port in UFW. $COL_RESET"
-echo -e "$YELLOW It will also create a new symbol.algo.conf in $RED /var/stratum/config $COL_RESET"
+echo -e "$YELLOW It will also create a new symbol.algo.conf in $RED $PATH_STRATUM/config $COL_RESET"
 echo -e "$YELLOW and will create a new stratum.symbol run file in $RED /usr/bin. $COL_RESET"
 echo
 
@@ -55,20 +57,20 @@ coinalgo=${coinalgo,,}
 coinsymbol=${coinsymbol^^}
 
 # Make sure the stratum.symbol config doesnt exist and that the algo file does.
-if [ -f /var/stratum/config/stratum.${coinsymbollower} ]; then
+if [ -f ${PATH_STRATUM}/config/stratum.${coinsymbollower} ]; then
   read -r -e -p "A file for ${coinsymbol} already exists. Are you sure you want to overwrite? A new port will be generated and you will need to update your coind.conf blocknotify line (y/n) : " overwrite
   if [[ ("$overwrite" == "n" || "$overwrite" == "N" || "$overwrite" == "no" || "$overwrite" == "NO") ]]; then
     echo -e "$RED Exiting... $COL_RESET"
     exit 0
   fi
-if [ ! -f /var/stratum/config/$coinalgo.conf ]; then
-  echo -e "$YELLOW Sorry that algo config file doesn't exist in $RED /home/crypto-data/yiimp/site/stratum/config/ $YELLOW please double check and try again. $COL_RESET"
+if [ ! -f $PATH_STRATUM/config/$coinalgo.conf ]; then
+  echo -e "$YELLOW Sorry that algo config file doesn't exist in $RED ${PATH_STRATUM}/config/ $YELLOW please double check and try again. $COL_RESET"
   exit 0
 fi
 fi
 
 # Prevent duplications from people running addport multiple times for the same coin...Also known as asshats...
-if [ -f /var/stratum/config/$coinsymbollower.$coinalgo.conf ]; then
+if [ -f $PATH_STRATUM/config/$coinsymbollower.$coinalgo.conf ]; then
   if [[ ("$overwrite" == "y" || "$overwrite" == "Y" || "$overwrite" == "yes" || "$overwrite" == "YES") ]]; then
     # Insert the port in to the new symbol.algo.conf
     sed -i '/port/c\port = '${coinport}'' $coinsymbollower.$coinalgo.conf
@@ -118,7 +120,7 @@ echo '#####################################################
 # Updated by Vaudois for Daemon Coin use...
 #####################################################
 
-STRATUM_DIR=/var/stratum
+STRATUM_DIR='""''"${PATH_STRATUM}"''""'
 #!/usr/bin/env bash
 
 '""''"${coinsymbollower}"''""'="screen -dmS '""''"${coinsymbollower}"''""' bash $STRATUM_DIR/run.sh '""''"${coinsymbollower}"''""'.'""''"${coinalgo}"''""'"
@@ -154,10 +156,10 @@ for name; do
     '""''"${coinsymbollower}"''""') startstop_'""''"${coinsymbollower}"''""' $cmd ;;
     *) startstop_service $cmd $name ;;
     esac
-done ' | sudo -E tee /var/stratum/config/stratum.${coinsymbollower} >/dev/null 2>&1
-sudo chmod +x /var/stratum/config/stratum.${coinsymbollower}
+done ' | sudo -E tee ${PATH_STRATUM}/config/stratum.${coinsymbollower} >/dev/null 2>&1
+sudo chmod +x ${PATH_STRATUM}/config/stratum.${coinsymbollower}
 
-sudo cp -r stratum.${coinsymbollower} /usr/bin
+sudo cp -r ${PATH_STRATUM}/config/stratum.${coinsymbollower} /usr/bin
 sudo ufw allow $coinport
 echo
 echo "Adding stratum.${coinsymbollower} to crontab for autostart at system boot."
