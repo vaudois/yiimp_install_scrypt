@@ -204,16 +204,6 @@
     echo
 
 	sleep 3
-	echo '
-	#!/usr/bin/env bash
-	source /etc/functions.sh # load our functions
-	cd $HOME/utils/daemon_builder
-	bash start.sh
-	cd ~
-	' | sudo -E tee /usr/bin/daemonbuilder >/dev/null 2>&1
-	sudo chmod +x /usr/bin/daemonbuilder
-
-	sleep 3
 	package_compile_crypto       
 
 	sleep 3
@@ -224,7 +214,6 @@
 
 	echo
 	echo -e "$GREEN Done...$COL_RESET"
-
 
     # Generating Random Passwords
     password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
