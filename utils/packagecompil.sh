@@ -151,7 +151,7 @@ function package_daemonbuilder
 
 	echo -e "$CYAN => Installing DaemonBuilder $COL_RESET"
 	
-	cd~
+	cd ~
 	cd $HOME/yiimp_install_scrypt
 	sudo mkdir -p $HOME/utils/daemon_builder	
 	sudo cp -r utils/start.sh $HOME/utils/daemon_builder
