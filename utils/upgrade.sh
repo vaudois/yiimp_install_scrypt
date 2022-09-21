@@ -74,7 +74,7 @@ if [[ ! -e 'absolutepath/utils/daemon_builder/temp_coin_builds/${coindir}/src/le
 else
 sudo chmod 777 absolutepath/utils/daemon_builder/temp_coin_builds/${coindir}/src/leveldb/build_detect_platform
 fi
-./configure CPPFLAGS="-I${HOME}/utils/berkeley/db4/include -O2" LDFLAGS="-L${HOME}/utils/berkeley/db4/lib" --without-gui --disable-tests
+./configure CPPFLAGS="-Iabsolutepath/utils/berkeley/db4/include -O2" LDFLAGS="-Labsolutepath/utils/berkeley/db4/lib" --without-gui --disable-tests
 else
 echo "Building using Berkeley 5.1..."
 basedir=$(pwd)
@@ -89,7 +89,7 @@ if [[ ! -e 'absolutepath/utils/daemon_builder/temp_coin_builds/${coindir}/src/le
 else
 sudo chmod 777 absolutepath/utils/daemon_builder/temp_coin_builds/${coindir}/src/leveldb/build_detect_platform
 fi
-./configure CPPFLAGS="-I${HOME}/utils/berkeley/db5/include -O2" LDFLAGS="-L${HOME}/utils/berkeley/db5/lib" --without-gui --disable-tests
+./configure CPPFLAGS="-Iabsolutepath/utils/berkeley/db5/include -O2" LDFLAGS="-Labsolutepath/utils/berkeley/db5/lib" --without-gui --disable-tests
 fi
 make -j$(nproc)
 else
@@ -110,8 +110,8 @@ sudo chmod +x build_detect_platform
 sudo make clean
 sudo make libleveldb.a libmemenv.a
 cd absolutepath/utils/daemon_builder/temp_coin_builds/${coindir}/src
-sed -i '/USE_UPNP:=0/i BDB_LIB_PATH = /home/utils/berkeley/db4/lib\nBDB_INCLUDE_PATH = /home/utils/berkeley/db4/include\nOPENSSL_LIB_PATH = /home/utils/openssl/lib\nOPENSSL_INCLUDE_PATH = /home/utils/openssl/include' makefile.unix
-sed -i '/USE_UPNP:=1/i BDB_LIB_PATH = /home/utils/berkeley/db4/lib\nBDB_INCLUDE_PATH = /home/utils/berkeley/db4/include\nOPENSSL_LIB_PATH = /home/utils/openssl/lib\nOPENSSL_INCLUDE_PATH = /home/utils/openssl/include' makefile.unix
+sed -i '/USE_UPNP:=0/i BDB_LIB_PATH = absolutepath/utils/berkeley/db4/lib\nBDB_INCLUDE_PATH = absolutepath/utils/berkeley/db4/include\nOPENSSL_LIB_PATH = absolutepath/utils/openssl/lib\nOPENSSL_INCLUDE_PATH = absolutepath/utils/openssl/include' makefile.unix
+sed -i '/USE_UPNP:=1/i BDB_LIB_PATH = absolutepath/utils/berkeley/db4/lib\nBDB_INCLUDE_PATH = absolutepath/utils/berkeley/db4/include\nOPENSSL_LIB_PATH = absolutepath/utils/openssl/lib\nOPENSSL_INCLUDE_PATH = absolutepath/utils/openssl/include' makefile.unix
 make -j$NPROC -f makefile.unix USE_UPNP=-
 fi
 
