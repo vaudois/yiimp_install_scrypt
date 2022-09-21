@@ -462,7 +462,16 @@ fi
 sudo setfacl -m u:$USER:rwx $HOME/wallets
 mkdir -p $HOME/wallets/."${coind::-1}"
 echo "I am now going to open nano, please copy and paste the config from yiimp in to this file."
+
+echo
+echo
+echo -e "$CYAN --------------------------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$YELLOW   I am now going to open nano, please copy and paste the config from yiimp in to this file.	$COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------------------------- 	$COL_RESET"
+echo
 read -n 1 -s -r -p "Press any key to continue"
+echo
+
 sudo nano $HOME/wallets/."${coind::-1}"/${coind::-1}.conf
 clear
 cd absolutepath/utils/daemon_builder
