@@ -392,17 +392,33 @@ if [[ ("$precompiled" == "true") ]]; then
 	COINCLIFIND=$(find ~+ -type f -name "*-cli")
 	COINTXFIND=$(find ~+ -type f -name "*-tx")
 	
-	coind=$(basename $COINDFIND)
+	if [[ -f "$COINDFIND" ]]; then
+		coind=$(basename $COINDFIND)
 
-	sudo strip $COINDFIND
-	sudo cp $COINDFIND /usr/bin
-	sudo chmod +x /usr/bin/${coind}
-	coindmv=true
+		sudo strip $COINDFIND
+		sudo cp $COINDFIND /usr/bin
+		sudo chmod +x /usr/bin/${coind}
+		coindmv=true
 
-	echo
-	echo
-	echo -e "$GREEN Coind moving to /usr/bin/$COL_RESET$YELLOW${coind} $COL_RESET"
-	sleep 3
+		echo
+		echo
+		echo -e "$GREEN Coind moving to /usr/bin/$COL_RESET$YELLOW${coind} $COL_RESET"
+		sleep 3
+	else
+		clear
+
+		echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+		echo -e "$RED    ERROR																		$COL_RESET"
+		echo -e "$RED    your precompiled *zip OR *.tar.gz not contains coind file					$COL_RESET"
+		echo -e "$RED    Please start again with a valid file precompiled!							$COL_RESET"
+		echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+
+		sudo rm -r absolutepath/utils/daemon_builder/temp_coin_builds/.lastcoin.conf
+		sudo rm -r absolutepath/utils/daemon_builder/temp_coin_builds/${coindir}
+		sudo rm -r absolutepath/utils/daemon_builder/.my.cnf
+
+		exit;
+	fi
 	
 	if [[ -f "$COINCLIFIND" ]]; then
 		coincli=$(basename $COINCLIFIND)
