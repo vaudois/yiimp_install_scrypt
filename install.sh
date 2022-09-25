@@ -11,10 +11,12 @@
 ################################################################################
 	
 	### Variable ###
-    githubyiimptpruvot=https://github.com/tpruvot/yiimp.git
+	githubyiimptpruvot=https://github.com/tpruvot/yiimp.git
 	githubrepoKudaraidee=https://github.com/Kudaraidee/yiimp.git
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
 	githubrepoAfiniel=https://github.com/afiniel/yiimp
+	
+	absolutepath=$HOME
 
 	output() {
     printf "\E[0;33;40m"
