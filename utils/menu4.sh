@@ -2,8 +2,9 @@
 #####################################################
 # Source code https://github.com/end222/pacmenu
 # Updated by Vaudois
-# Menu: Update new Stratum
+# Updrade this scrypt
 #####################################################
+
 
 FUNC=/etc/functionscoin.sh
 if [[ ! -f "$FUNC" ]]; then
@@ -14,14 +15,19 @@ fi
 
 source ${absolutepath}/${installtoserver}/conf/info.sh
 
-message_box " Stratum compiler " \
-"This Scrypt of Stratum run in future builds sorry
-\n\nCheck again later in Update this scrypt Menu"
+message_box " Updating This script " \
+"Check if this scrypt needs update.
+\n\nYou are currently using the version ${VERSION}"
 
 cd ~
 clear
 
+sudo curl https://raw.githubusercontent.com/vaudois/install_DmcAddpStrm/master/bootstrap.sh | bash
+
+clear
+
 echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$RED    Type ${daemonname} at anytime to run this Scrypt!			 				$COL_RESET"
+echo -e "$RED    Thank you using this scrpt Updating is Finish!				 				$COL_RESET"
 echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
 exit
+

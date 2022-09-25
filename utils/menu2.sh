@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #####################################################
 # Source code https://github.com/end222/pacmenu
-# Updated by afiniel for crypto use...
+# Updated by Vaudois
+# Menu: Add Coin to Dedicated Port and run stratum
 #####################################################
 
 FUNC=/etc/functionscoin.sh
@@ -11,93 +12,14 @@ else
 	source /etc/functionscoin.sh
 fi
 
-cd absolutepath/utils/daemon_builder
+source ${absolutepath}/${installtoserver}/conf/info.sh
 
-RESULT=$(dialog --stdout --title "Daemon Builder Coin" --menu "Choose one" -1 60 8 \
-1 "Install Berkeley 4.x Coin with autogen file" \
-2 "Install Berkeley 5.1 Coin with autogen file" \
-3 "Install Berkeley 5.3 Coin with autogen file" \
-4 "Install Berkeley 6.2 Coin with build.sh file" \
-5 "Install Coin with makefile.unix file" \
-6 "Install Coin with CMake file" \
-7 "Install Coin precompiled linux version" \
-8 Exit)
+cd ~
+clear
 
-if [ $RESULT = ]
-then
-exit;
-fi
+sudo addport
 
-if [ $RESULT = 1 ]
-then
-clear;
-echo '
-autogen=true
-berkeley="4.8"
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 2 ]
-then
-clear;
-echo '
-autogen=true
-berkeley="5.1"
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 3 ]
-then
-clear;
-echo '
-autogen=true
-berkeley="5.3"
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 4 ]
-then
-clear;
-echo '
-autogen=true
-berkeley="6.2"
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 5 ]
-then
-clear;
-echo '
-autogen=false
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 6 ]
-then
-clear;
-echo '
-autogen=false
-cmake=true
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 7 ]
-then
-clear;
-echo '
-precompiled=true
-' | sudo -E tee absolutepath/utils/daemon_builder/.my.cnf >/dev/null 2>&1;
-source source.sh;
-fi
-
-if [ $RESULT = 8 ]
-then
-clear;
-exit;
-fi
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$RED    Type ${daemonname} at anytime to Add Port & run Stratum				$COL_RESET"
+echo -e "$CYAN --------------------------------------------------------------------------- 	$COL_RESET"
+exit
