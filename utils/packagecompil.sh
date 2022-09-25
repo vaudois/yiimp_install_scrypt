@@ -1,4 +1,3 @@
-    
 #!/bin/bash
 ################################################################################ 
 #
@@ -43,20 +42,21 @@ function package_compile_crypto
 
 function package_compile_coin
 {
-	sudo mkdir -p $HOME/tmp
+	sudo mkdir -p ${absolutepath}/tmp
+	
 	sleep 3
 	echo
 	echo -e "$YELLOW Building Berkeley 4.8, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/tmp
-	sudo mkdir -p $HOME/utils/berkeley/db4/
+	cd ${absolutepath}/tmp
+	sudo mkdir -p ${absolutepath}/${installtoserver}/berkeley/db4/
 	hide_output sudo wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
 	hide_output sudo tar -xzvf db-4.8.30.NC.tar.gz
 	cd db-4.8.30.NC/build_unix/
-	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db4/
+	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=${absolutepath}/${installtoserver}/berkeley/db4/
 	hide_output sudo make install
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	sudo rm -r db-4.8.30.NC.tar.gz db-4.8.30.NC
 	echo -e "$GREEN Berkeley 4.8 Completed...$COL_RESET"
 
@@ -64,14 +64,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building Berkeley 5.1, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/tmp
-	sudo mkdir -p $HOME/utils/berkeley/db5/
+	cd ${absolutepath}/tmp
+	sudo mkdir -p ${absolutepath}/${installtoserver}/berkeley/db5/
 	hide_output sudo wget 'http://download.oracle.com/berkeley-db/db-5.1.29.tar.gz'
 	hide_output sudo tar -xzvf db-5.1.29.tar.gz
 	cd db-5.1.29/build_unix/
-	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db5/
+	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=${absolutepath}/${installtoserver}/berkeley/db5/
 	hide_output sudo make install
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	sudo rm -r db-5.1.29.tar.gz db-5.1.29
 	echo -e "$GREEN Berkeley 5.1 Completed...$COL_RESET"
 
@@ -79,14 +79,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building Berkeley 5.3, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/tmp
-	sudo mkdir -p $HOME/utils/berkeley/db5.3/
+	cd ${absolutepath}/tmp
+	sudo mkdir -p ${absolutepath}/${installtoserver}/berkeley/db5.3/
 	hide_output sudo wget 'http://anduin.linuxfromscratch.org/BLFS/bdb/db-5.3.28.tar.gz'
 	hide_output sudo tar -xzvf db-5.3.28.tar.gz
 	cd db-5.3.28/build_unix/
-	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db5.3/
+	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=${absolutepath}/${installtoserver}/berkeley/db5.3/
 	hide_output sudo make install
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	sudo rm -r db-5.3.28.tar.gz db-5.3.28
 	echo -e "$GREEN Berkeley 5.3 Completed...$COL_RESET"
 
@@ -94,14 +94,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building Berkeley 6.2, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/tmp
-	sudo mkdir -p $HOME/utils/berkeley/db6.2/
+	cd ${absolutepath}/tmp
+	sudo mkdir -p ${absolutepath}/${installtoserver}/berkeley/db6.2/
 	hide_output sudo wget 'http://download.oracle.com/berkeley-db/db-6.2.23.tar.gz'
 	hide_output sudo tar -xzvf db-6.2.23.tar.gz
 	cd db-6.2.23/build_unix/
-	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/utils/berkeley/db6.2/
+	hide_output sudo ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=${absolutepath}/${installtoserver}/berkeley/db6.2/
 	hide_output sudo make install
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	sudo rm -r db-6.2.23.tar.gz db-6.2.23
 	echo -e "$GREEN Berkeley 6.2 Completed...$COL_RESET"
 
@@ -109,14 +109,14 @@ function package_compile_coin
 	echo -e "$YELLOW Building OpenSSL 1.0.2g, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	hide_output sudo wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2g.tar.gz --no-check-certificate
 	hide_output sudo tar -xf openssl-1.0.2g.tar.gz
 	cd openssl-1.0.2g
-	hide_output sudo ./config --prefix=$HOME/utils/openssl --openssldir=$HOME/utils/openssl shared zlib
+	hide_output sudo ./config --prefix=${absolutepath}/${installtoserver}/openssl --openssldir=${absolutepath}/${installtoserver}/openssl shared zlib
 	hide_output sudo make
 	hide_output sudo make install
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	sudo rm -r openssl-1.0.2g.tar.gz openssl-1.0.2g
 	echo -e "$GREEN OpenSSL 1.0.2g Completed...$COL_RESET"
 
@@ -124,18 +124,18 @@ function package_compile_coin
 	echo -e "$YELLOW Building bls-signatures, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	hide_output sudo wget 'https://github.com/codablock/bls-signatures/archive/v20181101.zip'
 	hide_output sudo unzip v20181101.zip
 	cd bls-signatures-20181101
 	hide_output sudo cmake .
 	hide_output sudo make install
-	cd $HOME/tmp
+	cd ${absolutepath}/tmp
 	sudo rm -r v20181101.zip bls-signatures-20181101
 	echo -e "$GREEN bls-signatures Completed...$COL_RESET"
 	
 	sleep 3
-	sudo rm -rf $HOME/tmp
+	sudo rm -rf ${absolutepath}/tmp
 	echo
 	echo
 	echo -e "$GREEN Done...$COL_RESET"
@@ -151,105 +151,24 @@ function package_daemonbuilder
 
 	echo -e "$CYAN => Installing DaemonBuilder $COL_RESET"
 	
-	absolutepath=$HOME
-	
 	cd ~
-	cd $HOME/yiimp_install_scrypt
-	sudo mkdir -p $HOME/utils/daemon_builder	
-	sudo cp -r utils/start.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/menu.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/menu2.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/menu3.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/errors.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/source.sh $HOME/utils/daemon_builder
-	sudo cp -r utils/upgrade.sh $HOME/utils/daemon_builder
-	sleep 3
+	cd ${absolutepath}/yiimp_install_scrypt
 
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/start.sh
-	
-	
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu.sh
-	sleep 2
-	
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu2.sh
-	sleep 2
-	
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/menu3.sh
-	sleep 2
-	
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/errors.sh
-	sleep 2
-	
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/source.sh
-	sleep 2
-	
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
-	sleep 1
-	sudo sed -i 's#absolutepath#'$absolutepath'#' $HOME/utils/daemon_builder/upgrade.sh
+	hide_output sudo cp -r utils/start.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/menu.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/menu1.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/menu2.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/menu3.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/menu4.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/source.sh ${absolutepath}/${installtoserver}/daemon_builder
 	sleep 3
-
-	echo '
-	#!/usr/bin/env bash
+	
+	echo '#!/usr/bin/env bash
 	source /etc/functions.sh # load our functions
-	cd '"$HOME"'/utils/daemon_builder
+	cd '"${absolutepath}"'/'"${installtoserver}"'/daemon_builder
 	bash start.sh
-	cd ~
-	' | sudo -E tee /usr/bin/daemonbuilder >/dev/null 2>&1
-	sudo chmod +x /usr/bin/daemonbuilder
+	cd ~' | sudo -E tee /usr/bin/${daemonname} >/dev/null 2>&1
+	sudo chmod +x /usr/bin/${daemonname}
 
 	sleep 3
 }
