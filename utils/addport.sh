@@ -177,6 +177,14 @@ echo
 echo -e "$YELLOW The assigned dedicated port for this coins stratum is :$YELLOW $coinport $COL_RESET"
 echo
 echo -e "$YELLOW Make sure to add this to the Dedicated Port section in your YiiMP admin panel! $COL_RESET"
+echo
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+echo -e "$GREEN	Donations are welcome at wallets below:					  						$COL_RESET"
+echo -e "$YELLOW  BTC: btcdons	$COL_RESET"
+echo -e "$YELLOW  LTC: ltcdons	$COL_RESET"
+echo -e "$YELLOW  ETH: ethdons	$COL_RESET"
+echo -e "$YELLOW  BCH: bchdons	$COL_RESET"
+echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
 
 cd ~
 exit 0
