@@ -9,16 +9,61 @@
 #   v0.1
 # 
 ################################################################################
-	
+
+if [ -z "${TAG}" ]; then
+	TAG=v0.1
+fi
+
+clear
+
 	### Variable ###
 	githubyiimptpruvot=https://github.com/tpruvot/yiimp.git
 	githubrepoKudaraidee=https://github.com/Kudaraidee/yiimp.git
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
 	githubrepoAfiniel=https://github.com/afiniel/yiimp
+
+	echo "Starting installer..."
 	
+	BTCDEP="bc1qt8g9l6agk7qrzlztzuz7quwhgr3zlu4gc5qcuk"
+	LTCDEP="MGyth7od68xVqYnRdHQYes22fZW2b6h3aj"
+	ETHDEP="0xc4e42e92ef8a196eef7cc49456c786a41d7daa01"
+	BCHDEP="bitcoincash:qp9ltentq3rdcwlhxtn8cc2rr49ft5zwdv7k7e04df"
+
 	daemonname=coinbuild
 	absolutepath=$HOME
 	installtoserver=coin-setup
+	
+	sudo sed -i 's#btcdons#'$BTCDEP'#' conf/functions.sh
+	sleep 1
+	sudo sed -i 's#bchdons#'$BCHDEP'#' utils/addport.sh
+	sleep 1
+
+	sudo sed -i 's#ltcdons#'$LTCDEP'#' conf/functions.sh
+	sleep 1
+	sudo sed -i 's#bchdons#'$BCHDEP'#' utils/addport.sh
+	sleep 1
+
+	sudo sed -i 's#ethdons#'$ETHDEP'#' conf/functions.sh
+	sleep 1
+	sudo sed -i 's#bchdons#'$BCHDEP'#' utils/addport.sh
+	sleep 1
+
+	sudo sed -i 's#bchdons#'$BCHDEP'#' conf/functions.sh
+	sleep 1
+	sudo sed -i 's#bchdons#'$BCHDEP'#' utils/addport.sh
+	sleep 1
+
+	sudo sed -i 's#daemonnameserver#'$daemonname'#' conf/functions.sh
+	sleep 1
+
+	sudo sed -i 's#installpath#'$installtoserver'#' conf/functions.sh
+	sleep 1
+	
+	sudo sed -i 's#absolutepathserver#'$absolutepath'#' conf/functions.sh
+	sleep 1
+
+	sudo sed -i 's#versiontag#'$TAG'#' conf/functions.sh
+	sleep 1
 
 	output() {
     printf "\E[0;33;40m"
