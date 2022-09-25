@@ -324,60 +324,60 @@
 		hide_output git clone $githubrepoAfiniel -b next
 	fi
 
-    cd $HOME/yiimp/blocknotify
+    cd ${absolutepath}/yiimp/blocknotify
     sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
     hide_output sudo make
     
     # Compil iniparser
-    cd $HOME/yiimp/stratum/iniparser
+    cd ${absolutepath}/yiimp/stratum/iniparser
     hide_output sudo make
     
     # Compil Stratum
-    cd $HOME/yiimp/stratum
+    cd ${absolutepath}/yiimp/stratum
     if [[ ("$BTC" == "y" || "$BTC" == "Y") ]]; then
-    sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' $HOME/yiimp/stratum/Makefile
+    sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' ${absolutepath}/yiimp/stratum/Makefile
     fi
     hide_output sudo make
     
     # Copy Files (Blocknotify,iniparser,Stratum)
-    cd $HOME/yiimp
+    cd ${absolutepath}/yiimp
 	if [[ ("$yiimpver" == "1" || "$yiimpver" == "" || "$yiimpver" == "4") ]];then 
-		sudo sed -i 's/myadmin/'$admin_panel'/' $HOME/yiimp/web/yaamp/modules/site/SiteController.php
+		sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	else
-		sudo sed -i 's/AdminRights/'$admin_panel'/' $HOME/yiimp/web/yaamp/modules/site/SiteController.php
+		sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	fi
 
 	URLREPLACEWEBVAR=/var/web
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
 	URLSHCRYPTODATA=/home/crypto-data/yiimp/site/web
 
-	cd $HOME/yiimp/web/
+	cd ${absolutepath}/yiimp/web/
 
 	find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 
-	URLREPLACEWEBWAL=$HOME/wallets/
+	URLREPLACEWEBWAL=${absolutepath}/wallets/
 	URLSEARCHWEBWAL=/home/crypto-data/wallets/
 	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSEARCHWEBWAL}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 	
-	cd $HOME/yiimp
+	cd ${absolutepath}/yiimp
 	
-    sudo cp -r $HOME/yiimp/web /var/
+    sudo cp -r ${absolutepath}/yiimp/web /var/
     sudo mkdir -p /var/stratum
-    cd $HOME/yiimp/stratum
+    cd ${absolutepath}/yiimp/stratum
     sudo cp -a config.sample/. /var/stratum/config
     sudo cp -r stratum /var/stratum
     sudo cp -r run.sh /var/stratum
-    cd $HOME/yiimp
-    sudo cp -r $HOME/yiimp/bin/. /bin/
-    sudo cp -r $HOME/yiimp/blocknotify/blocknotify /usr/bin/
-    sudo cp -r $HOME/yiimp/blocknotify/blocknotify /var/stratum/
+    cd ${absolutepath}/yiimp
+    sudo cp -r ${absolutepath}/yiimp/bin/. /bin/
+    sudo cp -r ${absolutepath}/yiimp/blocknotify/blocknotify /usr/bin/
+    sudo cp -r ${absolutepath}/yiimp/blocknotify/blocknotify /var/stratum/
     sudo mkdir -p /etc/yiimp
-    sudo mkdir -p /$HOME/backup/
+    sudo mkdir -p /${absolutepath}/backup/
     #fixing yiimp
     sudo sed -i "s|ROOTDIR=/data/yiimp|ROOTDIR=/var|g" /bin/yiimp
     #fixing run.sh
@@ -1396,8 +1396,8 @@ echo '
     sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
 
     #Misc
-    sudo rm -rf $HOME/yiimp
-    sudo rm -rf $HOME/yiimp_install_scrypt
+    sudo rm -rf ${absolutepath}/yiimp
+    sudo rm -rf ${absolutepath}/yiimp_install_scrypt
     sudo rm -rf /var/log/nginx/*
 
     #Restart service
