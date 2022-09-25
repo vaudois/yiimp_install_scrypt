@@ -17,6 +17,7 @@
 	githubrepoAfiniel=https://github.com/afiniel/yiimp
 	
 	absolutepath=$HOME
+	installtoserver=coin-setup
 
 	output() {
     printf "\E[0;33;40m"
