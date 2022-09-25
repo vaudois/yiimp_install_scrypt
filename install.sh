@@ -344,18 +344,25 @@
 	else
 		sudo sed -i 's/AdminRights/'$admin_panel'/' $HOME/yiimp/web/yaamp/modules/site/SiteController.php
 	fi
-	
+
+	URLREPLACEWEBVAR=/var/web
+	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
+	URLSHCRYPTODATA=/home/crypto-data/yiimp/site/web
+
+	cd $HOME/yiimp/web/
+
+	find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sleep 3
+	find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sleep 3
+
 	URLREPLACEWEBWAL=$HOME/wallets/
 	URLSEARCHWEBWAL=/home/crypto-data/wallets/
 	sleep 3
-	sudo find $HOME/yiimp/web/ -type f -exec sed -i 's#'${URLSEARCHWEBWAL}'#'$URLREPLACEWEBWAL'#g' {} \;
+	find ./ -type f -exec sed -i 's@'${URLSEARCHWEBWAL}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 	
-	URLREPLACEWEBVAR=/var/web
-	URLSEARCHWEBVAR=/home/yiimp-data/yiimp/site/web
-	sleep 3
-	sudo find $HOME/yiimp/web/ -type f -exec sed -i 's#'${URLSEARCHWEBVAR}'#'$URLREPLACEWEBVAR'#g' {} \;
-	sleep 3
+	cd $HOME/yiimp
 	
     sudo cp -r $HOME/yiimp/web /var/
     sudo mkdir -p /var/stratum
