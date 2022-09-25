@@ -16,6 +16,7 @@
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
 	githubrepoAfiniel=https://github.com/afiniel/yiimp
 	
+	daemonname=coinbuild
 	absolutepath=$HOME
 	installtoserver=coin-setup
 
