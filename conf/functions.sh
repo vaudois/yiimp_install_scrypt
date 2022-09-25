@@ -9,7 +9,6 @@ absolutepath=absolutepathserver
 installtoserver=installpath
 daemonname=daemonnameserver
 
-
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 RED=$ESC_SEQ"31;01m"
@@ -163,7 +162,6 @@ function get_default_privateip {
 		fi
 
 		echo $address
-
 }
 
 
@@ -171,17 +169,16 @@ function get_default_privateip {
 function term_art {
 	clear
 	echo
-	echo -e "$CYAN  --------------------------------------------------------------------- 	  				$COL_RESET"
-	echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!								$COL_RESET"
-	echo -e "$GREEN  Version: $COL_RESET $MAGENTA versiontag												$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------- 	  				$COL_RESET"
-	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.					$COL_RESET"
-	echo -e "$YELLOW  It will also install a MySQL database and a Web server.								$COL_RESET"
-	echo -e "$YELLOW  MariaDB is used for the database.														$COL_RESET"
-	echo -e "$YELLOW  Nginx is used for the Web server, PHP 7.3 is also installed.							$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------- 	  				$COL_RESET"
+	echo -e "$CYAN  -----------------------------------------------------------------------	$COL_RESET"
+	echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!				$COL_RESET"
+	echo -e "$GREEN  Version: $COL_RESET $MAGENTA versiontag								$COL_RESET"
+	echo -e "$CYAN  -----------------------------------------------------------------------	$COL_RESET"
+	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.	$COL_RESET"
+	echo -e "$YELLOW  It will also install a MySQL database and a Web server.				$COL_RESET"
+	echo -e "$YELLOW  MariaDB is used for the database.										$COL_RESET"
+	echo -e "$YELLOW  Nginx is used for the Web server, PHP 7.3 is also installed.			$COL_RESET"
+	echo -e "$CYAN  -----------------------------------------------------------------------	$COL_RESET"
 	echo
-
 }
 
 function install_end_message
@@ -189,38 +186,38 @@ function install_end_message
 	clear
 	echo
 	figlet -f slant -w 100 "Complete!"
-	
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$GREEN  | Version: $COL_RESET $MAGENTA versiontag                                             |$COL_RESET"
-	echo -e "$YELLOW Yiimp Installer Script Fork By Vaudois													$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$YELLOW   Your mysql information (login/Password) is saved in:$RED ~/.my.cnf					$COL_RESET"
-	echo -e "$CYAN  ---------------------------------------------------------------------------	  	  		$COL_RESET"
-	echo -e "$YELLOW   Your pool  at :$CYAN http://"$server_name" 									  		$COL_RESET"
-	echo -e "$YELLOW   Admin area at :$CYAN http://"$server_name"/site/AdminPanel					  		$COL_RESET"
-	echo -e "$YELLOW   phpMyAdmin at :$CYAN http://"$server_name"/phpmyadmin 						  		$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$YELLOW   If you want change$RED $admin_panel $YELLOW edit SiteController.php:			  		$COL_RESET"
-	echo -e "$RED   /var/web/yaamp/modules/site/SiteController.php 									  		$COL_RESET"
-	echo -e "$YELLOW   Line 11 => change it to your preference. 									  		$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$YELLOW  Please make sure to change your$RED public keys and your wallet addresses in:  		$COL_RESET"
-	echo -e "$RED   /var/web/serverconfig.php		 												  		$COL_RESET"
+
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$GREEN  | Version: $COL_RESET $MAGENTA versiontag	|									$COL_RESET"
+	echo -e "$YELLOW Yiimp Installer Script Fork By Vaudois											$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$YELLOW   Your mysql information (login/Password) is saved in:$RED ~/.my.cnf			$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$YELLOW   Your pool  at :$CYAN http://"$server_name"									$COL_RESET"
+	echo -e "$YELLOW   Admin area at :$CYAN http://"$server_name"/site/AdminPanel					$COL_RESET"
+	echo -e "$YELLOW   phpMyAdmin at :$CYAN http://"$server_name"/phpmyadmin						$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$YELLOW   If you want change$RED $admin_panel $YELLOW edit SiteController.php:			$COL_RESET"
+	echo -e "$RED   /var/web/yaamp/modules/site/SiteController.php									$COL_RESET"
+	echo -e "$YELLOW   Line 11 => change it to your preference.										$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$YELLOW  Please make sure to change your$RED public keys and your wallet addresses in:	$COL_RESET"
+	echo -e "$RED   /var/web/serverconfig.php														$COL_RESET"
 	echo -e "$YELLOW  Please make sure to change your private keys in the$RED /etc/yiimp/keys.php$YELLOW file.$COL_RESET"
-	echo -e "$CYAN  ---------------------------------------------------------------------------				$COL_RESET"
-    echo -e "$RED   How to use Build Coin & Addport															$COL_RESET"
-    echo -e "$GREEN	To build a new coin :$COL_RESET $MAGENTA ${daemonname}			  						$COL_RESET"
-    echo -e "$GREEN	To added stratum to coin and dedicated port : $COL_RESET $MAGENTA addport	  			$COL_RESET"
-    echo -e "$CYAN  ---------------------------------------------------------------------------				$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-	echo -e "$GREEN	Donations are welcome at wallets below:					  						$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$RED   How to use Build Coin & Addport													$COL_RESET"
+	echo -e "$GREEN	To build a new coin :$COL_RESET $MAGENTA ${daemonname}							$COL_RESET"
+	echo -e "$GREEN	To added stratum to coin and dedicated port : $COL_RESET $MAGENTA addport		$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$GREEN	Donations are welcome at wallets below:											$COL_RESET"
 	echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA btcdons	$COL_RESET"
 	echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA ltcdons	$COL_RESET"
 	echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA ethdons	$COL_RESET"
 	echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bchdons	$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-	echo -e "$CYAN  -----------------------------------------------------------------------------  	  		$COL_RESET"
-	echo -e "$YELLOW |  YOU MUST$RED REBOOT$YELLOW NOW  TO FINALIZE INSTALLATION Thanks you! |		  		$COL_RESET"
-	echo -e "$CYAN  -----------------------------------------------------------   			    	  		$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$CYAN  -----------------------------------------------------------------------------	$COL_RESET"
+	echo -e "$YELLOW |  YOU MUST$RED REBOOT$YELLOW NOW  TO FINALIZE INSTALLATION Thanks you! |		$COL_RESET"
+	echo -e "$CYAN  -----------------------------------------------------------------------------	$COL_RESET"
 	echo
 }
