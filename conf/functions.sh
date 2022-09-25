@@ -2,10 +2,14 @@
 #####################################################
 # Source https://mailinabox.email/ https://github.com/mail-in-a-box/mailinabox
 # Updated by cryptopool.builders for crypto use...
-# Modified by Vaudois
+# Modified by Xavatar
+# Current Modified by Vaudois for Daemon coin & addport & stratum (2022-09-25)
 #####################################################
 
-VERSION=0.1
+absolutepath=absolutepathserver
+installtoserver=installpath
+daemonname=daemonnameserver
+
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 RED=$ESC_SEQ"31;01m"
@@ -15,21 +19,78 @@ BLUE=$ESC_SEQ"34;01m"
 MAGENTA=$ESC_SEQ"35;01m"
 CYAN=$ESC_SEQ"36;01m"
 
+function spinner
+{
+	local pid=$!
+	local delay=0.35
+	local spinstr='|/-\'
+	while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+			local temp=${spinstr#?}
+			printf " [%c]  " "$spinstr"
+			local spinstr=$temp${spinstr%"$temp"}
+			sleep $delay
+			printf "\b\b\b\b\b\b"
+	done
+	printf "    \b\b\b\b"
+}
+ 
+ function spinning_timer() {
+  animation=( ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ )
+  end=$((SECONDS+NUM))
+  while [ $SECONDS -lt $end ]; do
+    for i in "${animation[@]}"; do
+      echo -ne "${RED}\r$i ${CYAN}${MSG1}${NC}"
+      sleep 0.1
+    done
+  done
+  echo -e "${MSG2}"
+}
 
-function spinner {
- 		local pid=$!
- 		local delay=0.75
- 		local spinstr='|/-\'
- 		while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
- 				local temp=${spinstr#?}
- 				printf " [%c]  " "$spinstr"
- 				local spinstr=$temp${spinstr%"$temp"}
- 				sleep $delay
- 				printf "\b\b\b\b\b\b"
- 		done
- 		printf "    \b\b\b\b"
- }
+# terminal art end screen.
 
+function install_end_message {
+
+	clear
+	echo
+	clear
+	echo
+	figlet -f slant -w 100 "Complete!"
+	echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+	echo -e "$YELLOW  Script install of Daemon & Addpor & Stratum By Vaudois       					$COL_RESET"
+	echo -e "$GREEN	Donations are welcome at wallets below:					  						$COL_RESET"
+	echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA btcdons	$COL_RESET"
+	echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA ltcdons	$COL_RESET"
+	echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA ethdons	$COL_RESET"
+	echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bchdons	$COL_RESET"
+	echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
+	echo -e "$CYAN 	https://github.com/vaudois/install_DmcAddpStrm									$COL_RESET"
+	echo -e "$CYAN  ---------------------------------------------------------------------------  	$COL_RESET"
+	echo
+	echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+    echo -e "$RED   How to use																		$COL_RESET"
+    echo -e "$GREEN	To build a new coin :$COL_RESET $MAGENTA ${daemonname}			  				$COL_RESET"
+    echo -e "$GREEN	To added stratum to coin and dedicated port : $COL_RESET $MAGENTA addport	  	$COL_RESET"
+    echo -e "$CYAN  ---------------------------------------------------------------------------		$COL_RESET"
+    echo
+    cd ~
+}
+
+# terminal art start screen.
+function term_art {
+
+	echo
+	echo -e "$CYAN----------------------------------------------------------------------------------------	$COL_RESET"
+	echo "                                                                                        "
+	echo "██████╗  █████╗ ███████╗███╗   ███╗ ██████╗ ███╗   ██╗     ██████╗ ██████╗ ██╗███╗   ██╗"
+	echo "██╔══██╗██╔══██╗██╔════╝████╗ ████║██╔═══██╗████╗  ██║    ██╔════╝██╔═══██╗██║████╗  ██║"
+	echo "██║  ██║███████║█████╗  ██╔████╔██║██║   ██║██╔██╗ ██║    ██║     ██║   ██║██║██╔██╗ ██║"
+	echo "██║  ██║██╔══██║██╔══╝  ██║╚██╔╝██║██║   ██║██║╚██╗██║    ██║     ██║   ██║██║██║╚██╗██║"
+	echo "██████╔╝██║  ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║ ╚████║    ╚██████╗╚██████╔╝██║██║ ╚████║"
+	echo "╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝"
+    echo -e "$GREEN *Daemon Coin Installer$COL_RESET $MAGENTA versiontag									$COL_RESET"
+	echo -e "$CYAN----------------------------------------------------------------------------------------	$COL_RESET"
+	echo
+}
 
 function hide_output {
 		OUTPUT=$(tempfile)
@@ -47,17 +108,30 @@ function hide_output {
 		rm -f $OUTPUT
 }
 
+function spinner_output {
+		OUTPUT=$(tempfile)
+		$@ &> $OUTPUT & spinning_timer
+		E=$?
+		if [ $E != 0 ]; then
+		echo
+		echo FAILED: $@
+		echo -----------------------------------------
+		cat $OUTPUT
+		echo -----------------------------------------
+		exit $E
+		fi
 
-function apt_get_quiet {
-		DEBIAN_FRONTEND=noninteractive hide_output sudo apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" "$@"
+		rm -f $OUTPUT
 }
 
+function apt_get_quiet {
+		DEBIAN_FRONTEND=noninteractive hide_output sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" "$@"
+}
 
 function apt_install {
 		PACKAGES=$@
 		apt_get_quiet install $PACKAGES
 }
-
 
 function ufw_allow {
 		if [ -z "$DISABLE_FIREWALL" ]; then
@@ -160,51 +234,4 @@ function get_default_privateip {
 
 		echo $address
 
-}
-
-
-# terminal art start screen.
-function term_art {
-	clear
-	echo
-	echo -e "$CYAN  --------------------------------------------------------------------- 	  				$COL_RESET"
-	echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaujdois!								$COL_RESET"
-	echo -e "$GREEN  Version: v${VERSION}  																	$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------- 	  				$COL_RESET"
-	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.					$COL_RESET"
-	echo -e "$YELLOW  It will also install a MySQL database and a Web server.								$COL_RESET"
-	echo -e "$YELLOW  MariaDB is used for the database.														$COL_RESET"
-	echo -e "$YELLOW  Nginx is used for the Web server, PHP 7.3 is also installed.							$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------- 	  				$COL_RESET"
-	echo
-
-}
-
-function install_end_message
-{
-	clear
-	echo
-	figlet -f slant -w 100 "Complete!"
-	
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$GREEN  | Version: v${VERSION}                                                                 |$COL_RESET"
-	echo -e "$YELLOW Yiimp Installer Script Fork By Vaudois													$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$YELLOW   Your mysql information (login/Password) is saved in:$RED ~/.my.cnf					$COL_RESET"
-	echo -e "$CYAN  ---------------------------------------------------------------------------	  	  		$COL_RESET"
-	echo -e "$YELLOW   Your pool  at :$CYAN http://"$server_name" 									  		$COL_RESET"
-	echo -e "$YELLOW   Admin area at :$CYAN http://"$server_name"/site/AdminPanel					  		$COL_RESET"
-	echo -e "$YELLOW   phpMyAdmin at :$CYAN http://"$server_name"/phpmyadmin 						  		$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$YELLOW   If you want change$RED $admin_panel $YELLOW edit SiteController.php:			  		$COL_RESET"
-	echo -e "$RED   /var/web/yaamp/modules/site/SiteController.php 									  		$COL_RESET"
-	echo -e "$YELLOW   Line 11 => change it to your preference. 									  		$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------- 	  		$COL_RESET"
-	echo -e "$YELLOW  Please make sure to change your$RED public keys and your wallet addresses in:  		$COL_RESET"
-	echo -e "$RED   /var/web/serverconfig.php		 												  		$COL_RESET"
-	echo -e "$YELLOW  Please make sure to change your private keys in the$RED /etc/yiimp/keys.php$YELLOW file.$COL_RESET"
-	echo -e "$CYAN  -----------------------------------------------------------------------------  	  		$COL_RESET"
-	echo -e "$YELLOW |  YOU MUST$RED REBOOT$YELLOW NOW  TO FINALIZE INSTALLATION Thanks you! |		  		$COL_RESET"
-	echo -e "$CYAN  -----------------------------------------------------------   			    	  		$COL_RESET"
-	echo
 }
