@@ -1012,7 +1012,7 @@ clear
     sleep 3
     
     cd ~
-    cd yiimp/sql
+    cd ${absolutepath}/yiimp_install_scrypt/conf/db
 
 	# Import sql dump
 	sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
@@ -1047,6 +1047,8 @@ clear
 	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
 	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
 	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
+	
+	cd ~
 
     echo -e "$GREEN Done...$COL_RESET"    
     
