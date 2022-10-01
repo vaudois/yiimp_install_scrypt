@@ -161,6 +161,7 @@ function package_daemonbuilder
 	hide_output sudo cp -r utils/menu3.sh ${absolutepath}/${installtoserver}/daemon_builder
 	hide_output sudo cp -r utils/menu4.sh ${absolutepath}/${installtoserver}/daemon_builder
 	hide_output sudo cp -r utils/source.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r utils/info.sh ${absolutepath}/${installtoserver}/conf
 	sleep 3
 	
 	echo '#!/usr/bin/env bash
