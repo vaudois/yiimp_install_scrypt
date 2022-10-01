@@ -1357,6 +1357,13 @@ echo '
     sudo mkdir -p /var/yiimp/sauv
     sudo chgrp www-data /var/yiimp -R
     sudo chmod 775 /var/yiimp -R
+    
+    sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/main.sh /var/web
+    sudo chmod +x /var/web/main.sh
+    sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/loop2.sh /var/web
+    sudo chmod +x /var/web/main.sh
+    sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/blocks.sh /var/web
+    sudo chmod +x /var/web/main.sh
 
     #Add to contrab screen-scrypt
     (crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
@@ -1380,6 +1387,7 @@ echo '
     sudo systemctl status nginx | sed -n "1,3p"
     sudo systemctl restart php7.3-fpm.service
     sudo systemctl status php7.3-fpm | sed -n "1,3p"
+    sudo restartlg
 
     echo
     echo -e "$GREEN Done...$COL_RESET"
