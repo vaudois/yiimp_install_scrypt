@@ -142,8 +142,30 @@ clear
     read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
     read -e -p "Install UFW and configure ports? [Y/n] : " UFW
     read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior to running the script!! [Y/n]: " ssl_install
-    
-    
+    read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
+    if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+        read -e -p "Enter a Local Wireguard Private IP for this server (x.x.x.x): " wg_ip
+    fi
+  
+    echo -e "\n\n\n\n"
+    echo -e "$RED You entered the following. If it's wrong CTRL-C now to start over $COL_RESET"
+    echo "Domain Name:         $server_name"
+    echo "Stratum Subdomain:   $sub_domain"
+    echo "Support Email:       $EMAIL"
+    echo "AutoExchange:        $BTC"
+    echo "Panel Url:           $admin_panel"
+    echo "IP Range for Admin:  $Public"
+    echo "Yiimb Github choice: $yiimpver"
+    echo "Install Fail2ban:    $install_fail2ban"
+    echo "Install UFW:         $UFW"
+    echo "Install SSL now:     $ssl_install"
+    echo "Install wiregauard:  $wg_install"
+    echo "Wireguard wg0 IP:    $wg_ip"
+
+
+    read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
+    echo -e "\n\n\n\n"
+
     # Switch Aptitude
     echo
     echo -e "$CYAN Switching to Aptitude $COL_RESET"
@@ -1329,6 +1351,21 @@ echo '
     cd ~
     echo -e "$GREEN Done...$COL_RESET"
 
+    # Wireguard support
+    if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+        hide_output sudo apt update -y
+        hide_output sudo apt install wireguard-dkms wireguard-tools -y
+
+        (umask 077 && printf "[Interface]\nPrivateKey = " | sudo tee /etc/wireguard/wg0.conf > /dev/null)
+        wg genkey | sudo tee -a /etc/wireguard/wg0.conf | wg pubkey | sudo tee /etc/wireguard/publickey
+        sudo sed -i '$a Address = '$wg_ip'/24\nListenPort = 6121\n\n' /etc/wireguard/wg0.conf
+        sudo sed -i '$a #[Peer]\n#PublicKey= Remotes_Public_Key\n#AllowedIPs = Remote_wg0_IP/32\n#Endpoint=Remote_Public_IP:6121\n' /etc/wireguard/wg0.conf
+
+        sudo systemctl start wg-quick@wg0
+        sudo systemctl enable wg-quick@wg0
+
+        sudo ufw allow 6121
+    fi
 
     # Final Directory permissions
     echo
@@ -1378,6 +1415,27 @@ echo '
     sudo rm -rf ${absolutepath}/stratum
     sudo rm -rf ${absolutepath}/yiimp_install_scrypt
     sudo rm -rf /var/log/nginx/*
+
+    # Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
+    VPNSERVER=`curl -q http://ifconfig.me`
+    echo "export yiimpver=$yiimpver" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo "export blckntifypass=$blckntifypass" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo "export server_name=\$(hostname -f)" >> $HOME/yiimp/REMOTE_stratum.conf
+    if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+        WGPUBKEY=`sudo cat /etc/wireguard/publickey`
+        echo "export MYSQLIP=$wg_ip" >> $HOME/yiimp/REMOTE_stratum.conf
+        echo "export VPNPUBBKEY=$WGPUBKEY" >> $HOME/yiimp/REMOTE_stratum.conf
+    else
+        echo "export MYSQLIP=$server_name" >> $HOME/yiimp/REMOTE_stratum.conf
+        echo "export VPNPUBBKEY=" >> $HOME/yiimp/REMOTE_stratum.conf
+    fi
+    echo "export MYSQLDB=yiimpfrontend" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo "export MYSQLUSER=stratum" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo "export MYSQLPASS=$stratumpass" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo "export BTC=$BTC" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo "export VPNSERVER=$VPNSERVER" >> $HOME/yiimp/REMOTE_stratum.conf
+    echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" >> $HOME/yiimp/REMOTE_stratum.conf
+    sudo chmod 400 $HOME/yiimp/REMOTE_stratum.conf
 
     #Restart service
     sudo systemctl restart cron.service
