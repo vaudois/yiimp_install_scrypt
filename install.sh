@@ -23,6 +23,8 @@ clear
 	githubrepoKudaraidee=https://github.com/Kudaraidee/yiimp.git
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
 	githubrepoAfiniel=https://github.com/afiniel/yiimp
+	
+	githubstratum=https://github.com/vaudois/stratum.git
 
 	echo "Starting installer..."
 	
@@ -385,23 +387,26 @@ clear
 		hide_output git clone $githubrepoAfiniel -b next
 	fi
 
-    cd ${absolutepath}/yiimp/blocknotify
+	hide_output git clone $githubstratum
+
+    cd ${absolutepath}/stratum/blocknotify
     sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
     hide_output sudo make -j$NPROC
     
     # Compil iniparser
-    cd ${absolutepath}/yiimp/stratum/iniparser
+    cd ${absolutepath}/stratum/iniparser
     hide_output sudo make -j$NPROC
     
     # Compil Stratum
-    cd ${absolutepath}/yiimp/stratum
+    cd ${absolutepath}/stratum
     if [[ ("$BTC" == "y" || "$BTC" == "Y") ]]; then
     sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' ${absolutepath}/yiimp/stratum/Makefile
     fi
     hide_output sudo make -j$NPROC
     
     # Copy Files (Blocknotify,iniparser,Stratum)
-    cd ${absolutepath}/yiimp
+    cd ${absolutepath}/stratum
+    
 	if [[ ("$yiimpver" == "1" || "$yiimpver" == "" || "$yiimpver" == "4") ]];then 
 		sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	else
@@ -424,19 +429,19 @@ clear
 	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSEARCHWEBWAL}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
-	
+
 	cd ${absolutepath}/yiimp
 	
     sudo cp -r ${absolutepath}/yiimp/web /var/
     sudo mkdir -p /var/stratum
-    cd ${absolutepath}/yiimp/stratum
+    cd ${absolutepath}/stratum
     sudo cp -a config.sample/. /var/stratum/config
     sudo cp -r stratum /var/stratum
     sudo cp -r run.sh /var/stratum
     cd ${absolutepath}/yiimp
     sudo cp -r ${absolutepath}/yiimp/bin/. /bin/
-    sudo cp -r ${absolutepath}/yiimp/blocknotify/blocknotify /usr/bin/
-    sudo cp -r ${absolutepath}/yiimp/blocknotify/blocknotify /var/stratum/
+    sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
+    sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /var/stratum/
     sudo mkdir -p /etc/yiimp
     sudo mkdir -p /${absolutepath}/backup/
     #fixing yiimp
@@ -457,7 +462,6 @@ clear
     sudo chmod +x /var/stratum/config/run.sh
 
     echo -e "$GREEN Done...$COL_RESET"
-
 
     # Update Timezone
     echo
@@ -1329,9 +1333,11 @@ echo '
     #fix error screen main
     sudo sed -i 's/service $webserver start/sudo service $webserver start/g' /var/web/yaamp/modules/thread/CronjobController.php
     sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
+    sudo sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
 
     #Misc
     sudo rm -rf ${absolutepath}/yiimp
+    sudo rm -rf ${absolutepath}/stratum
     sudo rm -rf ${absolutepath}/yiimp_install_scrypt
     sudo rm -rf /var/log/nginx/*
 
