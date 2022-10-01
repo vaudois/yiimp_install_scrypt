@@ -913,8 +913,7 @@ clear
     hide_output sudo systemctl reload php7.3-fpm.service
     hide_output sudo systemctl restart nginx.service
     fi
-    
-    
+
     # Config Database
     echo
     echo
@@ -1015,152 +1014,39 @@ clear
     cd ~
     cd yiimp/sql
 
+	# Import sql dump
+	sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
 
-    if [[ ("$yiimpver" == "1" || "$yiimpver" == "") ]];then
-		# Kudaraidee Sql
-
-		# Import sql dump
-		sudo zcat 2021-06-21-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
-
-		# Oh the humanity!
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-01-accounts_hostaddr.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-15-coins_hasmasternodes.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-09-20-blocks_worker.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-17-payouts_errmsg.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-18-accounts_donation.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-23-shares_diff.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-26-markets.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-30-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-03-accounts.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-24-market_history.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-27-settings.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-11-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-15-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-23-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-01-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-04-bench_chips.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-11-23-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-02-05-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-03-31-earnings_index.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-05-accounts_case_swaptime.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-06-payouts_coinid_memo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-09-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-10-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-11-segwit.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-01-stratums_ports.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-02-coins_getinfo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
-    elif [[ "$yiimpver" == "2" ]]; then
-		# Tpruvot Sql
-
-		# Import sql dump
-		sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
-
-		# Oh the humanity!
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-01-accounts_hostaddr.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-15-coins_hasmasternodes.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-09-20-blocks_worker.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-17-payouts_errmsg.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-18-accounts_donation.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-23-shares_diff.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-26-markets.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-30-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-03-accounts.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-24-market_history.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-27-settings.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-11-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-15-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-23-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-01-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-04-bench_chips.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-11-23-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-02-05-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-03-31-earnings_index.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-05-accounts_case_swaptime.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-06-payouts_coinid_memo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-09-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-10-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-11-segwit.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-01-stratums_ports.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-02-coins_getinfo.sql
-	elif [[ "$yiimpver" == "3" ]]; then
-		# Afiniel Tech Sql
-
-
-		# Import sql dump
-		sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
-
-		# Oh the humanity!
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-01-accounts_hostaddr.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-15-coins_hasmasternodes.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-09-20-blocks_worker.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-17-payouts_errmsg.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-18-accounts_donation.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-23-shares_diff.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-26-markets.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-30-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-03-accounts.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-24-market_history.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-27-settings.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-11-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-15-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-23-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-01-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-04-bench_chips.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-11-23-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-02-05-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-03-31-earnings_index.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-05-accounts_case_swaptime.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-06-payouts_coinid_memo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-09-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-10-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-11-segwit.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-01-stratums_ports.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-02-coins_getinfo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-11-10-yiimp.sql.gz
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
-	elif [[ "$yiimpver" == "4" ]]; then
-		# Afiniel
-
-		# Import sql dump
-		# sudo zcat 2021-06-21-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
-		sudo zcat 2020-11-10-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
-		
-		# Oh the humanity!
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-01-accounts_hostaddr.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-15-coins_hasmasternodes.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-09-20-blocks_worker.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-17-payouts_errmsg.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-18-accounts_donation.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-23-shares_diff.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-26-markets.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-30-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-03-accounts.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-24-market_history.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-27-settings.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-11-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-15-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-23-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-01-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-04-bench_chips.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-11-23-coins.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-02-05-benchmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-03-31-earnings_index.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-05-accounts_case_swaptime.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-06-payouts_coinid_memo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-09-notifications.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-10-bookmarks.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-11-segwit.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-01-stratums_ports.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-02-coins_getinfo.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
-		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
-	fi
+	# Oh the humanity!
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-01-accounts_hostaddr.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-15-coins_hasmasternodes.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-09-20-blocks_worker.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-17-payouts_errmsg.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-18-accounts_donation.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-02-23-shares_diff.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-26-markets.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-03-30-coins.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-03-accounts.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-24-market_history.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-04-27-settings.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-11-coins.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-15-benchmarks.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-05-23-bookmarks.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-01-notifications.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-06-04-bench_chips.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2016-11-23-coins.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-02-05-benchmarks.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-03-31-earnings_index.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-05-accounts_case_swaptime.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-06-payouts_coinid_memo.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-09-notifications.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-10-bookmarks.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2017-11-segwit.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-01-stratums_ports.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-02-coins_getinfo.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
 
     echo -e "$GREEN Done...$COL_RESET"    
     
