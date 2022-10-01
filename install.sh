@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.1
+#   v0.2
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.1
+	TAG=v0.2
 fi
 
 NPROC=$(nproc)
