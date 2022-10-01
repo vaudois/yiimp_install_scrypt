@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 
-source /etc/functions.sh
+FUNC=/etc/functionscoin.sh
+if [[ ! -f "$FUNC" ]]; then
+	source /etc/functions.sh
+else
+	source /etc/functionscoin.sh
+fi
 
-PATH_STRATUM=/var/stratum
+source ${absolutepath}/${installtoserver}/conf/info.sh
+
 
 #####################################################
 # Dedicated Port config generator
-# Created by Vaudois for yiimp
+# Created by afiniel for yiimpool
 # This generator will modify the main algo.conf file
 # Create the new coin.algo.conf file
 # And update the stratum start file
@@ -179,12 +185,11 @@ echo
 echo -e "$YELLOW Make sure to add this to the Dedicated Port section in your YiiMP admin panel! $COL_RESET"
 echo
 echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-echo -e "$GREEN	Donations are welcome at wallets below:					  						$COL_RESET"
+echo -e "$GREEN	Donations are welcome at wallets below:					  	$COL_RESET"
 echo -e "$YELLOW  BTC: btcdons	$COL_RESET"
 echo -e "$YELLOW  LTC: ltcdons	$COL_RESET"
 echo -e "$YELLOW  ETH: ethdons	$COL_RESET"
 echo -e "$YELLOW  BCH: bchdons	$COL_RESET"
 echo -e "$CYAN  --------------------------------------------------------------------------- 	$COL_RESET"
-
 cd ~
 exit 0

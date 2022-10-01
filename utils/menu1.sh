@@ -74,6 +74,7 @@ then
 clear;
 echo '
 autogen=false
+unix=true
 ' | sudo -E tee ${absolutepath}/${installtoserver}/daemon_builder/.my.cnf >/dev/null 2>&1;
 source source.sh;
 fi

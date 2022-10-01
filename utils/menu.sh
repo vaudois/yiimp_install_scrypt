@@ -20,7 +20,7 @@ RESULT=$(dialog --stdout --nocancel --default-item 1 --title " Coin Setup ${VERS
 2 "Add Coin to Dedicated Port and run stratum" \
 3 "Update new Stratum" \
 ' ' "- Upgrade an Existing new Version of this Srypt -" \
-4 "Updrade this scrypt" \
+4 "Upgrade this scrypt" \
 
 5 Exit)
 

@@ -17,7 +17,7 @@ source ${absolutepath}/${installtoserver}/conf/info.sh
 
 message_box " Updating This script " \
 "Check if this scrypt needs update.
-\n\nYou are currently using the version ${VERSION}"
+\n\nYou are currently using version ${VERSION}"
 
 cd ~
 clear
