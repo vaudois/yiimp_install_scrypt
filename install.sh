@@ -14,6 +14,8 @@ if [ -z "${TAG}" ]; then
 	TAG=v0.1
 fi
 
+NPROC=$(nproc)
+
 clear
 
 	### Variable ###
@@ -385,18 +387,18 @@ clear
 
     cd ${absolutepath}/yiimp/blocknotify
     sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
-    hide_output sudo make
+    hide_output sudo make -j$NPROC
     
     # Compil iniparser
     cd ${absolutepath}/yiimp/stratum/iniparser
-    hide_output sudo make
+    hide_output sudo make -j$NPROC
     
     # Compil Stratum
     cd ${absolutepath}/yiimp/stratum
     if [[ ("$BTC" == "y" || "$BTC" == "Y") ]]; then
     sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' ${absolutepath}/yiimp/stratum/Makefile
     fi
-    hide_output sudo make
+    hide_output sudo make -j$NPROC
     
     # Copy Files (Blocknotify,iniparser,Stratum)
     cd ${absolutepath}/yiimp
@@ -417,7 +419,7 @@ clear
 	find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 
-	URLREPLACEWEBWAL=${absolutepath}/wallets/
+	URLREPLACEWEBWAL=/home/wallets/
 	URLSEARCHWEBWAL=/home/crypto-data/wallets/
 	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSEARCHWEBWAL}'@'${URLREPLACEWEBWAL}'@g' {} \;
@@ -482,16 +484,6 @@ clear
     echo
     echo -e "$GREEN Done...$COL_RESET"
     
-    
-    # Making Web Server Magic Happen
-    #echo
-    #echo -e "$CYAN Making Web Server Magic Happen! $COL_RESET"
-    #echo
-    
-    # Adding user to group, creating dir structure, setting permissions
-    #sudo mkdir -p /var/www/$server_name/html 
-    
-    
     # Creating webserver initial config file
     echo
     echo
@@ -531,7 +523,7 @@ clear
         error_log /var/log/nginx/'"${server_name}"'.app-error.log;
     
         # allow larger file uploads and longer script runtimes
-		client_body_buffer_size  50k;
+	client_body_buffer_size  50k;
         client_header_buffer_size 50k;
         client_max_body_size 50k;
         large_client_header_buffers 2 50k;
@@ -588,7 +580,6 @@ clear
     	
     if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
 
-    
     # Install SSL (with SubDomain)
     echo
     echo -e "Install LetsEncrypt and setting SSL (with SubDomain)"
@@ -966,7 +957,6 @@ clear
     ' | sudo -E tee ~/.my.cnf >/dev/null 2>&1
       sudo chmod 0600 ~/.my.cnf
 
-
     # Create keys file
     echo '  
     <?php
@@ -1138,7 +1128,7 @@ clear
 
 		# Import sql dump
 		# sudo zcat 2021-06-21-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
-		sudo zcat 2021-06-21-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
+		sudo zcat 2020-11-10-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		
 		# Oh the humanity!
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2015-07-01-accounts_hostaddr.sql
@@ -1170,8 +1160,6 @@ clear
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
-		# sudo mysql --defaults-group-suffix=host1 --force < 2020-11-10-yaamp.sql.gz
-		# sudo mysql --defaults-group-suffix=host1 --force < 2021-06-21-yaamp.sql.gz
 	fi
 
     echo -e "$GREEN Done...$COL_RESET"    
