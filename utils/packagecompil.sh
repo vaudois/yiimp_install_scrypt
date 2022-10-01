@@ -120,14 +120,15 @@ function package_compile_coin
 	echo -e "$YELLOW Building bls-signatures, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
+	cd ${absolutepath}/yiimp_install_scrypt/conf/package
+	hide_output sudo cp -r bls-signatures-20181101.zip ${absolutepath}/tmp
 	cd ${absolutepath}/tmp
-	hide_output sudo wget 'http://github.com/codablock/bls-signatures/archive/v20181101.zip'
-	hide_output sudo unzip v20181101.zip
+	hide_output sudo unzip bls-signatures-20181101.zip
 	cd bls-signatures-20181101
 	hide_output sudo cmake .
 	hide_output sudo make install
 	cd ${absolutepath}/tmp
-	sudo rm -r v20181101.zip bls-signatures-20181101
+	sudo rm -r bls-signatures-20181101.zip bls-signatures-20181101
 	echo -e "$GREEN bls-signatures Completed...$COL_RESET"
 	
 	sleep 3
