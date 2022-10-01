@@ -1205,7 +1205,7 @@ echo '
 
 	// #### More configs from Others Yiimp From Vaudois Github ####
 	
-	define('"'"'YAAMP_CONTACT_EMAIL'"'"', '"'"'vaudese@gmail.com'"'"');
+	define('"'"'YAAMP_CONTACT_EMAIL'"'"', '"'"'mail@mail.com'"'"');
 
 	define('"'"'YIIMP_VIEW_24H'"'"', false);
 
@@ -1216,25 +1216,24 @@ echo '
 	define('"'"'YAAMP_THIS_SERVER_STRATUM', 'europe'"'"');
 	define('"'"'YAAMP_SERVERS_STRATUMS'"'"', array(
 	'"'"'europe'"'"',
-	'"'"'asia'"'"',
 	));
 
 	// use chat from CHATBRO.COM
 	define('"'"'YAAMP_CHATBRO'"'"', true);
 	define('"'"'YAAMP_CHATBRO_CONFIG_WEB'"'"', false);
-	define('"'"'YAAMP_CHATBRO_ID'"'"', '"'"'18UYt'"'"');
+	define('"'"'YAAMP_CHATBRO_ID'"'"', '"'"'YOUR-ID'"'"');
 	// YAAMP_CHATBRO_CONFIG_WEB is false you can put the name of indefinite chats eg = chat1, new = chat2, new = chat3...
 	define('"'"'YAAMP_CHATBRO_CUSTOM_NAME'"'"', '"'"'090822'"'"');
 
 	// Bottom links social
-	define('"'"'YAAMP_LINK_DISCORD'"'"', '"'"'DD4rhgwySG'"'"');
+	define('"'"'YAAMP_LINK_DISCORD'"'"', '"'"'LINK_DISCORD'"'"');
 	define('"'"'YAAMP_LINK_TWITTER'"'"', true);
 	define('"'"'YAAMP_LINK_MAILCONTACT'"'"', YAAMP_CONTACT_EMAIL);
 
 	# TELEGRAM CONFIG BOT AND URL
-	define('"'"'YAAMP_LINK_TELEGRAM'"'"', '"'"'+DMgAs-7cwNEzYmFk'"'"');
-	define('"'"'YAAMP_BOT_TOKEN_TELEGRAM'"'"', '"'"'5564362856:AAG05ljMt7-67F8u5Fmyg8QmOK0nJMcMQxM'"'"');
-	define('"'"'YAAMP_CHAT_ID_TELEGRAM'"'"', '"'"'-661569030'"'"');
+	define('"'"'YAAMP_LINK_TELEGRAM'"'"', '"'"'+LINK_TELEGRAM'"'"');
+	define('"'"'YAAMP_BOT_TOKEN_TELEGRAM'"'"', '"'"'BOT_TOKEN'"'"');
+	define('"'"'YAAMP_CHAT_ID_TELEGRAM'"'"', '"'"'-CHAT_ID'"'"');
 
 	define('"'"'YAAMP_LINK_GITHUB'"'"', false);
 
@@ -1276,6 +1275,38 @@ echo '
 	));
 
     ' | sudo -E tee /var/web/serverconfig.php >/dev/null 2>&1
+
+	echo -e "$GREEN Done...$COL_RESET"
+
+	sleep 3
+	
+    # Generating a restart crons main loop2 blocks
+    echo
+    echo
+    echo -e "$CYAN => Generating a restart crons = main, loop2, blocks $COL_RESET"
+    echo
+    sleep 3
+    
+    # Make crons main loop2 blocks
+	
+	echo '#!/bin/bash
+	# Restart the pseudo cron screens...
+
+	LOG_DIR=/var/log/yiimp/log
+	WEB_DIR=/var/web
+
+	screen -X -S main quit
+	screen -X -S loop2 quit
+	screen -X -S blocks quit
+	screen -X -S debug quit
+
+	screen -dmS main $WEB_DIR/main.sh
+	screen -dmS loop2 $WEB_DIR/loop2.sh
+	screen -dmS blocks $WEB_DIR/blocks.sh
+
+	screen -dmS debug tail -f $LOG_DIR/debug.log
+	
+	' | sudo -E tee /bin/restartlg >/dev/null 2>&1
 
 
     echo -e "$GREEN Done...$COL_RESET"
