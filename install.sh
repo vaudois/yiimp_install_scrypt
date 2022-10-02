@@ -1478,11 +1478,11 @@ clear
 	sudo rm -rf /var/log/nginx/*
 
 	#Restart service
-	sudo update-alternatives --set php /usr/bin/php7.3
-	sleep 2
-	sudo service nginx restart
-	sleep 2
-	sudo service php7.3-fpm restart
+	#sudo update-alternatives --set php /usr/bin/php7.3
+	#sleep 2
+	#sudo service nginx restart
+	#sleep 2
+	#sudo service php7.3-fpm restart
 	sleep 2
 	sudo systemctl restart cron.service
 	sleep 2
