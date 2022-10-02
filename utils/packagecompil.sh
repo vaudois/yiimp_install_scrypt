@@ -150,6 +150,7 @@ function package_daemonbuilder
 	
 	cd ~
 	cd ${absolutepath}/yiimp_install_scrypt/utils
+	sudo mkdir -p ${absolutepath}/${installtoserver}/daemon_builder/
 
 	hide_output sudo cp -r start.sh ${absolutepath}/${installtoserver}/daemon_builder
 	hide_output sudo cp -r menu.sh ${absolutepath}/${installtoserver}/daemon_builder
