@@ -120,7 +120,7 @@ function package_compile_coin
 	echo -e "$YELLOW Building bls-signatures, this may take several minutes...$COL_RESET"
 	echo
 	sleep 3
-	cd ${absolutepath}/yiimp_install_scrypt/conf/package
+	cd ${absolutepath}/${nameofinstall}/conf/package
 	hide_output sudo cp -r bls-signatures-20181101.zip ${absolutepath}/tmp
 	cd ${absolutepath}/tmp
 	hide_output sudo unzip bls-signatures-20181101.zip
@@ -149,7 +149,7 @@ function package_daemonbuilder
 	echo -e "$CYAN => Installing DaemonBuilder $COL_RESET"
 	
 	cd ~
-	cd ${absolutepath}/yiimp_install_scrypt/utils
+	cd ${absolutepath}/${nameofinstall}/utils
 	sudo mkdir -p ${absolutepath}/${installtoserver}/daemon_builder/
 	sudo mkdir -p ${absolutepath}/${installtoserver}/conf/
 
