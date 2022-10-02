@@ -434,6 +434,10 @@ clear
 	sleep 3
 	sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	sleep 3
+	sudo sed -i 's@domain:@<?=YAAMP_SITE_URL ?>:@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
+	sleep 3
+	sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
+	sleep 3
 
 	URLREPLACEWEBVAR=/var/web
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
