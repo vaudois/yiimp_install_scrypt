@@ -577,15 +577,14 @@ else
 	fi
 fi
 
-if [[ "${YIIMPCONF}" == "true" ]]; then
+if [[ ("${YIIMPCONF}" == "true") ]]; then
 	# Make the new wallet folder have user paste the coin.conf and finally start the daemon
 	if [[ ! -e '$STORAGE_ROOT/wallets' ]]; then
 		sudo mkdir -p $STORAGE_ROOT/wallets
 	fi
 
 	sudo setfacl -m u:$USER:rwx $STORAGE_ROOT/wallets
-	mkdir -p $STORAGE_ROOT/wallets/."${coind::-1}"
-
+	sudo mkdir -p $STORAGE_ROOT/wallets/."${coind::-1}"
 elif [[ ("INSTALLMASTER" == "true") ]]; then
 	# Make the new wallet folder have user paste the coin.conf and finally start the daemon
 	if [[ ! -e "/home/wallets" ]]; then
@@ -593,7 +592,7 @@ elif [[ ("INSTALLMASTER" == "true") ]]; then
 	fi
 
 	sudo setfacl -m u:$USER:rwx /home/wallets
-	mkdir -p /home/wallets/."${coind::-1}"
+	sudo mkdir -p /home/wallets/."${coind::-1}"
 else
 	# Make the new wallet folder have user paste the coin.conf and finally start the daemon
 	if [[ ! -e "${absolutepath}/wallets" ]]; then
@@ -601,7 +600,7 @@ else
 	fi
 
 	sudo setfacl -m u:$USER:rwx ${absolutepath}/wallets
-	mkdir -p ${absolutepath}/wallets/."${coind::-1}"
+	sudo mkdir -p ${absolutepath}/wallets/."${coind::-1}"
 fi
 
 echo
@@ -681,7 +680,7 @@ sudo rm -r ${absolutepath}/${installtoserver}/daemon_builder/.my.cnf
 
 echo
 echo
-if [[ "${YIIMPCONF}" == "true" ]]; then
+if [[ ("${YIIMPCONF}" == "true") ]]; then
 	"${coind}" -datadir=$STORAGE_ROOT/wallets/."${coind::-1}" -conf="${coind::-1}.conf" -daemon -shrinkdebugfile
 elif [[ ("INSTALLMASTER" == "true") ]]; then
 	"${coind}" -datadir=/home/wallets/."${coind::-1}" -conf="${coind::-1}.conf" -daemon -shrinkdebugfile
