@@ -1416,12 +1416,13 @@ echo '
     sudo rm -rf ${absolutepath}/yiimp_install_scrypt
     sudo rm -rf /var/log/nginx/*
 
-    # Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
-    VPNSERVER=`curl -q http://ifconfig.me`
-    echo "export yiimpver=$yiimpver" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo "export blckntifypass=$blckntifypass" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo "export server_name=\$(hostname -f)" >> $HOME/yiimp/REMOTE_stratum.conf
     if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+	# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
+	VPNSERVER=`curl -q http://ifconfig.me`
+	echo "export yiimpver=$yiimpver" >> $HOME/yiimp/REMOTE_stratum.conf
+	echo "export blckntifypass=$blckntifypass" >> $HOME/yiimp/REMOTE_stratum.conf
+	echo "export server_name=\$(hostname -f)" >> $HOME/yiimp/REMOTE_stratum.conf
+
         WGPUBKEY=`sudo cat /etc/wireguard/publickey`
         echo "export MYSQLIP=$wg_ip" >> $HOME/yiimp/REMOTE_stratum.conf
         echo "export VPNPUBBKEY=$WGPUBKEY" >> $HOME/yiimp/REMOTE_stratum.conf
