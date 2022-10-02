@@ -4,6 +4,8 @@
 # Source to compile wallets
 #####################################################
 
+source ${absolutepath}/${installtoserver}/conf/info.sh
+
 FUNC=/etc/functionscoin.sh
 if [[ ! -f "$FUNC" ]]; then
 	source /etc/functions.sh
@@ -583,6 +585,15 @@ if [[ "${YIIMPCONF}" == "true" ]]; then
 
 	sudo setfacl -m u:$USER:rwx $STORAGE_ROOT/wallets
 	mkdir -p $STORAGE_ROOT/wallets/."${coind::-1}"
+
+elif [[ ("INSTALLMASTER" == "true") ]]; then
+	# Make the new wallet folder have user paste the coin.conf and finally start the daemon
+	if [[ ! -e "/home/wallets" ]]; then
+		sudo mkdir -p /home/wallets
+	fi
+
+	sudo setfacl -m u:$USER:rwx /home/wallets
+	mkdir -p /home/wallets/."${coind::-1}"
 else
 	# Make the new wallet folder have user paste the coin.conf and finally start the daemon
 	if [[ ! -e "${absolutepath}/wallets" ]]; then
@@ -604,6 +615,8 @@ echo
 
 if [[ "${YIIMPCONF}" == "true" ]]; then
 	sudo nano $STORAGE_ROOT/wallets/."${coind::-1}"/${coind::-1}.conf
+elif [[ ("INSTALLMASTER" == "true") ]]; then
+	sudo nano home/wallets/."${coind::-1}"/${coind::-1}.conf
 else
 	sudo nano ${absolutepath}/wallets/."${coind::-1}"/${coind::-1}.conf
 fi
@@ -670,6 +683,8 @@ echo
 echo
 if [[ "${YIIMPCONF}" == "true" ]]; then
 	"${coind}" -datadir=$STORAGE_ROOT/wallets/."${coind::-1}" -conf="${coind::-1}.conf" -daemon -shrinkdebugfile
+elif [[ ("INSTALLMASTER" == "true") ]]; then
+	"${coind}" -datadir=/home/wallets/."${coind::-1}" -conf="${coind::-1}.conf" -daemon -shrinkdebugfile
 else
 	"${coind}" -datadir=${absolutepath}/wallets/."${coind::-1}" -conf="${coind::-1}.conf" -daemon -shrinkdebugfile
 fi
