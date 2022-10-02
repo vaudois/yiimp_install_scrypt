@@ -397,21 +397,21 @@ clear
     cd ~
     if [[ ("$yiimpver" == "1" || "$yiimpver" == "") ]];then
 		cd ~
-		hide_output git clone $githubrepoKudaraidee
+		hide_output sudo git clone $githubrepoKudaraidee
 	elif [[ "$yiimpver" == "2" ]]; then
 		cd ~
-		hide_output git clone $githubyiimptpruvot
+		hide_output sudo git clone $githubyiimptpruvot
 		cd ~
 	elif [[ "$yiimpver" == "3" ]]; then
 		cd ~
-		hide_output git clone $githubrepoAfinielTech
+		hide_output sudo git clone $githubrepoAfinielTech
 	elif [[ "$yiimpver" == "4" ]]; then
 		cd ~
-		hide_output git clone $githubrepoAfiniel -b next
+		hide_output sudo git clone $githubrepoAfiniel -b next
 	fi
 
 	cd ~
-	hide_output git clone $githubstratum
+	hide_output sudo git clone $githubstratum
 
 	cd ${absolutepath}/stratum/blocknotify
 	sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
