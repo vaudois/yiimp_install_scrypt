@@ -415,18 +415,18 @@ clear
 
 	cd ${absolutepath}/stratum/blocknotify
 	sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
-	hide_output sudo make -j$NPROC
+	hide_output sudo make
 
 	# Compil iniparser
 	cd ${absolutepath}/stratum/iniparser
-	hide_output sudo make -j$NPROC
+	hide_output sudo make
 
 	# Compil Stratum
 	cd ${absolutepath}/stratum
 	if [[ ("$BTC" == "y" || "$BTC" == "Y") ]]; then
 		sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' ${absolutepath}/yiimp/stratum/Makefile
 	fi
-	hide_output sudo make -j$NPROC
+	hide_output sudo make
 
 	# Modify Files (Admin_panel), Wallets path, Web Path
 
@@ -1357,6 +1357,7 @@ clear
 	screen -dmS blocks $WEB_DIR/blocks.sh
 
 	screen -dmS debug tail -f $LOG_DIR/debug.log' | sudo -E tee /bin/restartlg >/dev/null 2>&1
+	sudo chmod +x /bin/restartlg
 
     echo -e "$GREEN Done...$COL_RESET"
 
