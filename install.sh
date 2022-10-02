@@ -1057,7 +1057,42 @@ clear
 	define('"'"'EXCH_TRADEOGRE_SECRET'"'"', '"'"''"'"');
 	define('"'"'EXCH_YOBIT_SECRET'"'"', '"'"''"'"');
 	define('"'"'EXCH_CRYPTOPIA_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_NOVA_SECRET'"'"','"'"''"'"');' | sudo -E tee /etc/yiimp/keys.php >/dev/null 2>&1
+	define('"'"'EXCH_NOVA_SECRET'"'"','"'"''"'"');
+	
+	
+	
+	// Exchange public keys (private keys are in a separate config file)
+	define('"'"'EXCH_ALCUREX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_ALTILLY_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_BIBOX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_BINANCE_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_BITTREX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_BITSTAMP_SECRET'"'"','"'"''"'"');
+	define('"'"'EXCH_BLEUTRADE_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_BTER_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_CEXIO_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_CREX24_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_CCEX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_COINMARKETS_PASS'"'"', '"'"''"'"');
+	define('"'"'EXCH_CRYPTOHUB_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_CRYPTOWATCH_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_DELIONDEX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_EMPOEX_SECKEY'"'"', '"'"''"'"');
+	define('"'"'EXCH_ESCODEX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_GATEIO_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_GRAVIEX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_HITBTC_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_JUBI_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_KRAKEN_SECRET'"'"','"'"''"'"');
+	define('"'"'EXCH_KUCOIN_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_LIVECOIN_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_POLONIEX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_SHAPESHIFT_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_STOCKSEXCHANGE_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_SWIFTEX_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_TRADEOGRE_SECRET'"'"', '"'"''"'"');
+	define('"'"'EXCH_YOBIT_SECRET'"'"', '"'"''"'"');
+	' | sudo -E tee /etc/yiimp/keys.php >/dev/null 2>&1
 
 	echo -e "$GREEN Done...$COL_RESET"
 
@@ -1170,37 +1205,6 @@ clear
 
 	define('"'"'YAAMP_USE_NGINX'"'"', true);
 
-	// Exchange public keys (private keys are in a separate config file)
-	define('"'"'EXCH_ALCUREX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_ALTILLY_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BIBOX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BINANCE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BITTREX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BITSTAMP_SECRET'"'"','"'"''"'"');
-	define('"'"'EXCH_BLEUTRADE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BTER_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CEXIO_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CREX24_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CCEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_COINMARKETS_PASS'"'"', '"'"''"'"');
-	define('"'"'EXCH_CRYPTOHUB_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CRYPTOWATCH_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_DELIONDEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_EMPOEX_SECKEY'"'"', '"'"''"'"');
-	define('"'"'EXCH_ESCODEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_GATEIO_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_GRAVIEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_HITBTC_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_JUBI_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_KRAKEN_SECRET'"'"','"'"''"'"');
-	define('"'"'EXCH_KUCOIN_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_LIVECOIN_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_POLONIEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_SHAPESHIFT_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_STOCKSEXCHANGE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_SWIFTEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_TRADEOGRE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_YOBIT_SECRET'"'"', '"'"''"'"');
 	// Exchange public keys (private keys are in a separate config file)
 	define('"'"'EXCH_CRYPTOPIA_KEY'"'"', '"'"''"'"');
 	define('"'"'EXCH_POLONIEX_KEY'"'"', '"'"''"'"');
