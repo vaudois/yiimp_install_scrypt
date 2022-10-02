@@ -1267,7 +1267,7 @@ clear
 	define('"'"'YAAMP_GOOGLE_ANALYTICS'"'"', '"'"''"'"');
 
 	// Others server Stratums of inn Worl enter name Country ex: Europe
-	define('"'"'YAAMP_THIS_SERVER_STRATUM', 'europe'"'"');
+	define('"'"'YAAMP_THIS_SERVER_STRATUM'"'"', '"'"'europe'"'"');
 	define('"'"'YAAMP_SERVERS_STRATUMS'"'"', array(
 	'"'"'europe'"'"',
 	));
