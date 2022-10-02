@@ -33,6 +33,7 @@ clear
 	ETHDEP="0xc4e42e92ef8a196eef7cc49456c786a41d7daa01"
 	BCHDEP="bitcoincash:qp9ltentq3rdcwlhxtn8cc2rr49ft5zwdv7k7e04df"
 
+	nameofinstall=yiimp_install_scrypt
 	daemonname=coinbuild
 	absolutepath=$HOME
 	installtoserver=coin-setup
@@ -486,6 +487,8 @@ clear
 	done
 	exec bash' | sudo -E tee /var/stratum/config/run.sh >/dev/null 2>&1
 	sudo chmod +x /var/stratum/config/run.sh
+	sleep 2
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/yaamp.php /var/web/yaamp/core/functions
 
     echo -e "$GREEN Done...$COL_RESET"
 
@@ -1106,7 +1109,7 @@ clear
 	sleep 3
 
 	cd ~
-	cd ${absolutepath}/yiimp_install_scrypt/conf/db
+	cd ${absolutepath}/${nameofinstall}/conf/db
 
 	# Import sql dump
 	sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
@@ -1448,11 +1451,11 @@ clear
 	sudo chgrp www-data /var/yiimp -R
 	sudo chmod 775 /var/yiimp -R
     
-	sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/main.sh /var/web
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/main.sh /var/web
 	sudo chmod +x /var/web/main.sh
-	sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/loop2.sh /var/web
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/loop2.sh /var/web
 	sudo chmod +x /var/web/loop2.sh
-	sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/blocks.sh /var/web
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/blocks.sh /var/web
 	sudo chmod +x /var/web/blocks.sh
 
 	#Add to contrab screen-scrypt
@@ -1471,7 +1474,7 @@ clear
 	#Misc
 	sudo rm -rf ${absolutepath}/yiimp
 	sudo rm -rf ${absolutepath}/stratum
-	sudo rm -rf ${absolutepath}/yiimp_install_scrypt
+	sudo rm -rf ${absolutepath}/${nameofinstall}
 	sudo rm -rf /var/log/nginx/*
 
 	#Restart service
