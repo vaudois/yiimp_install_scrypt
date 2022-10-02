@@ -149,16 +149,16 @@ function package_daemonbuilder
 	echo -e "$CYAN => Installing DaemonBuilder $COL_RESET"
 	
 	cd ~
-	cd ${absolutepath}/yiimp_install_scrypt
+	cd ${absolutepath}/yiimp_install_scrypt/utils
 
-	hide_output sudo cp -r utils/start.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/menu.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/menu1.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/menu2.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/menu3.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/menu4.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/source.sh ${absolutepath}/${installtoserver}/daemon_builder
-	hide_output sudo cp -r utils/info.sh ${absolutepath}/${installtoserver}/conf
+	hide_output sudo cp -r start.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r menu.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r menu1.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r menu2.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r menu3.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r menu4.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r source.sh ${absolutepath}/${installtoserver}/daemon_builder
+	hide_output sudo cp -r info.sh ${absolutepath}/${installtoserver}/conf
 	sleep 3
 	
 	echo '#!/usr/bin/env bash
