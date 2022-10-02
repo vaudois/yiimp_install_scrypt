@@ -151,6 +151,7 @@ function package_daemonbuilder
 	cd ~
 	cd ${absolutepath}/yiimp_install_scrypt/utils
 	sudo mkdir -p ${absolutepath}/${installtoserver}/daemon_builder/
+	sudo mkdir -p ${absolutepath}/${installtoserver}/conf/
 
 	hide_output sudo cp -r start.sh ${absolutepath}/${installtoserver}/daemon_builder
 	hide_output sudo cp -r menu.sh ${absolutepath}/${installtoserver}/daemon_builder
@@ -160,6 +161,15 @@ function package_daemonbuilder
 	hide_output sudo cp -r menu4.sh ${absolutepath}/${installtoserver}/daemon_builder
 	hide_output sudo cp -r source.sh ${absolutepath}/${installtoserver}/daemon_builder
 	hide_output sudo cp -r info.sh ${absolutepath}/${installtoserver}/conf
+	sleep 3
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/start.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/menu.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/menu1.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/menu2.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/menu3.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/menu4.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/daemon_builder/source.sh
+	hide_output sudo chmod +x ${absolutepath}/${installtoserver}/conf/info.sh
 	sleep 3
 	
 	echo '#!/usr/bin/env bash
