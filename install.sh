@@ -1024,7 +1024,6 @@ clear
 	/* Sample config file to put in /etc/yiimp/keys.php */
 	define('"'"'YIIMP_MYSQLDUMP_USER'"'"', '"'"'panel'"'"');
 	define('"'"'YIIMP_MYSQLDUMP_PASS'"'"', '"'"''"${password}"''"'"');
-	define('"'"'YIIMP_MYSQLDUMP_PATH'"'"', '"'"''"/var/yiimp/sauv"''"'"');
 
 	/* Keys required to create/cancel orders and access your balances/deposit addresses */
 	define('"'"'EXCH_ALCUREX_SECRET'"'"', '"'"''"'"');
