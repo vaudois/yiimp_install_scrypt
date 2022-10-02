@@ -1451,9 +1451,9 @@ clear
 	sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/main.sh /var/web
 	sudo chmod +x /var/web/main.sh
 	sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/loop2.sh /var/web
-	sudo chmod +x /var/web/main.sh
+	sudo chmod +x /var/web/loop2.sh
 	sudo cp -r ${absolutepath}/yiimp_install_scrypt/utils/blocks.sh /var/web
-	sudo chmod +x /var/web/main.sh
+	sudo chmod +x /var/web/blocks.sh
 
 	#Add to contrab screen-scrypt
 	(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
