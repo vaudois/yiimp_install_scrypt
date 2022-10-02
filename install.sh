@@ -145,6 +145,7 @@ clear
     read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
     if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
         read -e -p "Enter a Local Wireguard Private IP for this server (x.x.x.x): " wg_ip
+	# curl -q http://ifconfig.me
     fi
   
     echo -e "\n\n\n\n"
@@ -1373,6 +1374,29 @@ echo '
     echo -e "$CYAN => Final Directory permissions $COL_RESET"
     echo
     sleep 3
+    
+    echo "export MYSQLDB=yiimpfrontend" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    echo "export MYSQLUSER=stratum" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    echo "export MYSQLPASS=$stratumpass" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    echo "export BTC=$BTC" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    echo "export VPNSERVER=$VPNSERVER" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    sudo chmod 400 ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+
+    if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+	# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
+	VPNSERVER=`curl -q http://ifconfig.me`
+	echo "export yiimpver=$yiimpver" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+	echo "export blckntifypass=$blckntifypass" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+	echo "export server_name=\$(hostname -f)" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+
+        WGPUBKEY=`sudo cat /etc/wireguard/publickey`
+        echo "export MYSQLIP=$wg_ip" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+        echo "export VPNPUBBKEY=$WGPUBKEY" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    else
+        echo "export MYSQLIP=$server_name" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+        echo "export VPNPUBBKEY=" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+    fi
 
     whoami=`whoami`
     sudo usermod -aG www-data $whoami
@@ -1408,6 +1432,7 @@ echo '
     #fix error screen main
     sudo sed -i 's/service $webserver start/sudo service $webserver start/g' /var/web/yaamp/modules/thread/CronjobController.php
     sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
+    
     sudo sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
 
     #Misc
@@ -1415,28 +1440,6 @@ echo '
     sudo rm -rf ${absolutepath}/stratum
     sudo rm -rf ${absolutepath}/yiimp_install_scrypt
     sudo rm -rf /var/log/nginx/*
-
-    if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
-	# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
-	VPNSERVER=`curl -q http://ifconfig.me`
-	echo "export yiimpver=$yiimpver" >> $HOME/yiimp/REMOTE_stratum.conf
-	echo "export blckntifypass=$blckntifypass" >> $HOME/yiimp/REMOTE_stratum.conf
-	echo "export server_name=\$(hostname -f)" >> $HOME/yiimp/REMOTE_stratum.conf
-
-        WGPUBKEY=`sudo cat /etc/wireguard/publickey`
-        echo "export MYSQLIP=$wg_ip" >> $HOME/yiimp/REMOTE_stratum.conf
-        echo "export VPNPUBBKEY=$WGPUBKEY" >> $HOME/yiimp/REMOTE_stratum.conf
-    else
-        echo "export MYSQLIP=$server_name" >> $HOME/yiimp/REMOTE_stratum.conf
-        echo "export VPNPUBBKEY=" >> $HOME/yiimp/REMOTE_stratum.conf
-    fi
-    echo "export MYSQLDB=yiimpfrontend" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo "export MYSQLUSER=stratum" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo "export MYSQLPASS=$stratumpass" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo "export BTC=$BTC" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo "export VPNSERVER=$VPNSERVER" >> $HOME/yiimp/REMOTE_stratum.conf
-    echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" >> $HOME/yiimp/REMOTE_stratum.conf
-    sudo chmod 400 $HOME/yiimp/REMOTE_stratum.conf
 
     #Restart service
     sudo systemctl restart cron.service
