@@ -394,7 +394,7 @@ clear
     # Generating Random Password for stratum
 	blckntifypass=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
 
-    # Compil Blocknotify
+    # Download Version of Yiimp and stratum
     cd ~
     if [[ ("$yiimpver" == "1" || "$yiimpver" == "") ]];then
 		cd ~
@@ -414,6 +414,7 @@ clear
 	cd ~
 	hide_output sudo git clone $githubstratum
 
+	# Compil Blocknotify
 	cd ${absolutepath}/stratum/blocknotify
 	sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
 	hide_output sudo make
@@ -430,7 +431,6 @@ clear
 	hide_output sudo make
 
 	# Modify Files (Admin_panel), Wallets path, Web Path
-
 	sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	sleep 3
 	sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
@@ -451,14 +451,17 @@ clear
 	find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 
-	URLREPLACEWEBWAL=/home/wallets/
-	URLSEARCHWEBWAL=/home/crypto-data/wallets/
+	URLREPLACEWEBWAL=${absolutepath}/wallets/
+	URLSCRYPTODATAWALLET=/home/crypto-data/wallets/
+	URLSYIIMPDATAWALLET=/home/yiimp-data/wallets/
+
+	find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
-	find ./ -type f -exec sed -i 's@'${URLSEARCHWEBWAL}'@'${URLREPLACEWEBWAL}'@g' {} \;
+
+	find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 
 	# Copy Files (Blocknotify,iniparser,Stratum)
-
 	cd ${absolutepath}/yiimp
 	sudo cp -r ${absolutepath}/yiimp/web /var/
 	sudo mkdir -p /var/stratum
