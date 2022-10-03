@@ -430,7 +430,7 @@ clear
 	fi
 	hide_output sudo make
 
-	# Modify Files (Admin_panel), Wallets path, Web Path
+	# Modify Files (Admin_panel), Wallets path, Web Path footer
 	sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	sleep 3
 	sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
