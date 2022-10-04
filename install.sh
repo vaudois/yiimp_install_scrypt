@@ -444,9 +444,11 @@ clear
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
 	URLSHCRYPTODATA=/home/crypto-data/yiimp/site/web
 
-	cd ${absolutepath}/yiimp/web/
-
+	cd ${absolutepath}/yiimp/web/yaamp/
+	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sleep 3
+
 	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
@@ -455,9 +457,11 @@ clear
 	URLSCRYPTODATAWALLET=/home/crypto-data/wallets/
 	URLSYIIMPDATAWALLET=/home/yiimp-data/wallets/
 
+	cd ${absolutepath}/yiimp/web/yaamp/
 	find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 
+	sleep 3
 	find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 
