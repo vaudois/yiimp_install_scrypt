@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.3
+#   v0.4
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.3
+	TAG=v0.4
 fi
 
 NPROC=$(nproc)
@@ -1044,43 +1044,10 @@ clear
 	/* Sample config file to put in /etc/yiimp/keys.php */
 	define('"'"'YIIMP_MYSQLDUMP_USER'"'"', '"'"'panel'"'"');
 	define('"'"'YIIMP_MYSQLDUMP_PASS'"'"', '"'"''"${password}"''"'"');
-	/* Keys required to create/cancel orders and access your balances/deposit addresses */
-	define('"'"'EXCH_ALCUREX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_ALTILLY_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BIBOX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BINANCE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BITTREX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BITSTAMP_SECRET'"'"','"'"''"'"');
-	define('"'"'EXCH_BLEUTRADE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_BTER_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CEXIO_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CREX24_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CCEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_COINMARKETS_PASS'"'"', '"'"''"'"');
-	define('"'"'EXCH_CRYPTOHUB_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_CRYPTOWATCH_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_DELIONDEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_EMPOEX_SECKEY'"'"', '"'"''"'"');
-	define('"'"'EXCH_ESCODEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_GATEIO_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_GRAVIEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_HITBTC_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_JUBI_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_KRAKEN_SECRET'"'"','"'"''"'"');
-	define('"'"'EXCH_KUCOIN_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_LIVECOIN_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_POLONIEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_SHAPESHIFT_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_STOCKSEXCHANGE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_SWIFTEX_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_TRADEOGRE_SECRET'"'"', '"'"''"'"');
-	define('"'"'EXCH_YOBIT_SECRET'"'"', '"'"''"'"');
+
+	// Exchange public keys (private keys are in a separate config file)
 	define('"'"'EXCH_CRYPTOPIA_SECRET'"'"', '"'"''"'"');
 	define('"'"'EXCH_NOVA_SECRET'"'"','"'"''"'"');
-	
-	
-	
-	// Exchange public keys (private keys are in a separate config file)
 	define('"'"'EXCH_ALCUREX_SECRET'"'"', '"'"''"'"');
 	define('"'"'EXCH_ALTILLY_SECRET'"'"', '"'"''"'"');
 	define('"'"'EXCH_BIBOX_SECRET'"'"', '"'"''"'"');
