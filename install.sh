@@ -1367,27 +1367,27 @@ clear
 	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/ >/dev/null 2>&1
 	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/
 
-	echo "export MYSQLDB=yiimpfrontend" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo "export MYSQLUSER=stratum" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo "export MYSQLPASS=$stratumpass" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo "export BTC=$BTC" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo "export VPNSERVER=$VPNSERVER" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+
+	echo "export MYSQLDB=yiimpfrontend" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo "export MYSQLUSER=stratum" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo "export MYSQLPASS=$stratumpass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo "export BTC=$BTC" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo "export VPNSERVER=$VPNSERVER" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	sudo chmod 400 ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
 
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
 	# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
 	VPNSERVER=`curl -q http://ifconfig.me`
-	echo "export yiimpver=$yiimpver" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo "export blckntifypass=$blckntifypass" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-	echo "export server_name=\$(hostname -f)" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-
+	echo "export yiimpver=$yiimpver" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo "export blckntifypass=$blckntifypass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+	echo "export server_name=\$(hostname -f)" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 		WGPUBKEY=`sudo cat /etc/wireguard/publickey`
-		echo "export MYSQLIP=$wg_ip" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-		echo "export VPNPUBBKEY=$WGPUBKEY" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+		echo "export MYSQLIP=$wg_ip" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+		echo "export VPNPUBBKEY=$WGPUBKEY" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	else
-		echo "export MYSQLIP=$server_name" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
-		echo "export VPNPUBBKEY=" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+		echo "export MYSQLIP=$server_name" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+		echo "export VPNPUBBKEY=" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	fi
 
 	whoami=$(whoami)
