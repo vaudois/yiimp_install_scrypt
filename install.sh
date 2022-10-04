@@ -446,11 +446,20 @@ clear
 
 	cd ${absolutepath}/yiimp/web/yaamp/
 	sleep 3
-	find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sudo find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 
 	sleep 3
-	find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sudo find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sleep 3
+
+	cd ${absolutepath}/yiimp/web/yaamp/
+	sleep 3
+	sudo find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
+	sleep 3
+
+	sleep 3
+	sudo find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 
 	URLREPLACEWEBWAL=${absolutepath}/wallets/
@@ -458,11 +467,21 @@ clear
 	URLSYIIMPDATAWALLET=/home/yiimp-data/wallets/
 
 	cd ${absolutepath}/yiimp/web/yaamp/
-	find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
+	sleep 3
+	sudo find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 
 	sleep 3
-	find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
+	sudo find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
+	sleep 3
+
+	cd ${absolutepath}/yiimp/web/yaamp/
+	sleep 3
+	sudo find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
+	sleep 3
+
+	sleep 3
+	sudo find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
 
 	# Copy Files (Blocknotify,iniparser,Stratum)
@@ -660,7 +679,6 @@ clear
 				# enforce https
 				return 301 https://$server_name$request_uri;
 			}
-
 		server
 		{
 			if ($blockedagent)
@@ -674,20 +692,16 @@ clear
 			listen 443 ssl http2;
 			listen [::]:443 ssl http2;
 			server_name '"${server_name}"';
-
 			root /var/www/'"${server_name}"'/html/web;
 			index index.php;
-
 			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
 			error_log  /var/log/nginx/'"${server_name}"'.app-error.log;
-
 			# allow larger file uploads and longer script runtimes
 			client_body_buffer_size  50k;
 			client_header_buffer_size 50k;
 			client_max_body_size 50k;
 			large_client_header_buffers 2 50k;
 			sendfile off;
-
 			# strengthen ssl security
 			ssl_certificate /etc/letsencrypt/live/'"${server_name}"'/fullchain.pem;
 			ssl_certificate_key /etc/letsencrypt/live/'"${server_name}"'/privkey.pem;
@@ -703,7 +717,6 @@ clear
 			add_header X-XSS-Protection "1; mode=block";
 			add_header X-Robots-Tag none;
 			add_header Content-Security-Policy "frame-ancestors 'self'";
-
 			location /
 			{
 				try_files $uri $uri/ /index.php?$args;
@@ -783,7 +796,6 @@ clear
 			root "/var/www/'"${server_name}"'/html/web";
 			index index.html index.htm index.php;
 			charset utf-8;
-
 			location /
 			{
 				try_files $uri $uri/ /index.php?$args;
@@ -795,7 +807,6 @@ clear
 		
 			location = /favicon.ico { access_log off; log_not_found off; }
 			location = /robots.txt  { access_log off; log_not_found off; }
-
 			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
 			error_log /var/log/nginx/'"${server_name}"'.app-error.log;
 		
@@ -805,7 +816,6 @@ clear
 			client_max_body_size 50k;
 			large_client_header_buffers 2 50k;
 			sendfile off;
-
 			location ~ ^/index\.php$
 			{
 				fastcgi_split_path_info ^(.+\.php)(/.+)$;
@@ -1034,7 +1044,6 @@ clear
 	/* Sample config file to put in /etc/yiimp/keys.php */
 	define('"'"'YIIMP_MYSQLDUMP_USER'"'"', '"'"'panel'"'"');
 	define('"'"'YIIMP_MYSQLDUMP_PASS'"'"', '"'"''"${password}"''"'"');
-
 	/* Keys required to create/cancel orders and access your balances/deposit addresses */
 	define('"'"'EXCH_ALCUREX_SECRET'"'"', '"'"''"'"');
 	define('"'"'EXCH_ALTILLY_SECRET'"'"', '"'"''"'"');
@@ -1171,50 +1180,36 @@ clear
 	define('"'"'YIIMP_MYSQLDUMP_PATH'"'"', '"'"''"/var/yiimp/sauv"''"'"');
 		
 	define('"'"'YAAMP_BIN'"'"', '"'"'/var/bin'"'"');
-
 	define('"'"'YAAMP_DBHOST'"'"', '"'"'localhost'"'"');
 	define('"'"'YAAMP_DBNAME'"'"', '"'"'yiimpfrontend'"'"');
 	define('"'"'YAAMP_DBUSER'"'"', '"'"'panel'"'"');
 	define('"'"'YAAMP_DBPASSWORD'"'"', '"'"''"${password}"''"'"');
-
 	define('"'"'YAAMP_PRODUCTION'"'"', true);
 	define('"'"'YAAMP_RENTAL'"'"', false);
-
 	define('"'"'YAAMP_LIMIT_ESTIMATE'"'"', false);
-
 	define('"'"'YAAMP_FEES_SOLO'"'"', 1.0);
-
 	define('"'"'YAAMP_FEES_MINING'"'"', 0.5);
 	define('"'"'YAAMP_FEES_EXCHANGE'"'"', 2);
 	define('"'"'YAAMP_FEES_RENTING'"'"', 2);
 	define('"'"'YAAMP_TXFEE_RENTING_WD'"'"', 0.002);
-
 	define('"'"'YAAMP_PAYMENTS_FREQ'"'"', 2*60*60);
 	define('"'"'YAAMP_PAYMENTS_MINI'"'"', 0.001);
-
 	define('"'"'YAAMP_ALLOW_EXCHANGE'"'"', false);
 	define('"'"'YIIMP_PUBLIC_EXPLORER'"'"', true);
 	define('"'"'YIIMP_PUBLIC_BENCHMARK'"'"', false);
-
 	define('"'"'YIIMP_FIAT_ALTERNATIVE'"'"', '"'"'USD'"'"'); // USD is main
 	define('"'"'YAAMP_USE_NICEHASH_API'"'"', false);
-
 	define('"'"'YAAMP_BTCADDRESS'"'"', '"'"'bc1qpnxtg3dvtglrvfllfk3gslt6h5zffkf069nh8r'"'"');
-
 	define('"'"'YAAMP_SITE_URL'"'"', '"'"''"${server_name}"''"'"');
 	define('"'"'YAAMP_STRATUM_URL'"'"', YAAMP_SITE_URL); // change if your stratum server is on a different host
 	define('"'"'YAAMP_SITE_NAME'"'"', '"'"'MyYiimpPool'"'"');
 	define('"'"'YAAMP_ADMIN_EMAIL'"'"', '"'"''"${EMAIL}"''"'"');
 	define('"'"'YAAMP_ADMIN_IP'"'"', '"'"''"${Public}"''"'"'); // samples: "80.236.118.26,90.234.221.11" or "10.0.0.1/8"
-
 	define('"'"'YAAMP_ADMIN_WEBCONSOLE'"'"', true);
 	define('"'"'YAAMP_CREATE_NEW_COINS'"'"', false);
 	define('"'"'YAAMP_NOTIFY_NEW_COINS'"'"', false);
-
 	define('"'"'YAAMP_DEFAULT_ALGO'"'"', '"'"'x11'"'"');
-
 	define('"'"'YAAMP_USE_NGINX'"'"', true);
-
 	// Exchange public keys (private keys are in a separate config file)
 	define('"'"'EXCH_CRYPTOPIA_KEY'"'"', '"'"''"'"');
 	define('"'"'EXCH_POLONIEX_KEY'"'"', '"'"''"'"');
@@ -1231,20 +1226,16 @@ clear
 	define('"'"'EXCH_KRAKEN_KEY'"'"', '"'"''"'"');
 	define('"'"'EXCH_LIVECOIN_KEY'"'"', '"'"''"'"');
 	define('"'"'EXCH_NOVA_KEY'"'"', '"'"''"'"');
-
 	// Automatic withdraw to Yaamp btc wallet if btc balance > 0.3
 	define('"'"'EXCH_AUTO_WITHDRAW'"'"', 0.3);
-
 	// nicehash keys deposit account & amount to deposit at a time
 	define('"'"'NICEHASH_API_KEY'"'"','"'"'f96c65a7-3d2f-4f3a-815c-cacf00674396'"'"');
 	define('"'"'NICEHASH_API_ID'"'"','"'"'825979'"'"');
 	define('"'"'NICEHASH_DEPOSIT'"'"','"'"'3ABoqBjeorjzbyHmGMppM62YLssUgJhtuf'"'"');
 	define('"'"'NICEHASH_DEPOSIT_AMOUNT'"'"','"'"'0.01'"'"');
-
 	$cold_wallet_table = array(
 	'"'"'bc1qpnxtg3dvtglrvfllfk3gslt6h5zffkf069nh8r'"'"' => 0.10,
 	);
-
 	// Sample fixed pool fees
 	$configFixedPoolFees = array(
 		'"'"'zr5'"'"' => 2.0,
@@ -1259,81 +1250,62 @@ clear
 		'"'"'sha256'"'"' => 5.0,
 		
 	);
-
 	// Sample custom stratum ports
 	$configCustomPorts = array(
 	//	'"'"'x11'"'"' => 7000,
 	);
-
 	// mBTC Coefs per algo (default is 1.0)
 	$configAlgoNormCoef = array(
 	//	'"'"'x11'"'"' => 5.0,
 	);
-
 	// #### More configs from Others Yiimp From Vaudois Github ####
-
 	define('"'"'YAAMP_CONTACT_EMAIL'"'"', '"'"'mail@mail.com'"'"');
-
 	define('"'"'YIIMP_VIEW_24H'"'"', false);
-
 	// Google Analytics = '"'"''"'"' == disabled
 	define('"'"'YAAMP_GOOGLE_ANALYTICS'"'"', '"'"''"'"');
-
 	// Others server Stratums of inn Worl enter name Country ex: Europe
 	define('"'"'YAAMP_THIS_SERVER_STRATUM'"'"', '"'"'europe'"'"');
 	define('"'"'YAAMP_SERVERS_STRATUMS'"'"', array(
 	'"'"'europe'"'"',
 	));
-
 	// use chat from CHATBRO.COM
 	define('"'"'YAAMP_CHATBRO'"'"', true);
 	define('"'"'YAAMP_CHATBRO_CONFIG_WEB'"'"', false);
 	define('"'"'YAAMP_CHATBRO_ID'"'"', '"'"'YOUR-ID'"'"');
 	// YAAMP_CHATBRO_CONFIG_WEB is false you can put the name of indefinite chats eg = chat1, new = chat2, new = chat3...
 	define('"'"'YAAMP_CHATBRO_CUSTOM_NAME'"'"', '"'"'090822'"'"');
-
 	// Bottom links social
 	define('"'"'YAAMP_LINK_DISCORD'"'"', '"'"'LINK_DISCORD'"'"');
 	define('"'"'YAAMP_LINK_TWITTER'"'"', true);
 	define('"'"'YAAMP_LINK_MAILCONTACT'"'"', YAAMP_CONTACT_EMAIL);
-
 	# TELEGRAM CONFIG BOT AND URL
 	define('"'"'YAAMP_LINK_TELEGRAM'"'"', '"'"'+LINK_TELEGRAM'"'"');
 	define('"'"'YAAMP_BOT_TOKEN_TELEGRAM'"'"', '"'"'BOT_TOKEN'"'"');
 	define('"'"'YAAMP_CHAT_ID_TELEGRAM'"'"', '"'"'-CHAT_ID'"'"');
-
 	define('"'"'YAAMP_LINK_GITHUB'"'"', false);
-
 	// FOOTER Copyright add text or html info...
 	define('"'"'YAAMP_FOOTER_COPY'"'"', '"'"''"'"');
-
 	$date_promo_start 	= new DateTime('"'"'2022-09-09'"'"');
 	$form_date_promo 	= $date_promo_start->format('"'"'Y M D H:i:s'"'"');
 	$end_date_promo 	= '"'"'end 23:59'"'"';
 	$msg_coin_up_promo 	= '"'"'For each block found, payment increase of 5%!'"'"'."\n\r"; 
-
 	define('"'"'MESSAGE_BANNER_PROMO'"'"','"'"'EXTENDED PROMOTION: Fees 0% in Shared and SOLO'"'"'."\n\r".$msg_coin_up_promo.'"'"'Start '"'"' . $form_date_promo.'"'"' '"'"'.$end_date_promo);
-
 	// define fee in % with COIN exp: '"'"'BTC'"'"' => 1.0,
 	$configFixedPoolFeesCoin = array(
 		//'"'"'JGC'"'"' => '"'"'0'"'"',
 	);
-
 	$configFixedPoolFeesCoinSolo = array(
 		//'"'"'JGC'"'"' => '"'"'0'"'"',
 	);
-
 	// define REWARDS in % SWITH COIN FEE = 0, with COIN exp: '"'"'BTC'"'"' => 1,  <-- this rewards block + 1%
 	$configFixedPoolRewardsCoin = array(
 		//'"'"'JGC'"'"' => 5,
 	);
-
 	// COIN MESSAGE = RPC Error: error -8: dummy value must be set to "*", add COIN in line (coin_results.php)
 	define('"'"'RPC_ERROR_8'"'"', array(
 		'"'"'VTC'"'"',
 		'"'"'LTC'"'"',
 	));
-
 	// COIN ERROR PAIMENTS = RPC Error (payment.php)
 	// todo: enhance/detect payout_max from normal sendmany error
 	define('"'"'RPC_ERROR_PAIMENT'"'"', array(
@@ -1356,19 +1328,15 @@ clear
 
 	echo '#!/bin/bash
 	# Restart the pseudo cron screens...
-
 	LOG_DIR=/var/log/yiimp/log
 	WEB_DIR=/var/web
-
 	screen -X -S main quit
 	screen -X -S loop2 quit
 	screen -X -S blocks quit
 	screen -X -S debug quit
-
 	screen -dmS main $WEB_DIR/main.sh
 	screen -dmS loop2 $WEB_DIR/loop2.sh
 	screen -dmS blocks $WEB_DIR/blocks.sh
-
 	screen -dmS debug tail -f $LOG_DIR/debug.log' | sudo -E tee /bin/restartlg >/dev/null 2>&1
 	sudo chmod +x /bin/restartlg
 
@@ -1413,6 +1381,24 @@ clear
 	echo -e "$CYAN => Final Directory permissions $COL_RESET"
 	echo
 	sleep 3
+
+	echo '[clienthost1]
+	user=panel
+	password='"${password}"'
+	database=yiimpfrontend
+	host=localhost
+	[clienthost2]
+	user=stratum
+	password='"${password2}"'
+	database=yiimpfrontend
+	host=localhost
+	[myphpadmin]
+	user=phpmyadmin
+	password='"${AUTOGENERATED_PASS}"'
+	[mysql]
+	user=root
+	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/ >/dev/null 2>&1
+	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/
 
 	echo "export MYSQLDB=yiimpfrontend" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
 	echo "export MYSQLUSER=stratum" >> ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
