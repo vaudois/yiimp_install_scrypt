@@ -1295,7 +1295,7 @@ clear
 
 	echo '#!/bin/bash
 	# Restart the pseudo cron screens...
-	LOG_DIR=/var/log/yiimp/log
+	LOG_DIR=/var/log/yiimp
 	WEB_DIR=/var/web
 	screen -X -S main quit
 	screen -X -S loop2 quit
