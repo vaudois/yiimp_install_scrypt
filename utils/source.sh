@@ -581,6 +581,7 @@ if [[ "${YIIMPCONF}" == "true" ]]; then
 	# Make the new wallet folder have user paste the coin.conf and finally start the daemon
 	if [[ ! -e '$STORAGE_ROOT/wallets' ]]; then
 		sudo mkdir -p $STORAGE_ROOT/wallets
+		sudo chgrp www-data $STORAGE_ROOT/wallets -R 
 	fi
 
 	sudo setfacl -m u:$USER:rwx $STORAGE_ROOT/wallets
