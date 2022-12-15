@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.4
+#   v0.5
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.4
+	TAG=v0.5
 fi
 
 NPROC=$(nproc)
@@ -1385,7 +1385,13 @@ clear
 	sudo sed -i 's/username = root/username = stratum/g' *.conf
 	sudo sed -i 's/password = patofpaq/password = '$password2'/g' *.conf
 	cd ~
-	sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
+	HOMESSHEXIST=~/.ssh
+	if [[ -d "${HOMESSHEXIST}" ]]; then
+		sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
+	else
+		sudo mkdir -p ~/.ssh/
+		sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
+	fi
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
