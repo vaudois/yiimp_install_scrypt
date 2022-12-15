@@ -166,7 +166,7 @@ function get_default_privateip {
 
 
 # terminal art start screen.
-function term_art {
+function term_art_server {
 	clear
 	echo
 	echo -e "$CYAN  -----------------------------------------------------------------------	$COL_RESET"
@@ -206,7 +206,7 @@ function install_end_message
 	echo -e "$YELLOW  Please make sure to change your private keys in the$RED /etc/yiimp/keys.php$YELLOW file.	$COL_RESET"
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
 	echo -e "$RED   How to use Build Coin & Addport	& restart crons : main, loop2, blocks				$COL_RESET"
-	echo -e "$GREEN	To build a new coin :$COL_RESET $MAGENTA ${daemonname}						$COL_RESET"
+	echo -e "$GREEN	To build a new coin :$COL_RESET $MAGENTA coinbuild						$COL_RESET"
 	echo -e "$GREEN	To added stratum to coin and dedicated port : $COL_RESET $MAGENTA addport			$COL_RESET"
 	echo -e "$GREEN	To restart crons :$COL_RESET $MAGENTA restartlg							$COL_RESET"
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
