@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.5
+#   v0.4
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.5
+	TAG=v0.4
 fi
 
 NPROC=$(nproc)
@@ -110,9 +110,7 @@ clear
 
 	# Update package and Upgrade Ubuntu
 	echo
-	echo
 	echo -e "$CYAN => Updating system and installing required packages :$COL_RESET"
-	echo 
 	sleep 3
         
 	sudo apt -y update 
@@ -131,11 +129,9 @@ clear
 	DISTRO='"${DISTRO}"'
 	PRIVATE_IP='"${PRIVATE_IP}"'' | sudo -E tee conf/pool.conf >/dev/null 2>&1
 
-	term_art
-	echo
+	term_art_server
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
-	echo
 	#read -e -p "Enter time zone (e.g. America/New_York) : " TIME
 	read -e -p "Domain Name (no http:// or www. just : example.com or 185.22.24.26) : " server_name
 	read -e -p "Enter subdomain from stratum connections miners (europe.example.com?) [y/N] : " sub_domain
@@ -153,7 +149,7 @@ clear
 	# curl -q http://ifconfig.me
 	fi
 
-	term_art
+	term_art_server
 	echo -e "\n\n\n\n"
 	echo -e "$RED You entered the following. If it's wrong CTRL-C now to start over $COL_RESET"
 	echo "Domain Name:         $server_name"
@@ -172,20 +168,17 @@ clear
     read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
     echo -e "\n\n\n\n"
 
-	term_art
+	term_art_server
 	# Switch Aptitude
 	echo
 	echo -e "$CYAN Switching to Aptitude $COL_RESET"
-	echo 
 	sleep 3
 	apt_install aptitude
 	echo -e "$GREEN Done...$COL_RESET $COL_RESET"
 
 	# Installing Nginx
 	echo
-	echo
 	echo -e "$CYAN => Installing Nginx server : $COL_RESET"
-	echo
 	sleep 3
     
 	if [ -f /usr/sbin/apache2 ]; then
@@ -201,7 +194,6 @@ clear
 	hide_output sudo systemctl start cron.service
 	hide_output sudo systemctl enable cron.service
 	sudo systemctl status nginx | sed -n "1,3p"
-	echo
 	echo -e "$GREEN Done...$COL_RESET"
 	
 
@@ -218,9 +210,7 @@ clear
 
 	# Installing Mariadb
 	echo
-	echo
 	echo -e "$CYAN => Installing Mariadb Server : $COL_RESET"
-	echo
 	sleep 3
 
 	# Create random password
@@ -231,14 +221,11 @@ clear
 	hide_output sudo systemctl enable mysql
 	sleep 5
 	sudo systemctl status mysql | sed -n "1,3p"
-	echo
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing Installing php7.3
 	echo
-	echo
 	echo -e "$CYAN => Installing php7.3 : $COL_RESET"
-	echo
 	sleep 3
     
 	source conf/pool.conf
@@ -261,7 +248,7 @@ clear
 	sleep 5
 	hide_output sudo systemctl start php7.3-fpm
 	sudo systemctl status php7.3-fpm | sed -n "1,3p"
-	echo
+
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# fix CDbConnection failed to open the DB connection.
@@ -275,9 +262,7 @@ clear
     
 	# Installing other needed files
 	echo
-	echo
 	echo -e "$CYAN => Installing other needed files : $COL_RESET"
-	echo
 	sleep 3
 
 	apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev gnutls-dev \
@@ -289,18 +274,13 @@ clear
 
 	# Installing Package to compile crypto currency
 	echo
-	echo
 	echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
-	echo
 
 	sleep 3
 	package_compile_crypto       
 
 	sleep 3
 	package_compile_coin
-
-	sleep 3
-	package_daemonbuilder
 
 	echo
 	echo -e "$GREEN Done...$COL_RESET"
@@ -312,9 +292,7 @@ clear
 
 	# Test Email
 	echo
-	echo
 	echo -e "$CYAN => Testing to see if server emails are sent $COL_RESET"
-	echo
 	sleep 3
 
 	if [[ "$root_email" != "" ]]; then
@@ -336,9 +314,7 @@ clear
 
 	# Installing Fail2Ban & UFW
 	echo
-	echo
 	echo -e "$CYAN => Some optional installs (Fail2Ban & UFW) $COL_RESET"
-	echo
 	sleep 3
 
     if [[ ("$install_fail2ban" == "y" || "$install_fail2ban" == "Y" || "$install_fail2ban" == "") ]]; then
@@ -361,14 +337,11 @@ clear
 		sudo systemctl status ufw | sed -n "1,3p"   
     fi
 
-    echo
     echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing PhpMyAdmin
 	echo
-	echo
 	echo -e "$CYAN => Installing phpMyAdmin $COL_RESET"
-	echo
 	sleep 3
 
 	echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect" | sudo debconf-set-selections
@@ -384,11 +357,8 @@ clear
 
 	# Installing Yiimp
 	echo
-	echo
 	echo -e "$CYAN => Installing Yiimp $COL_RESET"
-	echo
-	echo -e "Grabbing yiimp fron Github, building files and setting file structure."
-	echo
+	echo -e "$YELLOW Grabbing yiimp fron Github, building files and setting file structure.$COL_RESET "
 	sleep 3
 
     # Generating Random Password for stratum
@@ -520,9 +490,7 @@ clear
 
 	# Update Timezone
 	echo
-	echo
 	echo -e "$CYAN => Update default timezone. $COL_RESET"
-	echo
 
 	# Check if link file
 	#sudo [ -L /etc/localtime ] &&  sudo unlink /etc/localtime
@@ -540,14 +508,12 @@ clear
 		sudo systemctl restart rsyslog
 	fi
 	sudo systemctl status rsyslog | sed -n "1,3p"
-	echo
+
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Creating webserver initial config file
 	echo
-	echo
 	echo -e "$CYAN => Creating webserver initial config file $COL_RESET"
-	echo
 
 	# Adding user to group, creating dir structure, setting permissions
 	sudo mkdir -p /var/www/$server_name/html
@@ -660,7 +626,6 @@ clear
 		# Install SSL (with SubDomain)
 		echo
 		echo -e "Install LetsEncrypt and setting SSL (with SubDomain)"
-		echo
 		
 		apt_install letsencrypt
 		sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name"
@@ -938,7 +903,6 @@ clear
 			# Install SSL (without SubDomain)
 			echo
 			echo -e "Install LetsEncrypt and setting SSL (without SubDomain)"
-			echo
 			sleep 3
 			
 			apt_install letsencrypt
@@ -1122,9 +1086,7 @@ clear
 
 	# Config Database
 	echo
-	echo
 	echo -e "$CYAN => Now for the database fun! $COL_RESET"
-	echo
 	sleep 3
     
 	# Create database
@@ -1205,11 +1167,7 @@ clear
 
 	# Peforming the SQL import
 	echo
-	echo
 	echo -e "$CYAN => Database 'yiimpfrontend' and users 'panel' and 'stratum' created with password $password and $password2, will be saved for you $COL_RESET"
-	echo
-	echo -e "Performing the SQL import"
-	echo
 	sleep 3
 
 	cd ~
@@ -1256,9 +1214,7 @@ clear
 
 	# Generating a basic Yiimp serverconfig.php
 	echo
-	echo
 	echo -e "$CYAN => Generating a basic Yiimp serverconfig.php $COL_RESET"
-	echo
 	sleep 3
 
 	# Make config file
@@ -1408,9 +1364,7 @@ clear
 
 	# Generating a restart crons main loop2 blocks
 	echo
-	echo
 	echo -e "$CYAN => Generating a restart crons = main, loop2, blocks $COL_RESET"
-	echo
 	sleep 3
     
 	# Make crons main loop2 blocks
@@ -1433,9 +1387,7 @@ clear
 
 	# Updating stratum config files with database connection info
 	echo
-	echo
 	echo -e "$CYAN => Updating stratum config files with database connection info. $COL_RESET"
-	echo
 	sleep 3
 
 	cd /var/stratum/config
@@ -1446,10 +1398,15 @@ clear
 	sudo sed -i 's/username = root/username = stratum/g' *.conf
 	sudo sed -i 's/password = patofpaq/password = '$password2'/g' *.conf
 	cd ~
+	sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
 	echo -e "$GREEN Done...$COL_RESET"
+	sleep 3
 
 	# Wireguard support
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+		echo
+		echo -e "$CYAN => Installing wireguard support.... $COL_RESET"
+		sleep 3
 		hide_output sudo apt update -y
 		hide_output sudo apt install wireguard-dkms wireguard-tools -y
 
@@ -1462,13 +1419,51 @@ clear
 		sudo systemctl enable wg-quick@wg0
 
 		sudo ufw allow 6121
+		echo -e "$GREEN Done...$COL_RESET"
+		sleep 3
 	fi
+
+	# Install CoinBuild
+	cd ${absolutepath}/${nameofinstall}
+	STRATUMFILE=/var/stratum
+	sudo git config --global url."https://github.com/".insteadOf git@github.com: >/dev/null 2>&1
+	sudo git config --global url."https://".insteadOf git:// >/dev/null 2>&1
+	sleep 2
+
+	REPO="vaudois/daemoncoin-addport-stratum"
+	LATESTVER=$(curl -sL 'https://api.github.com/repos/${REPO}/releases/latest' | jq -r ".tag_name")
+
+	temp_dir="$(mktemp -d)" && \
+		sudo git clone -q git@github.com:${REPO%.git} "${temp_dir}" && \
+			cd "${temp_dir}/" && \
+				sudo git -c advice.detachedHead=false checkout -q tags/${LATESTVER} >/dev/null 2>&1
+	sleep 1
+	test $? -eq 0 ||
+		{ 
+			echo
+			echo -e "$RED Error cloning repository. $COL_RESET";
+			echo
+			sudo rm -f $temp_dir
+			exit 1;
+		}
+
+	FILEINSTALLEXIST="${temp_dir}/install.sh"
+	if [ -f "$FILEINSTALLEXIST" ]; then
+		sudo chown -R $USER ${temp_dir} >/dev/null 2>&1
+		sleep 1
+		cd ${temp_dir}
+		sudo find . -type f -name "*.sh" -exec chmod -R +x {} \; >/dev/null 2>&1
+		sleep 1
+		./install.sh "${temp_dir}" "${STRATUMFILE}" "${DISTRO}"
+		sudo rm -rf $temp_dir
+	fi
+	
+	clear
+	term_art_server
 
 	# Final Directory permissions
 	echo
-	echo
 	echo -e "$CYAN => Final Directory permissions $COL_RESET"
-	echo
 	sleep 3
 
 	echo '[clienthost1]
@@ -1486,8 +1481,8 @@ clear
 	password='"${AUTOGENERATED_PASS}"'
 	[mysql]
 	user=root
-	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/ >/dev/null 2>&1
-	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/
+	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/server.conf >/dev/null 2>&1
+	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/server.conf
 
 
 	echo "export MYSQLDB=yiimpfrontend" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
@@ -1580,7 +1575,6 @@ clear
 	sudo restartlg
 	sleep 2
 
-	echo
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
