@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.4
+#   v0.5
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.4
+	TAG=v0.5
 fi
 
 NPROC=$(nproc)
@@ -553,94 +553,100 @@ clear
 	sudo mkdir -p /var/www/$server_name/html
 
 	if [[ ("$sub_domain" == "y" || "$sub_domain" == "Y") ]]; then
-	echo 'include /etc/nginx/blockuseragents.rules;
+	echo '
+	#####################################################
+	# Updated by Vaudois for crypto use...
+	#####################################################
+	include /etc/nginx/blockuseragents.rules;
 	server
 	{
 		if ($blockedagent)
 		{
 			return 403;
 		}
-			if ($request_method !~ ^(GET|HEAD|POST)$)
-			{
-				return 444;
-			}
-			listen 80;
-			listen [::]:80;
-			server_name '"${server_name}"';
-			root "/var/www/'"${server_name}"'/html/web";
-			index index.html index.htm index.php;
-			charset utf-8;
-		
-			location /
-			{
-				try_files $uri $uri/ /index.php?$args;
-			}
-			location @rewrite
-			{
-				rewrite ^/(.*)$ /index.php?r=$1;
-			}
-		
-			location = /favicon.ico { access_log off; log_not_found off; }
-			location = /robots.txt  { access_log off; log_not_found off; }
-		
-			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
-			error_log /var/log/nginx/'"${server_name}"'.app-error.log;
-		
-			# allow larger file uploads and longer script runtimes
-			client_body_buffer_size  50k;
-			client_header_buffer_size 50k;
-			client_max_body_size 50k;
-			large_client_header_buffers 2 50k;
-			sendfile off;
-		
-			location ~ ^/index\.php$
-			{
-				fastcgi_split_path_info ^(.+\.php)(/.+)$;
-				fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
-				fastcgi_index index.php;
-				include fastcgi_params;
-				fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-				fastcgi_intercept_errors off;
-				fastcgi_buffer_size 16k;
-				fastcgi_buffers 4 16k;
-				fastcgi_connect_timeout 300;
-				fastcgi_send_timeout 300;
-				fastcgi_read_timeout 300;
-				try_files $uri $uri/ =404;
-			}
-			location ~ \.php$
-			{
-				return 404;
-			}
-			location ~ \.sh
-			{
-				return 404;
-			}
-			location ~ /\.ht
+		if ($request_method !~ ^(GET|HEAD|POST)$)
+		{
+			return 444;
+		}
+		listen 80;
+		listen [::]:80;
+		server_name '"${server_name}"';
+		root "/var/www/'"${server_name}"'/html/web";
+		index index.html index.htm index.php;
+		charset utf-8;
+	
+		location /
+		{
+			try_files $uri $uri/ /index.php?$args;
+		}
+		location @rewrite
+		{
+			rewrite ^/(.*)$ /index.php?r=$1;
+		}
+	
+		location = /favicon.ico { access_log off; log_not_found off; }
+		location = /robots.txt  { access_log off; log_not_found off; }
+	
+		access_log /var/log/nginx/'"${server_name}"'.app-access.log;
+		error_log /var/log/nginx/'"${server_name}"'.app-error.log;
+	
+		# allow larger file uploads and longer script runtimes
+		client_body_buffer_size  50k;
+		client_header_buffer_size 50k;
+		client_max_body_size 50k;
+		large_client_header_buffers 2 50k;
+		sendfile off;
+	
+		location ~ ^/index\.php$
+		{
+			fastcgi_split_path_info ^(.+\.php)(/.+)$;
+			fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+			fastcgi_index index.php;
+			include fastcgi_params;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			fastcgi_intercept_errors off;
+			fastcgi_buffer_size 16k;
+			fastcgi_buffers 4 16k;
+			fastcgi_connect_timeout 300;
+			fastcgi_send_timeout 300;
+			fastcgi_read_timeout 300;
+			try_files $uri $uri/ =404;
+		}
+		location ~ \.php$
+		{
+			return 404;
+		}
+		location ~ \.sh
+		{
+			return 404;
+		}
+		location ~ /\.ht
+		{
+			deny all;
+		}
+		location ~ /.well-known
+		{
+			allow all;
+		}
+		location /phpmyadmin
+		{
+			root /usr/share/;
+			index index.php;
+			try_files $uri $uri/ =404;
+			location ~ ^/phpmyadmin/(doc|sql|setup)/
 			{
 				deny all;
 			}
-			location ~ /.well-known
+			location ~ /phpmyadmin/(.+\.php)$
 			{
-				allow all;
+				fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+				fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+				include fastcgi_params;
+				include snippets/fastcgi-php.conf;
 			}
-			location /phpmyadmin
-			{
-				root /usr/share/;
-				index index.php;
-				try_files $uri $uri/ =404;
-				location ~ ^/phpmyadmin/(doc|sql|setup)/
-				{
-					deny all;
-				}
-				location ~ /phpmyadmin/(.+\.php)$
-				{
-					fastcgi_pass unix:/run/php/php7.3-fpm.sock;
-					fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-					include fastcgi_params;
-					include snippets/fastcgi-php.conf;
-				}
-			}
+		}
+		# additional config
+		include yiimp/nginxCustom.conf;
     }' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 
 	sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
@@ -662,23 +668,27 @@ clear
 		sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 		# I am SSL Man!
-		echo 'include /etc/nginx/blockuseragents.rules;
+		echo '
+		#####################################################
+		# Updated by Vaudois for crypto use...
+		#####################################################
+		include /etc/nginx/blockuseragents.rules;
 		server
 		{
 			if ($blockedagent)
 			{
 				return 403;
 			}
-				if ($request_method !~ ^(GET|HEAD|POST)$)
-				{
-					return 444;
-				}
-				listen 80;
-				listen [::]:80;
-				server_name '"${server_name}"';
-				# enforce https
-				return 301 https://$server_name$request_uri;
+			if ($request_method !~ ^(GET|HEAD|POST)$)
+			{
+				return 444;
 			}
+			listen 80;
+			listen [::]:80;
+			server_name '"${server_name}"';
+			# enforce https
+			return 301 https://$server_name$request_uri;
+		}
 		server
 		{
 			if ($blockedagent)
@@ -770,16 +780,65 @@ clear
 					include snippets/fastcgi-php.conf;
 				}
 			}
+			# additional config
+			include yiimp/nginxCustom.conf;
 		}' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 	fi
-	
+
+	echo '
+	#####################################################
+	# Updated by Vaudois for crypto use
+	#####################################################
+	# favicon.ico
+	location = /favicon.ico {
+		log_not_found off;
+		access_log off;
+	}
+
+	# robots.txt
+	location = /robots.txt {
+		log_not_found off;
+		access_log off;
+	}
+
+	# assets, media
+	location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|cur|heic|webp|tiff?|mp3|m4a|aac|ogg|midi?|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
+		expires 7d;
+		access_log off;
+	}
+
+	# svg, fonts
+	location ~* \.(?:svgz?|ttf|ttc|otf|eot|woff2?)$ {
+		add_header Access-Control-Allow-Origin "*";
+		expires 7d;
+		access_log off;
+	}
+
+	location ^~ /list-algos/ {
+		deny all;
+		access_log off;
+		return 301 https://'"${server_name}"';
+	}
+
+	# gzip
+	gzip on;
+	gzip_vary on;
+	gzip_proxied any;
+	gzip_comp_level 6;
+	gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
+	' | sudo -E tee /etc/customconf/nginxCustom.conf >/dev/null 2>&1
+
 	hide_output sudo systemctl reload php7.3-fpm.service
 	hide_output sudo systemctl restart nginx.service
 	echo -e "$GREEN Done...$COL_RESET"
 
 	else
 
-		echo 'include /etc/nginx/blockuseragents.rules;
+		echo '
+		#####################################################
+		# Updated by Vaudois for crypto use...
+		#####################################################
+		include /etc/nginx/blockuseragents.rules;
 		server
 		{
 			if ($blockedagent)
@@ -864,6 +923,8 @@ clear
 				include snippets/fastcgi-php.conf;
 				}
 			}
+			# additional config
+			include yiimp/nginxCustom.conf;
 		}' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
@@ -871,8 +932,7 @@ clear
 		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
 		echo -e "$GREEN Done...$COL_RESET"
-	   
-		
+
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
 		
 			# Install SSL (without SubDomain)
@@ -886,13 +946,20 @@ clear
 			sudo rm /etc/nginx/sites-available/$server_name.conf
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 			# I am SSL Man!
-			echo 'include /etc/nginx/blockuseragents.rules;
-			server {
-			if ($blockedagent) {
-						return 403;
+			echo '
+			#####################################################
+			# Updated by Vaudois for crypto use...
+			#####################################################
+			include /etc/nginx/blockuseragents.rules;
+			server
+			{
+				if ($blockedagent)
+				{
+					return 403;
 				}
-				if ($request_method !~ ^(GET|HEAD|POST)$) {
-				return 444;
+				if ($request_method !~ ^(GET|HEAD|POST)$)
+				{
+					return 444;
 				}
 				listen 80;
 				listen [::]:80;
@@ -900,94 +967,105 @@ clear
 				# enforce https
 				return 301 https://$server_name$request_uri;
 			}
+
+			server
+			{
+				if ($blockedagent)
+				{
+					return 403;
+				}
+				if ($request_method !~ ^(GET|HEAD|POST)$)
+				{
+					return 444;
+				}
+				listen 443 ssl http2;
+				listen [::]:443 ssl http2;
+				server_name '"${server_name}"' www.'"${server_name}"';
 			
-			server {
-			if ($blockedagent) {
-						return 403;
-				}
-				if ($request_method !~ ^(GET|HEAD|POST)$) {
-				return 444;
-				}
-					listen 443 ssl http2;
-					listen [::]:443 ssl http2;
-					server_name '"${server_name}"' www.'"${server_name}"';
-				
-					root /var/www/'"${server_name}"'/html/web;
-					index index.php;
-				
-					access_log /var/log/nginx/'"${server_name}"'.app-access.log;
-					error_log  /var/log/nginx/'"${server_name}"'.app-error.log;
-				
-					# allow larger file uploads and longer script runtimes
-			client_body_buffer_size  50k;
+				root /var/www/'"${server_name}"'/html/web;
+				index index.php;
+			
+				access_log /var/log/nginx/'"${server_name}"'.app-access.log;
+				error_log  /var/log/nginx/'"${server_name}"'.app-error.log;
+			
+				# allow larger file uploads and longer script runtimes
+				client_body_buffer_size  50k;
 				client_header_buffer_size 50k;
 				client_max_body_size 50k;
 				large_client_header_buffers 2 50k;
 				sendfile off;
 				
-					# strengthen ssl security
-					ssl_certificate /etc/letsencrypt/live/'"${server_name}"'/fullchain.pem;
-					ssl_certificate_key /etc/letsencrypt/live/'"${server_name}"'/privkey.pem;
-					ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-					ssl_prefer_server_ciphers on;
-					ssl_session_cache shared:SSL:10m;
-					ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
-					ssl_dhparam /etc/ssl/certs/dhparam.pem;
-				
-					# Add headers to serve security related headers
-					add_header Strict-Transport-Security "max-age=15768000; preload;";
-					add_header X-Content-Type-Options nosniff;
-					add_header X-XSS-Protection "1; mode=block";
-					add_header X-Robots-Tag none;
-					add_header Content-Security-Policy "frame-ancestors 'self'";
-				
-				location / {
-				try_files $uri $uri/ /index.php?$args;
-				}
-				location @rewrite {
-				rewrite ^/(.*)$ /index.php?r=$1;
-				}
+				# strengthen ssl security
+				ssl_certificate /etc/letsencrypt/live/'"${server_name}"'/fullchain.pem;
+				ssl_certificate_key /etc/letsencrypt/live/'"${server_name}"'/privkey.pem;
+				ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+				ssl_prefer_server_ciphers on;
+				ssl_session_cache shared:SSL:10m;
+				ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+				ssl_dhparam /etc/ssl/certs/dhparam.pem;
 			
+				# Add headers to serve security related headers
+				add_header Strict-Transport-Security "max-age=15768000; preload;";
+				add_header X-Content-Type-Options nosniff;
+				add_header X-XSS-Protection "1; mode=block";
+				add_header X-Robots-Tag none;
+				add_header Content-Security-Policy "frame-ancestors 'self'";
 				
-					location ~ ^/index\.php$ {
-						fastcgi_split_path_info ^(.+\.php)(/.+)$;
-						fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
-						fastcgi_index index.php;
-						include fastcgi_params;
-						fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-						fastcgi_intercept_errors off;
-						fastcgi_buffer_size 16k;
-						fastcgi_buffers 4 16k;
-						fastcgi_connect_timeout 300;
-						fastcgi_send_timeout 300;
-						fastcgi_read_timeout 300;
-						include /etc/nginx/fastcgi_params;
+				location /
+				{
+					try_files $uri $uri/ /index.php?$args;
+				}
+				location @rewrite
+				{
+					rewrite ^/(.*)$ /index.php?r=$1;
+				}
+				location ~ ^/index\.php$
+				{
+					fastcgi_split_path_info ^(.+\.php)(/.+)$;
+					fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+					fastcgi_index index.php;
+					include fastcgi_params;
+					fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+					fastcgi_intercept_errors off;
+					fastcgi_buffer_size 16k;
+					fastcgi_buffers 4 16k;
+					fastcgi_connect_timeout 300;
+					fastcgi_send_timeout 300;
+					fastcgi_read_timeout 300;
+					include /etc/nginx/fastcgi_params;
 					try_files $uri $uri/ =404;
 				}
-				location ~ \.php$ {
+				location ~ \.php$
+				{
 					return 404;
 				}
-				location ~ \.sh {
-				return 404;
+				location ~ \.sh
+				{
+					return 404;
 				}
-				
-					location ~ /\.ht {
+				location ~ /\.ht
+				{
+					deny all;
+				}
+					location /phpmyadmin
+				{
+					root /usr/share/;
+					index index.php;
+					try_files $uri $uri/ =404;
+					location ~ ^/phpmyadmin/(doc|sql|setup)/
+					{
 						deny all;
 					}
-				location /phpmyadmin {
-				root /usr/share/;
-				index index.php;
-				try_files $uri $uri/ =404;
-				location ~ ^/phpmyadmin/(doc|sql|setup)/ {
-					deny all;
-			}
-				location ~ /phpmyadmin/(.+\.php)$ {
-					fastcgi_pass unix:/run/php/php7.3-fpm.sock;
-					fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-					include fastcgi_params;
-					include snippets/fastcgi-php.conf;
+						location ~ /phpmyadmin/(.+\.php)$
+					{
+						fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+						fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+						include fastcgi_params;
+						include snippets/fastcgi-php.conf;
+					}
 				}
-			  }
+				# additional config
+				include yiimp/nginxCustom.conf;
 			}
 				
 			' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
@@ -995,6 +1073,49 @@ clear
 			echo -e "$GREEN Done...$COL_RESET"
 
 		fi
+		echo '
+		#####################################################
+		# Updated by Vaudois for crypto use
+		#####################################################
+		# favicon.ico
+		location = /favicon.ico {
+			log_not_found off;
+			access_log off;
+		}
+
+		# robots.txt
+		location = /robots.txt {
+			log_not_found off;
+			access_log off;
+		}
+
+		# assets, media
+		location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|cur|heic|webp|tiff?|mp3|m4a|aac|ogg|midi?|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
+			expires 7d;
+			access_log off;
+		}
+
+		# svg, fonts
+		location ~* \.(?:svgz?|ttf|ttc|otf|eot|woff2?)$ {
+			add_header Access-Control-Allow-Origin "*";
+			expires 7d;
+			access_log off;
+		}
+
+		location ^~ /list-algos/ {
+			deny all;
+			access_log off;
+			return 301 https://'"${server_name}"';
+		}
+
+		# gzip
+		gzip on;
+		gzip_vary on;
+		gzip_proxied any;
+		gzip_comp_level 6;
+		gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
+		' | sudo -E tee /etc/customconf/nginxCustom.conf >/dev/null 2>&1
+
 		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
     fi
@@ -1127,7 +1248,8 @@ clear
 	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2018-09-22-workers.sql
 	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2019-03-coins_thepool_life.sql
 	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
-	
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2022-10-29-blocks_effort.sql
+	hide_output sudo mysql --defaults-group-suffix=host1 --force < 2022-10-14-shares_solo.sql
 	cd ~
 
 	echo -e "$GREEN Done...$COL_RESET"    
@@ -1464,4 +1586,5 @@ clear
 
 	echo
 	install_end_message
-	echo
+
+	echo ""
