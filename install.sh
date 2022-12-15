@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.5
+#   v0.4
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.5
+	TAG=v0.4
 fi
 
 NPROC=$(nproc)
@@ -40,22 +40,14 @@ clear
 	
 	sudo sed -i 's#btcdons#'$BTCDEP'#' conf/functions.sh
 	sleep 1
-	sudo sed -i 's#bchdons#'$BTCDEP'#' utils/addport.sh
-	sleep 1
 
 	sudo sed -i 's#ltcdons#'$LTCDEP'#' conf/functions.sh
-	sleep 1
-	sudo sed -i 's#ltcdons#'$LTCDEP'#' utils/addport.sh
 	sleep 1
 
 	sudo sed -i 's#ethdons#'$ETHDEP'#' conf/functions.sh
 	sleep 1
-	sudo sed -i 's#ethdons#'$ETHDEP'#' utils/addport.sh
-	sleep 1
 
 	sudo sed -i 's#bchdons#'$BCHDEP'#' conf/functions.sh
-	sleep 1
-	sudo sed -i 's#bchdons#'$BCHDEP'#' utils/addport.sh
 	sleep 1
 
 	sudo sed -i 's#daemonnameserver#'$daemonname'#' conf/functions.sh
@@ -97,8 +89,6 @@ clear
 	sudo cp -r conf/functions.sh /etc/
 	sudo cp -r conf/screen-scrypt.sh /etc/
 	sudo cp -r conf/editconf.py /usr/bin/
-	sudo cp -r utils/addport.sh /usr/bin/addport
-	sudo chmod +x /usr/bin/addport
 	sudo chmod +x /usr/bin/editconf.py
 	sudo chmod +x /etc/screen-scrypt.sh
 
