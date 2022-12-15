@@ -6,12 +6,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.5
+#   v0.4
 # 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.5
+	TAG=v0.4
 fi
 
 NPROC=$(nproc)
@@ -277,10 +277,7 @@ clear
 	echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
 
 	sleep 3
-	package_compile_crypto       
-
-	sleep 3
-	package_compile_coin
+	package_compile_crypto
 
 	echo
 	echo -e "$GREEN Done...$COL_RESET"
