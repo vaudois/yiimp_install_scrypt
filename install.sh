@@ -107,7 +107,7 @@ clear
 	hide_output sudo apt -y upgrade
 	hide_output sudo apt -y autoremove
 	apt_install dialog python3 python3-pip acl nano apt-transport-https
-	apt_install figlet
+	apt_install figlet curl jq
 	echo -e "$GREEN Done...$COL_RESET"
 
 	source conf/prerequisite.sh
