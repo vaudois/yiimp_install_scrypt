@@ -180,7 +180,7 @@ function term_art_server {
 	echo "																							"
 	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
 	echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!				$COL_RESET"
-	echo -e "$GREEN  Version: $COL_RESET $MAGENTA versiontag								$COL_RESET"
+	echo -e "$GREEN  Version:$COL_RESET$MAGENTA ${TAG}$MAGENTA Installation on Distro ${GREEN}${DISTRO}		$COL_RESET"
 	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
 	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.	$COL_RESET"
 	echo -e "$YELLOW  It will also install a MySQL database and a Web server.				$COL_RESET"
@@ -197,7 +197,7 @@ function install_end_message
 	figlet -f slant -w 100 "Complete!"
 
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
-	echo -e "$GREEN  | Version: $COL_RESET $MAGENTA versiontag	|						$COL_RESET"
+	echo -e "$GREEN  |	Version: $COL_RESET $MAGENTA ${TAG}	|						$COL_RESET"
 	echo -e "$YELLOW Yiimp Installer Script Fork By Vaudois								$COL_RESET"
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
 	echo -e "$YELLOW   Your mysql information (login/Password) is saved in:$RED ~/.my.cnf				$COL_RESET"
