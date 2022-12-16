@@ -169,7 +169,7 @@ function get_default_privateip {
 function term_art_server {
 	clear
 	echo
-	echo -e "$CYAN  --------------------------------------------------------------------------------------	$COL_RESET"
+	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
 	echo "																							"
 	echo "  ░██████╗███████╗██████╗░██╗░░░██╗███████╗██████╗░  ██╗░░░██╗██╗██╗███╗░░░███╗██████╗░	"
 	echo "  ██╔════╝██╔════╝██╔══██╗██║░░░██║██╔════╝██╔══██╗  ╚██╗░██╔╝██║██║████╗░████║██╔══██╗	"
@@ -178,15 +178,15 @@ function term_art_server {
 	echo "  ██████╔╝███████╗██║░░██║░░╚██╔╝░░███████╗██║░░██║  ░░░██║░░░██║██║██║░╚═╝░██║██║░░░░░	"
 	echo "  ╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝  ░░░╚═╝░░░╚═╝╚═╝╚═╝░░░░░╚═╝╚═╝░░░░░	"
 	echo "																							"
-	echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
+	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
 	echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!				$COL_RESET"
 	echo -e "$GREEN  Version: $COL_RESET $MAGENTA versiontag								$COL_RESET"
-	echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
+	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
 	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.	$COL_RESET"
 	echo -e "$YELLOW  It will also install a MySQL database and a Web server.				$COL_RESET"
 	echo -e "$YELLOW  MariaDB is used for the database.										$COL_RESET"
 	echo -e "$YELLOW  Nginx is used for the Web server, PHP 7.3 is also installed.			$COL_RESET"
-	echo -e "$CYAN  -----------------------------------------------------------------------------------	$COL_RESET"
+	echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
 	echo
 }
 
