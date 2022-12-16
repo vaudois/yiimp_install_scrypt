@@ -1391,6 +1391,7 @@ clear
 	else
 		sudo mkdir -p ~/.ssh/
 		sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
+		sudo ssh-keyscan github.com >> ~/known_hosts >/dev/null 2>&1
 	fi
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
