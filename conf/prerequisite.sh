@@ -15,12 +15,6 @@ MAGENTA=$ESC_SEQ"35;01m"
 CYAN=$ESC_SEQ"36;01m"
 
 echo
-echo
-echo -e "$CYAN => Check prerequisite : $COL_RESET"
-echo
-
-echo
-echo
 echo -e "$CYAN => Check prerequisite : $COL_RESET"
 
 if [ "`lsb_release -d | sed 's/.*:\s*//' | sed 's/18\.04\.[0-9]/18.04/' `" == "Ubuntu 18.04 LTS" ]; then
