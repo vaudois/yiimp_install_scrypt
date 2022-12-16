@@ -504,6 +504,49 @@ clear
 	echo
 	echo -e "$CYAN => Creating webserver initial config file $COL_RESET"
 
+	echo '
+	#####################################################
+	# Updated by Vaudois for crypto use
+	#####################################################
+	# favicon.ico
+	location = /favicon.ico {
+		log_not_found off;
+		access_log off;
+	}
+
+	# robots.txt
+	location = /robots.txt {
+		log_not_found off;
+		access_log off;
+	}
+
+	# assets, media
+	location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|cur|heic|webp|tiff?|mp3|m4a|aac|ogg|midi?|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
+		expires 7d;
+		access_log off;
+	}
+
+	# svg, fonts
+	location ~* \.(?:svgz?|ttf|ttc|otf|eot|woff2?)$ {
+		add_header Access-Control-Allow-Origin "*";
+		expires 7d;
+		access_log off;
+	}
+
+	location ^~ /list-algos/ {
+		deny all;
+		access_log off;
+		return 301 https://'"${server_name}"';
+	}
+
+	# gzip
+	gzip on;
+	gzip_vary on;
+	gzip_proxied any;
+	gzip_comp_level 6;
+	gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
+	' | sudo -E tee /etc/yiimp/nginxCustom.conf >/dev/null 2>&1
+
 	# Adding user to group, creating dir structure, setting permissions
 	sudo mkdir -p /var/www/$server_name/html
 
@@ -603,7 +646,7 @@ clear
 		# additional config
 		include yiimp/nginxCustom.conf;
     }' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
-
+	
 	sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 	sudo ln -s /var/web /var/www/$server_name/html
 	hide_output sudo systemctl reload php7.3-fpm.service
@@ -738,49 +781,6 @@ clear
 			include yiimp/nginxCustom.conf;
 		}' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 	fi
-
-	echo '
-	#####################################################
-	# Updated by Vaudois for crypto use
-	#####################################################
-	# favicon.ico
-	location = /favicon.ico {
-		log_not_found off;
-		access_log off;
-	}
-
-	# robots.txt
-	location = /robots.txt {
-		log_not_found off;
-		access_log off;
-	}
-
-	# assets, media
-	location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|cur|heic|webp|tiff?|mp3|m4a|aac|ogg|midi?|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
-		expires 7d;
-		access_log off;
-	}
-
-	# svg, fonts
-	location ~* \.(?:svgz?|ttf|ttc|otf|eot|woff2?)$ {
-		add_header Access-Control-Allow-Origin "*";
-		expires 7d;
-		access_log off;
-	}
-
-	location ^~ /list-algos/ {
-		deny all;
-		access_log off;
-		return 301 https://'"${server_name}"';
-	}
-
-	# gzip
-	gzip on;
-	gzip_vary on;
-	gzip_proxied any;
-	gzip_comp_level 6;
-	gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
-	' | sudo -E tee /etc/yiimp/nginxCustom.conf >/dev/null 2>&1
 
 	hide_output sudo systemctl reload php7.3-fpm.service
 	hide_output sudo systemctl restart nginx.service
@@ -1026,48 +1026,6 @@ clear
 			echo -e "$GREEN Done...$COL_RESET"
 
 		fi
-		echo '
-		#####################################################
-		# Updated by Vaudois for crypto use
-		#####################################################
-		# favicon.ico
-		location = /favicon.ico {
-			log_not_found off;
-			access_log off;
-		}
-
-		# robots.txt
-		location = /robots.txt {
-			log_not_found off;
-			access_log off;
-		}
-
-		# assets, media
-		location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|cur|heic|webp|tiff?|mp3|m4a|aac|ogg|midi?|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
-			expires 7d;
-			access_log off;
-		}
-
-		# svg, fonts
-		location ~* \.(?:svgz?|ttf|ttc|otf|eot|woff2?)$ {
-			add_header Access-Control-Allow-Origin "*";
-			expires 7d;
-			access_log off;
-		}
-
-		location ^~ /list-algos/ {
-			deny all;
-			access_log off;
-			return 301 https://'"${server_name}"';
-		}
-
-		# gzip
-		gzip on;
-		gzip_vary on;
-		gzip_proxied any;
-		gzip_comp_level 6;
-		gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
-		' | sudo -E tee /etc/yiimp/nginxCustom.conf >/dev/null 2>&1
 
 		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
