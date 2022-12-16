@@ -96,7 +96,7 @@ clear
 	source utils/packagecompil.sh
 
 	clear	
-	term_art
+	term_art_server
 
 	# Update package and Upgrade Ubuntu
 	echo
