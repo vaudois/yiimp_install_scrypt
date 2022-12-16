@@ -777,7 +777,7 @@ clear
 	gzip_proxied any;
 	gzip_comp_level 6;
 	gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
-	' | sudo -E tee /etc/customconf/nginxCustom.conf >/dev/null 2>&1
+	' | sudo -E tee /etc/yiimp/nginxCustom.conf >/dev/null 2>&1
 
 	hide_output sudo systemctl reload php7.3-fpm.service
 	hide_output sudo systemctl restart nginx.service
@@ -1064,7 +1064,7 @@ clear
 		gzip_proxied any;
 		gzip_comp_level 6;
 		gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
-		' | sudo -E tee /etc/customconf/nginxCustom.conf >/dev/null 2>&1
+		' | sudo -E tee /etc/yiimp/nginxCustom.conf >/dev/null 2>&1
 
 		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
