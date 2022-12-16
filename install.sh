@@ -1390,6 +1390,7 @@ clear
 		sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
 	else
 		sudo mkdir -p ~/.ssh/
+		sudo chown -R $USER ~/.ssh >/dev/null 2>&1
 		sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
 		sudo ssh-keyscan github.com >> ~/known_hosts >/dev/null 2>&1
 	fi
