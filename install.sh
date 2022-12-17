@@ -104,7 +104,6 @@ clear
 
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
-	#read -e -p "Enter time zone (e.g. America/New_York) : " TIME
 	read -e -p "Domain Name (no http:// or www. just : example.com or 185.22.24.26) : " server_name
 	read -e -p "Enter subdomain from stratum connections miners (europe.example.com?) [y/N] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
@@ -126,7 +125,6 @@ clear
 	echo "Domain Name:         $server_name"
 	echo "Stratum Subdomain:   $sub_domain"
 	echo "Support Email:       $EMAIL"
-	echo "AutoExchange:        $BTC"
 	echo "Panel Url:           $admin_panel"
 	echo "IP Range for Admin:  $Public"
 	echo "Yiimb Github choice: $yiimpver"
@@ -385,9 +383,6 @@ clear
 
 	# Compil Stratum
 	cd ${absolutepath}/stratum
-	if [[ ("$BTC" == "y" || "$BTC" == "Y") ]]; then
-		sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' ${absolutepath}/yiimp/stratum/Makefile
-	fi
 	hide_output sudo make
 
 	# Modify Files (Admin_panel), Wallets path, Web Path footer
@@ -1475,11 +1470,9 @@ clear
 	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/server.conf >/dev/null 2>&1
 	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/server.conf
 
-
 	echo "export MYSQLDB=yiimpfrontend" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	echo "export MYSQLUSER=stratum" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	echo "export MYSQLPASS=$stratumpass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo "export BTC=$BTC" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	echo "export VPNSERVER=$VPNSERVER" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	sudo chmod 400 ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
