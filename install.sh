@@ -366,7 +366,8 @@ clear
 		hide_output sudo git clone $githubrepoAfiniel -b next
 	elif [[ "$yiimpver" == "5" ]]; then
 		cd ~
-		hide_output sudo git clone $githubrepoSabiasQue -b next
+		hide_output sudo git clone $githubrepoSabiasQue
+		hide_output sudo mv SQSYIIMPALTE/ yiimp/
 	fi
 
 	cd ~
