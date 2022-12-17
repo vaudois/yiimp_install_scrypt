@@ -108,12 +108,10 @@ clear
 	read -e -p "Domain Name (no http:// or www. just : example.com or 185.22.24.26) : " server_name
 	read -e -p "Enter subdomain from stratum connections miners (europe.example.com?) [y/N] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
-	read -e -p "Set Pool to AutoExchange? i.e. mine any coin with BTC address? [y/N] : " BTC
-	read -e -p "Please enter a new location for /site/adminRights this is to customize the Admin Panel entrance url (e.g. myAdminpanel) : " admin_panel
+	read -e -p "Admin panel name desired => /site/ADMIN_NAME customize the Admin Panel entrance (e.g. myAdminpanel) : " admin_panel
 	read -e -p "Enter the Public IP of the system you will use to access the admin panel (http://www.whatsmyip.org/) : " Public
 	read -e -p "Desired Yiimp install?(1=Kudaraidee or 2=tpruvot or 3=Afiniel-Tech 4= Afiniel 5= SabiasQue(beta)) [1 by default] : " yiimpver
 	read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
-	read -e -p "Install UFW and configure ports? [Y/n] : " UFW
 	read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior to running the script!! [Y/n]: " ssl_install
 	read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
@@ -133,13 +131,12 @@ clear
 	echo "IP Range for Admin:  $Public"
 	echo "Yiimb Github choice: $yiimpver"
 	echo "Install Fail2ban:    $install_fail2ban"
-	echo "Install UFW:         $UFW"
 	echo "Install SSL now:     $ssl_install"
 	echo "Install wiregauard:  $wg_install"
 	echo "Wireguard wg0 IP:    $wg_ip"
 
     	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
-    	echo -e "\n\n\n\n"
+    	echo -e "\n\n"
 	
     	clear
 	term_art_server
@@ -314,20 +311,18 @@ clear
 		sudo systemctl status fail2ban | sed -n "1,3p"
 	fi
 
-    if [[ ("$UFW" == "y" || "$UFW" == "Y" || "$UFW" == "") ]]; then
-		apt_install ufw
+	apt_install ufw
 
-		hide_output sudo ufw default deny incoming
-		hide_output sudo ufw default allow outgoing
+	hide_output sudo ufw default deny incoming
+	hide_output sudo ufw default allow outgoing
 
-		hide_output sudo ufw allow ssh
-		hide_output sudo ufw allow http
-		hide_output sudo ufw allow https
+	hide_output sudo ufw allow ssh
+	hide_output sudo ufw allow http
+	hide_output sudo ufw allow https
 
-		hide_output sudo ufw --force enable
-		sleep 3
-		sudo systemctl status ufw | sed -n "1,3p"   
-    fi
+	hide_output sudo ufw --force enable
+	sleep 3
+	sudo systemctl status ufw | sed -n "1,3p"
 
     echo -e "$GREEN Done...$COL_RESET"
 
