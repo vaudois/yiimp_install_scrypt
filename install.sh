@@ -442,7 +442,7 @@ clear
 
 	# Copy Files (Blocknotify,iniparser,Stratum)
 	cd ${absolutepath}/yiimp
-	sudo cp -r ${absolutepath}/yiimp/web /var/
+	sudo cp -r ${absolutepath}/yiimp/web/ /var/
 	sudo mkdir -p /var/stratum
 	cd ${absolutepath}/stratum
 	sudo cp -a config.sample/. /var/stratum/config
