@@ -581,10 +581,7 @@ clear
 		{
 			rewrite ^/(.*)$ /index.php?r=$1;
 		}
-	
-		location = /favicon.ico { access_log off; log_not_found off; }
-		location = /robots.txt  { access_log off; log_not_found off; }
-	
+
 		access_log /var/log/nginx/'"${server_name}"'.app-access.log;
 		error_log /var/log/nginx/'"${server_name}"'.app-error.log;
 	
@@ -644,7 +641,7 @@ clear
 			}
 		}
 		# additional config
-		include yiimp/nginxCustom.conf;
+		include /etc/yiimp/nginxCustom.conf;
     }' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 	
 	sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
@@ -683,6 +680,7 @@ clear
 			listen 80;
 			listen [::]:80;
 			server_name '"${server_name}"';
+
 			# enforce https
 			return 301 https://$server_name$request_uri;
 		}
@@ -703,12 +701,14 @@ clear
 			index index.php;
 			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
 			error_log  /var/log/nginx/'"${server_name}"'.app-error.log;
+
 			# allow larger file uploads and longer script runtimes
 			client_body_buffer_size  50k;
 			client_header_buffer_size 50k;
 			client_max_body_size 50k;
 			large_client_header_buffers 2 50k;
 			sendfile off;
+
 			# strengthen ssl security
 			ssl_certificate /etc/letsencrypt/live/'"${server_name}"'/fullchain.pem;
 			ssl_certificate_key /etc/letsencrypt/live/'"${server_name}"'/privkey.pem;
@@ -778,7 +778,7 @@ clear
 				}
 			}
 			# additional config
-			include yiimp/nginxCustom.conf;
+			include /etc/yiimp/nginxCustom.conf;
 		}' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 	fi
 
@@ -818,8 +818,6 @@ clear
 				rewrite ^/(.*)$ /index.php?r=$1;
 			}
 		
-			location = /favicon.ico { access_log off; log_not_found off; }
-			location = /robots.txt  { access_log off; log_not_found off; }
 			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
 			error_log /var/log/nginx/'"${server_name}"'.app-error.log;
 		
@@ -878,7 +876,7 @@ clear
 				}
 			}
 			# additional config
-			include yiimp/nginxCustom.conf;
+			include /etc/yiimp/nginxCustom.conf;
 		}' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
 
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
@@ -1018,7 +1016,7 @@ clear
 					}
 				}
 				# additional config
-				include yiimp/nginxCustom.conf;
+				include /etc/yiimp/nginxCustom.conf;
 			}
 				
 			' | sudo -E tee /etc/nginx/sites-available/$server_name.conf >/dev/null 2>&1
