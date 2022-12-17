@@ -22,7 +22,8 @@ clear
 	githubyiimptpruvot=https://github.com/tpruvot/yiimp.git
 	githubrepoKudaraidee=https://github.com/Kudaraidee/yiimp.git
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
-	githubrepoAfiniel=https://github.com/afiniel/yiimp
+	githubrepoAfiniel=https://github.com/afiniel/yiimp.git
+	githubrepoSabiasQue=https://github.com/SabiasQueSpace/SQSYIIMPALTE.git
 	
 	githubstratum=https://github.com/vaudois/stratum.git
 
@@ -128,7 +129,7 @@ clear
 	read -e -p "Set Pool to AutoExchange? i.e. mine any coin with BTC address? [y/N] : " BTC
 	read -e -p "Please enter a new location for /site/adminRights this is to customize the Admin Panel entrance url (e.g. myAdminpanel) : " admin_panel
 	read -e -p "Enter the Public IP of the system you will use to access the admin panel (http://www.whatsmyip.org/) : " Public
-	read -e -p "Enter desired Yiimp GitHub (1=Kudaraidee or 2=tpruvot or 3=Afiniel-Tech 4= Afiniel) [1 by default] : " yiimpver
+	read -e -p "Desired Yiimp install?(1=Kudaraidee or 2=tpruvot or 3=Afiniel-Tech 4= Afiniel 5= SabiasQue(beta)) [1 by default] : " yiimpver
 	read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
 	read -e -p "Install UFW and configure ports? [Y/n] : " UFW
 	read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior to running the script!! [Y/n]: " ssl_install
@@ -368,6 +369,9 @@ clear
 	elif [[ "$yiimpver" == "4" ]]; then
 		cd ~
 		hide_output sudo git clone $githubrepoAfiniel -b next
+	elif [[ "$yiimpver" == "5" ]]; then
+		cd ~
+		hide_output sudo git clone $githubrepoSabiasQue -b next
 	fi
 
 	cd ~
