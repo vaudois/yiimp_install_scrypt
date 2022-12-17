@@ -445,9 +445,9 @@ clear
 	sudo cp -r ${absolutepath}/yiimp/web/ /var/
 	sudo mkdir -p /var/stratum
 	cd ${absolutepath}/stratum
-	sudo cp -a config.sample/. /var/stratum/config
-	sudo cp -r stratum /var/stratum
-	sudo cp -r run.sh /var/stratum
+	sudo cp -a config.sample/. /var/stratum/config/
+	sudo cp -r stratum /var/stratum/
+	sudo cp -r run.sh /var/stratum/
 	cd ${absolutepath}/yiimp
 	sudo cp -r ${absolutepath}/yiimp/bin/. /bin/
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
