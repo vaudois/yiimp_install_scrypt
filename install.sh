@@ -102,24 +102,6 @@ clear
 	clear	
 	term_art_server
 
-	# Update package and Upgrade Ubuntu
-	echo
-	echo -e "$CYAN => Updating system and installing required packages :$COL_RESET"
-	sleep 3
-        
-	hide_output sudo apt -y update 
-	hide_output sudo apt -y upgrade
-	hide_output sudo apt -y autoremove
-	apt_install dialog python3 python3-pip acl nano apt-transport-https
-	apt_install figlet curl jq
-	echo -e "$GREEN Done...$COL_RESET"
-
-	echo 'PUBLIC_IP='"${PUBLIC_IP}"'
-	PUBLIC_IPV6='"${PUBLIC_IPV6}"'
-	DISTRO='"${DISTRO}"'
-	PRIVATE_IP='"${PRIVATE_IP}"'' | sudo -E tee conf/pool.conf >/dev/null 2>&1
-
-	term_art_server
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
 	#read -e -p "Enter time zone (e.g. America/New_York) : " TIME
@@ -139,6 +121,7 @@ clear
 	# curl -q http://ifconfig.me
 	fi
 
+	clear
 	term_art_server
 	echo -e "\n\n\n\n"
 	echo -e "$RED You entered the following. If it's wrong CTRL-C now to start over $COL_RESET"
@@ -155,10 +138,29 @@ clear
 	echo "Install wiregauard:  $wg_install"
 	echo "Wireguard wg0 IP:    $wg_ip"
 
-    read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
-    echo -e "\n\n\n\n"
-
+    	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
+    	echo -e "\n\n\n\n"
+	
+    	clear
 	term_art_server
+
+	# Update package and Upgrade Ubuntu
+	echo
+	echo -e "$CYAN => Updating system and installing required packages :$COL_RESET"
+	sleep 3
+        
+	hide_output sudo apt -y update 
+	hide_output sudo apt -y upgrade
+	hide_output sudo apt -y autoremove
+	apt_install dialog python3 python3-pip acl nano apt-transport-https
+	apt_install figlet curl jq
+	echo -e "$GREEN Done...$COL_RESET"
+
+	echo 'PUBLIC_IP='"${PUBLIC_IP}"'
+	PUBLIC_IPV6='"${PUBLIC_IPV6}"'
+	DISTRO='"${DISTRO}"'
+	PRIVATE_IP='"${PRIVATE_IP}"'' | sudo -E tee conf/pool.conf >/dev/null 2>&1
+
 	# Switch Aptitude
 	echo
 	echo -e "$CYAN Switching to Aptitude $COL_RESET"
