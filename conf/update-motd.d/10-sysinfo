@@ -24,6 +24,8 @@
 source /etc/functions.sh
 source /etc/serveryiimp.conf
 
+startlogo
+
 date=`date`
 ps -aux | grep "[m]ain" > /dev/null 2>&1
 if [[ "$?" == "0" ]]; then
