@@ -221,7 +221,6 @@ clear
 	echo -e "$CYAN => Installing php7.3 : $COL_RESET"
 	sleep 3
     
-	source conf/pool.conf
 	if [ ! -f /etc/apt/sources.list.d/ondrej-php-bionic.list ]; then
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
 	fi
