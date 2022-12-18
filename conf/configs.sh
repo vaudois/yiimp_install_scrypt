@@ -3,12 +3,10 @@
 # Modified by Vaudois for crypto use...
 #####################################################
 
-
 function confnginxsslsub
 {
 # Install SSL (with SubDomain)
-echo '
-#####################################################
+echo '#####################################################
 # Updated by Vaudois for crypto use...
 #####################################################
 include /etc/nginx/blockuseragents.rules;
@@ -130,8 +128,7 @@ server
 function confnginxsslnotsub
 {
 # Install SSL (without SubDomain)
-echo '
-#####################################################
+echo '#####################################################
 # Updated by Vaudois for crypto use...
 #####################################################
 include /etc/nginx/blockuseragents.rules;
@@ -253,12 +250,10 @@ server
 }' | sudo -E tee /etc/nginx/sites-available/$1.conf >/dev/null 2>&1
 }
 
-
 function confnginxnotsslsub
 {
 # Install without SSL (with SubDomain)
-echo '
-#####################################################
+echo '#####################################################
 # Updated by Vaudois for crypto use...
 #####################################################
 include /etc/nginx/blockuseragents.rules;
@@ -354,8 +349,7 @@ server
 function confnginxnotssl
 {
 # Install without SSL
-echo '
-#####################################################
+echo '#####################################################
 # Updated by Vaudois for crypto use...
 #####################################################
 include /etc/nginx/blockuseragents.rules;
@@ -449,8 +443,7 @@ server
 function nginxcustomconf
 {
 # Custom config for nginx
-echo '
-#####################################################
+echo '#####################################################
 # Updated by Vaudois for crypto use
 #####################################################
 # favicon.ico
