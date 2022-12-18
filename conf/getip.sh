@@ -85,7 +85,7 @@ if [ "$PUBLIC_IPV6" = "auto" ]; then
 	PUBLIC_IPV6=$(get_publicip_from_web_service 6 || get_default_privateip 6)
 fi
 if [ -z "${PRIVATE_IP:-}" ]; then
-	PRIVATE_IP=hostname -I | awk '{print $1}'
+	PRIVATE_IP=$(hostname -I | awk '{print $1}')
 fi
 
 echo -e "$GREEN Done...$COL_RESET"
