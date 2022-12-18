@@ -579,8 +579,8 @@ clear
 			rewrite ^/(.*)$ /index.php?r=$1;
 		}
 
-		access_log /var/log/nginx/'"${server_name}"'.app-access.log;
-		error_log /var/log/nginx/'"${server_name}"'.app-error.log;
+		access_log /var/log/yiimp/'"${server_name}"'.app-access.log;
+		error_log /var/log/yiimp/'"${server_name}"'.app-error.log;
 	
 		# allow larger file uploads and longer script runtimes
 		client_body_buffer_size  50k;
@@ -696,8 +696,8 @@ clear
 			server_name '"${server_name}"';
 			root /var/www/'"${server_name}"'/html/web;
 			index index.php;
-			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
-			error_log  /var/log/nginx/'"${server_name}"'.app-error.log;
+			access_log /var/log/yiimp/'"${server_name}"'.app-access.log;
+			error_log  /var/log/yiimp/'"${server_name}"'.app-error.log;
 
 			# allow larger file uploads and longer script runtimes
 			client_body_buffer_size  50k;
@@ -815,8 +815,8 @@ clear
 				rewrite ^/(.*)$ /index.php?r=$1;
 			}
 		
-			access_log /var/log/nginx/'"${server_name}"'.app-access.log;
-			error_log /var/log/nginx/'"${server_name}"'.app-error.log;
+			access_log /var/log/yiimp/'"${server_name}"'.app-access.log;
+			error_log /var/log/yiimp/'"${server_name}"'.app-error.log;
 		
 			# allow larger file uploads and longer script runtimes
 			client_body_buffer_size  50k;
@@ -933,8 +933,8 @@ clear
 				root /var/www/'"${server_name}"'/html/web;
 				index index.php;
 			
-				access_log /var/log/nginx/'"${server_name}"'.app-access.log;
-				error_log  /var/log/nginx/'"${server_name}"'.app-error.log;
+				access_log /var/log/yiimp/'"${server_name}"'.app-access.log;
+				error_log  /var/log/yiimp/'"${server_name}"'.app-error.log;
 			
 				# allow larger file uploads and longer script runtimes
 				client_body_buffer_size  50k;
@@ -1341,29 +1341,6 @@ clear
 
 	sleep 3
 
-	# Generating a restart crons main loop2 blocks
-	echo
-	echo -e "$CYAN => Generating a restart crons = main, loop2, blocks $COL_RESET"
-	sleep 3
-    
-	# Make crons main loop2 blocks
-
-	echo '#!/bin/bash
-	# Restart the pseudo cron screens...
-	LOG_DIR=/var/log/yiimp
-	WEB_DIR=/var/web
-	screen -X -S main quit
-	screen -X -S loop2 quit
-	screen -X -S blocks quit
-	screen -X -S debug quit
-	screen -dmS main $WEB_DIR/main.sh
-	screen -dmS loop2 $WEB_DIR/loop2.sh
-	screen -dmS blocks $WEB_DIR/blocks.sh
-	screen -dmS debug tail -f $LOG_DIR/debug.log' | sudo -E tee /bin/restartlg >/dev/null 2>&1
-	sudo chmod +x /bin/restartlg
-
-    echo -e "$GREEN Done...$COL_RESET"
-
 	# Updating stratum config files with database connection info
 	echo
 	echo -e "$CYAN => Updating stratum config files with database connection info. $COL_RESET"
@@ -1455,13 +1432,13 @@ clear
 
 	echo '[clienthost1]
 	user=panel
-	password='"${password}"'
 	database=yiimpfrontend
+	password='"${password}"'
 	host=localhost
 	[clienthost2]
 	user=stratum
-	password='"${password2}"'
 	database=yiimpfrontend
+	password='"${password2}"'
 	host=localhost
 	[myphpadmin]
 	user=phpmyadmin
@@ -1471,12 +1448,230 @@ clear
 	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/server.conf >/dev/null 2>&1
 	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/server.conf
 
-	echo "export MYSQLDB=yiimpfrontend" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo "export MYSQLUSER=stratum" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo "export MYSQLPASS=$stratumpass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo "export VPNSERVER=$VPNSERVER" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo -e "\n#\#SET THE VPN IP FOR THIS REMOTE STRATUM\n#\nexport VPNIP=??????" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	sudo chmod 400 ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf
+	echo 'STORAGE_USER='"${absolutepath}"'
+	STORAGE_SITE=/var/web
+	PUBLIC_IP='"${PUBLIC_IP}"'
+	PUBLIC_IPV6='"${PUBLIC_IPV6}"'
+	DISTRO='"${DISTRO}"'
+	PRIVATE_IP='"${PRIVATE_IP}"'
+	CRONS=/var/web/crons
+	LOG_DIR=/var/log/yiimp
+	PATH_STRATUM='"${STRATUMFILE}"'
+	' | sudo -E tee /etc/serveryiimp.conf >/dev/null 2>&1
+
+	echo '#!/bin/sh -e
+	#
+	# helper for update-motd
+
+	if [ -f /var/run/reboot-required ]; then
+		cat /var/run/reboot-required
+	fi' | sudo -E tee /usr/lib/update-notifier/update-motd-reboot-required >/dev/null 2>&1
+	sudo chmod 755 /usr/lib/update-notifier/update-motd-reboot-required
+	
+	echo '#!/bin/sh -e
+	#
+	# helper for update-motd
+
+
+	# poor mans force
+	if [ "$1" = "--force" ]; then
+		NEED_UPDATE_CHECK=yes
+	else
+		NEED_UPDATE_CHECK=no
+	fi
+
+	# check time when we did the last update check
+	stamp="/var/lib/update-notifier/updates-available"
+
+	# get list dir
+	StateDir="/var/lib/apt/"
+	ListDir="lists/"
+	eval "$(apt-config shell StateDir Dir::State)"
+	eval "$(apt-config shell ListDir Dir::State::Lists)"
+
+	# get dpkg status file
+	DpkgStatus="/var/lib/dpkg/status"
+	eval "$(apt-config shell DpkgStatus Dir::State::status)"
+
+	# get sources.list file
+	EtcDir="etc/apt/"
+	SourceList="sources.list"
+	eval "$(apt-config shell EtcDir Dir::Etc)"
+	eval "$(apt-config shell SourceList Dir::Etc::sourcelist)"
+
+	# let the actual update be asynchronous to avoid stalling apt-get
+	cleanup() { rm -f "$tmpfile"; }
+
+	# check if we have a list file or sources.list that needs checking
+	if [ -e "$stamp" ]; then
+		if [ "$(find "/$StateDir/$ListDir" "/$EtcDir/$SourceList" "/$DpkgStatus" -type f -newer "$stamp" -print -quit)" ]; then
+			NEED_UPDATE_CHECK=yes
+		fi
+	else
+		if [ "$(find "/$StateDir/$ListDir" "/$EtcDir/$SourceList" -type f -print -quit)" ]; then
+			NEED_UPDATE_CHECK=yes
+		fi
+	fi
+
+	tmpfile=""
+	trap cleanup EXIT
+	tmpfile=$(mktemp -p $(dirname "$stamp"))
+
+	# output something for update-motd
+	if [ "$NEED_UPDATE_CHECK" = "yes" ]; then
+		{
+
+			echo ""
+			/usr/lib/update-notifier/apt-check --human-readable
+			echo ""
+		} > "$tmpfile"
+		mv "$tmpfile" "$stamp"
+	fi' | sudo -E tee /usr/lib/update-notifier/update-motd-updates-available >/dev/null 2>&1
+	sudo chmod 755 /usr/lib/update-notifier/update-motd-updates-available
+
+	echo '#!/bin/sh -e
+	#
+	# helper for update-motd
+
+	# poor mans force
+	if [ "$1" = "--force" ]; then
+		NEED_EOL_CHECK=yes
+	else
+		NEED_EOL_CHECK=no
+	fi
+
+	# check time when we did the last update check
+	stamp="/var/lib/update-notifier/hwe-eol"
+
+	# get list dir
+	StateDir="/var/lib/apt/"
+	ListDir="lists/"
+	eval "$(apt-config shell StateDir Dir::State)"
+	eval "$(apt-config shell ListDir Dir::State::Lists)"
+
+	# get dpkg status file
+	DpkgStatus="/var/lib/dpkg/status"
+	eval "$(apt-config shell DpkgStatus Dir::State::status)"
+
+	# get sources.list file
+	EtcDir="etc/apt/"
+	SourceList="sources.list"
+	eval "$(apt-config shell EtcDir Dir::Etc)"
+	eval "$(apt-config shell SourceList Dir::Etc::sourcelist)"
+
+	# let the actual update be asynchronous to avoid stalling apt-get
+	cleanup() { rm -f "$tmpfile"; }
+
+	# check if we have a list file or sources.list that needs checking
+	if [ -e "$stamp" ]; then
+		if [ "$(find "/$StateDir/$ListDir" "/$EtcDir/$SourceList" "/$DpkgStatus" -type f -newer "$stamp" -print -quit)" ]; then
+			NEED_EOL_CHECK=yes
+		fi
+	else
+		if [ "$(find "/$StateDir/$ListDir" "/$EtcDir/$SourceList" -type f -print -quit)" ]; then
+			NEED_EOL_CHECK=yes
+		fi
+	fi
+
+	tmpfile=""
+	trap cleanup EXIT
+	tmpfile=$(mktemp -p $(dirname "$stamp"))
+
+	# output something for update-motd
+	if [ "$NEED_EOL_CHECK" = "yes" ]; then
+		{
+			# the script may exit with status 10 when a HWE update is needed
+			/usr/bin/hwe-support-status || true
+		} > "$tmpfile"
+		mv "$tmpfile" "$stamp"
+	fi
+
+	# output what we have (either cached or newly generated)
+	cat "$stamp"' | sudo -E tee /usr/lib/update-notifier/update-motd-hwe-eol >/dev/null 2>&1
+	sudo chmod 755 /usr/lib/update-notifier/update-motd-hwe-eol
+
+	echo '#!/bin/sh
+	# Authors:
+	#   Mads Chr. Olesen <mads@mchro.dk>
+	#   Kees Cook <kees@ubuntu.com>
+	set -e
+
+	# poor mans force
+	if [ "$1" = "--force" ]; then
+		NEEDS_FSCK_CHECK=yes
+	fi
+
+	# check time when we did the last check
+	stamp="/var/lib/update-notifier/fsck-at-reboot"
+	if [ -e "$stamp" ]; then
+		stampt=$(stat -c %Y $stamp)
+	else
+		stampt=0
+	fi
+
+	# check time when we last booted
+	last_boot=$(date -d "now - $(awk '"'{print $1}'"' /proc/uptime) seconds" +%s)
+
+	now=$(date +%s)
+	if [ $(($stampt + 3600)) -lt $now ] || [ $stampt -gt $now ] \
+	   || [ $stampt -lt $last_boot ]
+	then
+		#echo $stampt $now need update 
+		NEEDS_FSCK_CHECK=yes
+	fi
+
+	# output something for update-motd
+	if [ -n "$NEEDS_FSCK_CHECK" ]; then
+	  {
+		check_occur_any=
+
+		ext_partitions=$(mount | awk '"'$5 ~ /^ext(2|3|4)$/ { print $1 }'"')
+		for part in $ext_partitions; do
+			dumpe2fs_out=$(dumpe2fs -h $part 2>/dev/null)
+			mount_count=$(echo "$dumpe2fs_out" | grep "^Mount count:"|cut -d':' -f 2-)
+			if [ -z "$mount_count" ]; then mount_count=0; fi
+			max_mount_count=$(echo "$dumpe2fs_out" | grep "^Maximum mount count:"|cut -d':' -f 2-)
+			if [ -z "$max_mount_count" ]; then max_mount_count=0; fi
+			check_interval=$(echo "$dumpe2fs_out" | grep "^Check interval:" | cut -d':' -f 2- | cut -d'(' -f 1)
+			if [ -z "$check_interval" ]; then check_interval=0; fi
+			next_check_date=$(echo "$dumpe2fs_out" | grep "^Next check after:" | cut -d':' -f 2-)
+			if [ -z "$next_check_interval" ]; then next_check_interval=0; fi
+			next_check_tstamp=$(date -d "$next_check_date" +%s)
+
+			#echo "next_check_date=\"$next_check_date\" next_check_tstamp=\"$next_check_tstamp\""
+			#echo "part=\"$part\" mount_count=\"$mount_count\" / max=\"$max_mount_count\" "
+
+			check_occur=
+			# Check based on mount counts?
+			if [ "$max_mount_count" -gt 0 -a \
+				 "$mount_count" -ge "$max_mount_count" ]; then
+				check_occur=yes
+			fi
+			# Check based on time passed?
+			if [ "$check_interval" -gt 0 -a \
+				 "$next_check_tstamp" -lt "$now" ]; then
+				check_occur=yes
+			fi
+			if [ -n "$check_occur" ]; then
+				check_occur_any=yes
+				mountpoint=$(mount | grep "^$part" | cut -d ' ' -f 3)
+				pass=$(grep -v '"'^#'"' /etc/fstab | tr -s ' ' '"'\t'"' | cut -s -f 2,6 | grep -w "$mountpoint" | cut -f 2)
+				if [ "$pass" = "0" ]; then
+					echo "*** $part should be checked for errors ***"
+				else
+					echo "*** $part will be checked for errors at next reboot ***"
+				fi
+			fi
+		done
+		if [ -n "$check_occur_any" ]; then
+			echo ""
+		fi
+	  } > $stamp
+	fi
+
+	# output what we have (either cached or newly generated)
+	cat $stamp' | sudo -E tee /usr/lib/update-notifier/update-motd-fsck-at-reboot >/dev/null 2>&1
+	sudo chmod 755 /usr/lib/update-notifier/update-motd-fsck-at-reboot
 
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
 	# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
@@ -1501,7 +1696,7 @@ clear
 	sudo chgrp www-data /var/web -R
 	sudo chmod g+w /var/web -R
 
-	sudo mkdir /var/log/yiimp
+	sudo mkdir /var/log/yiimp/
 	sudo touch /var/log/yiimp/debug.log
 	sudo chgrp www-data /var/log/yiimp -R
 	sudo chmod 775 /var/log/yiimp -R
@@ -1509,29 +1704,33 @@ clear
 	sudo chgrp www-data /var/stratum -R
 	sudo chmod 775 /var/stratum
 
-	sudo mkdir -p /var/yiimp/sauv
+	sudo mkdir -p /var/yiimp/sauv/
 	sudo chgrp www-data /var/yiimp -R
 	sudo chmod 775 /var/yiimp -R
     
+	sudo mkdir -p /var/web/crons/
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/main.sh /var/web
-	sudo chmod +x /var/web/main.sh
+	sudo chmod +x /var/web/crons/main.sh
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/loop2.sh /var/web
-	sudo chmod +x /var/web/loop2.sh
+	sudo chmod +x /var/web/crons/loop2.sh
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/blocks.sh /var/web
-	sudo chmod +x /var/web/blocks.sh
+	sudo chmod +x /var/web/crons/blocks.sh
 
 	#Add to contrab screen-scrypt
-	(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
+	#(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
 
 	#fix error screen main
-	sudo sed -i 's/service $webserver start/sudo service $webserver start/g' /var/web/yaamp/modules/thread/CronjobController.php
-	sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
+	sudo sed -i 's/"service $webserver start"/"sudo service $webserver start"/g' /var/web/yaamp/modules/thread/CronjobController.php
+	sudo sed -i 's/"service nginx stop"/"sudo service nginx stop"/g' /var/web/yaamp/modules/thread/CronjobController.php
 
 	#fix error screen main "backup sql frontend"
 	sudo sed -i "s|/root/backup|/var/yiimp/sauv|g" /var/web/yaamp/core/backend/system.php
 
 	#fix error phpmyadmin
-	sudo sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
+	FILELIBPHPMYADMIN=/usr/share/phpmyadmin/libraries/sql.lib.php
+	if [[ -f "${FILELIBPHPMYADMIN}" ]]; then
+		sudo sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
+	fi
 
 	#Misc
 	sudo rm -rf ${absolutepath}/yiimp
