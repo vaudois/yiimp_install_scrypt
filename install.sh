@@ -1755,12 +1755,6 @@ clear
 	sudo rm -rf ${absolutepath}/${nameofinstall}
 	sudo rm -rf /var/log/nginx/*
 
-	#Restart service
-	#sudo update-alternatives --set php /usr/bin/php7.3
-	#sleep 2
-	#sudo service nginx restart
-	#sleep 2
-	#sudo service php7.3-fpm restart
 	sleep 2
 	sudo systemctl restart cron.service
 	sleep 2
@@ -1773,7 +1767,6 @@ clear
 	sudo systemctl restart php7.3-fpm.service
 	sleep 2
 	sudo systemctl status php7.3-fpm | sed -n "1,3p"
-	sudo restartlg
 	sleep 2
 
 	echo -e "$GREEN Done...$COL_RESET"
