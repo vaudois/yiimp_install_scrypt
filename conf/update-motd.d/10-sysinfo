@@ -26,7 +26,7 @@ source /etc/serveryiimp.conf
 
 startlogo
 printf "\n"
-printf "  Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "Server Yiimp Version v0.6"
+printf "  Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "Server Yiimp Version versiontag"
 printf "\n"
 
 date=`date`
