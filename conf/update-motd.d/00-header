@@ -25,7 +25,6 @@
 #####################################################
 
 source /etc/functions.sh
-source /etc/serveryiimp.conf
 
 clear
 
