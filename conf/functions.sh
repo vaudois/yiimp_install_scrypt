@@ -215,6 +215,7 @@ function install_end_message
 	echo -e "$YELLOW |  YOU MUST$RED REBOOT$YELLOW NOW  TO FINALIZE INSTALLATION Thanks you! |			$COL_RESET"
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
 	echo
+	cd ~
 }
 
 function startlogo
