@@ -24,8 +24,6 @@
 # Updated by Vaudois for crypto use...
 #####################################################
 
-source /etc/functions.sh
-
 clear
 
 [ -r /etc/lsb-release ] && . /etc/lsb-release
@@ -34,9 +32,3 @@ if [ -z "$DISTRIB_DESCRIPTION" ] && [ -x /usr/bin/lsb_release ]; then
         # Fall back to using the very slow lsb_release utility
         DISTRIB_DESCRIPTION=$(lsb_release -s -d)
 fi
-
-startlogo
-printf "\n"
-
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "Server Yiimp Version versiontag"
-printf "\n"
