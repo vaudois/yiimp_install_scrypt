@@ -24,6 +24,9 @@
 # Updated by Vaudois for crypto use...
 #####################################################
 
+source /etc/functions.sh
+source /etc/serveryiimp.conf
+
 clear
 
 [ -r /etc/lsb-release ] && . /etc/lsb-release
