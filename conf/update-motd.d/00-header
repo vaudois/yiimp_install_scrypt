@@ -36,5 +36,5 @@ fi
 figlet -f slant -w 100 "Vaudois Yiimp"
 printf "\n"
 
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "Server Yiimp Version v0.5"
+printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "Server Yiimp Version versiontag"
 printf "\n"
