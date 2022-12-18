@@ -1459,6 +1459,10 @@ clear
 	PATH_STRATUM='"${STRATUMFILE}"'
 	' | sudo -E tee /etc/serveryiimp.conf >/dev/null 2>&1
 
+	echo 'clear
+	run-parts /etc/update-motd.d/ | sudo tee /etc/motd' | sudo -E tee /usr/bin/motd >/dev/null 2>&1
+	sudo chmod 755 /usr/bin/motd
+
 	echo '#!/bin/sh -e
 	#
 	# helper for update-motd
