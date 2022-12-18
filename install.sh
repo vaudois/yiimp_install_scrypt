@@ -7,6 +7,7 @@
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
 #   v0.6
+# 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
@@ -1716,6 +1717,9 @@ clear
 	sudo cp -r ${absolutepath}/${nameofinstall}/90-footer /etc/update-motd.d/
 	sudo cp -r ${absolutepath}/${nameofinstall}/91-contract-ua-esm-status.dpkg-dist /etc/update-motd.d/
 	
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/screens /usr/bin/
+	sudo chmod +x /usr/bin/screens
+	
 	sudo mkdir -p /var/web/crons/
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/main.sh /var/web/
 	sudo chmod +x /var/web/crons/main.sh
@@ -1725,7 +1729,7 @@ clear
 	sudo chmod +x /var/web/crons/blocks.sh
 
 	#Add to contrab screen-scrypt
-	#(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
+	(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
 
 	#fix error screen main
 	sudo sed -i 's/"service $webserver start"/"sudo service $webserver start"/g' /var/web/yaamp/modules/thread/CronjobController.php
