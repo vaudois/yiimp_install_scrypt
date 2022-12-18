@@ -106,7 +106,7 @@ clear
 
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
-	read -e -p "Domain Name (no http:// or www. just : example.com or 185.22.24.26) : " server_name
+	read -e -p "Domain Name (no http:// or www. just : example.com or ${PUBLIC_IP}) : " server_name
 	read -e -p "Enter subdomain from stratum connections miners (europe.example.com?) [y/N] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
 	read -e -p "Admin panel name desired => /site/ADMIN_NAME customize the Admin Panel entrance (e.g. myAdminpanel) : " admin_panel
