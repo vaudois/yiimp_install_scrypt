@@ -7,7 +7,6 @@
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
 #   v0.6
-# 
 ################################################################################
 
 if [ -z "${TAG}" ]; then
@@ -61,6 +60,9 @@ clear
 	sleep 1
 
 	sudo sed -i 's#versiontag#'$TAG'#' conf/functions.sh
+	sleep 1
+
+	sudo sed -i 's#versiontag#'$TAG'#' conf/update-motd.d/00-header
 	sleep 1
 
 	output()
@@ -1476,7 +1478,6 @@ clear
 	#
 	# helper for update-motd
 
-
 	# poor mans force
 	if [ "$1" = "--force" ]; then
 		NEED_UPDATE_CHECK=yes
@@ -1716,7 +1717,7 @@ clear
 	sudo mkdir /etc/update-motd.d/
 	sudo touch /etc/update-motd.d/00-header ; sudo touch /etc/update-motd.d/10-sysinfo ; sudo touch /etc/update-motd.d/90-footer ; sudo touch /etc/update-motd.d/91-contract-ua-esm-status.dpkg-dist
 	sudo chmod +x /etc/update-motd.d/*
-    sudo cp -r ${absolutepath}/${nameofinstall}/00-header /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/00-header /etc/update-motd.d/
 	sudo cp -r ${absolutepath}/${nameofinstall}/10-sysinfo /etc/update-motd.d/
 	sudo cp -r ${absolutepath}/${nameofinstall}/90-footer /etc/update-motd.d/
 	sudo cp -r ${absolutepath}/${nameofinstall}/91-contract-ua-esm-status.dpkg-dist /etc/update-motd.d/
