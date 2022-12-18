@@ -1717,10 +1717,10 @@ clear
 	sudo mkdir /etc/update-motd.d/
 	sudo touch /etc/update-motd.d/00-header ; sudo touch /etc/update-motd.d/10-sysinfo ; sudo touch /etc/update-motd.d/90-footer ; sudo touch /etc/update-motd.d/91-contract-ua-esm-status.dpkg-dist
 	sudo chmod +x /etc/update-motd.d/*
-	sudo cp -r ${absolutepath}/${nameofinstall}/00-header /etc/update-motd.d/
-	sudo cp -r ${absolutepath}/${nameofinstall}/10-sysinfo /etc/update-motd.d/
-	sudo cp -r ${absolutepath}/${nameofinstall}/90-footer /etc/update-motd.d/
-	sudo cp -r ${absolutepath}/${nameofinstall}/91-contract-ua-esm-status.dpkg-dist /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/00-header /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/10-sysinfo /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/90-footer /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/91-contract-ua-esm-status.dpkg-dist /etc/update-motd.d/
 	
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/screens /usr/bin/
 	sudo chmod +x /usr/bin/screens
