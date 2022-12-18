@@ -48,7 +48,7 @@ if [[ "$?" == "0" ]]; then
 else
         loop2="stopped"
 fi
-ps -aux | grep "[l]og/debug.log" > /dev/null 2>&1
+ps -aux | grep "[l]og/yiimp/debug.log" > /dev/null 2>&1
 if [[ "$?" == "0" ]]; then
         debug="running"
 else
