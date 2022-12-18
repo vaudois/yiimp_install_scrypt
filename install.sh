@@ -106,13 +106,14 @@ clear
 
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
+	echo
 	read -e -p "Domain Name (no https:// or www. just : example.com or ${PUBLIC_IP}) : " server_name
 	read -e -p "Enter subdomain from stratum connections miners (e.g. europe) [y/N] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
-	read -e -p "Admin panel name desired => /site/ADMIN_NAME customize the Admin Panel entrance (e.g. myAdminpanel) : " admin_panel
+	read -e -p "Admin panel: desired customized name Admin url (e.g. myAdminpanel) : " admin_panel
 	read -e -p "Enter the Public IP of the system you will use to access the admin panel : " Public
 	read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
-	read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior! [Y/n]: " ssl_install
+	read -e -p "Install SSL? IMPORTANT! Have your domain name pointed to this server prior! [Y/n]: " ssl_install
 	read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
 		read -e -p "Enter a Local Wireguard Private IP for this server (x.x.x.x): " wg_ip
