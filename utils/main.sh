@@ -10,7 +10,7 @@ PHP_CLI='php -d max_execution_time=120'
 cd ${STORAGE_SITE}/
 
 date
-echo started in ${DIR}
+echo started in ${STORAGE_SITE}
 
 while true; do
         ${PHP_CLI} runconsole.php cronjob/run
