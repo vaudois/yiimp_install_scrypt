@@ -238,5 +238,5 @@ function donations
 	echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA ltcdons	$COL_RESET"
 	echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA ethdons	$COL_RESET"
 	echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bchdons	$COL_RESET"
-	echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
+	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
 }
