@@ -1,8 +1,6 @@
 #!/bin/bash
 #####################################################
-# Source https://mailinabox.email/ https://github.com/mail-in-a-box/mailinabox
-# Updated by cryptopool.builders for crypto use...
-# Modified by Vaudois
+# Modified by Vaudois for crypto use...
 #####################################################
 
 absolutepath=absolutepathserver
