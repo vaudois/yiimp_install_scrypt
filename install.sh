@@ -1713,12 +1713,12 @@ clear
 	sudo chgrp www-data /var/stratum -R
 	sudo chmod 775 /var/stratum
 
-	sudo mkdir -p /var/yiimp/sauv/
+	sudo mkdir -p /var/yiimp/sauv/ >/dev/null 2>&1
 	sudo chgrp www-data /var/yiimp -R
 	sudo chmod 775 /var/yiimp -R
 
 	sudo rm -r /etc/update-motd.d/
-	sudo mkdir /etc/update-motd.d/
+	sudo mkdir /etc/update-motd.d/ >/dev/null 2>&1
 	sudo touch /etc/update-motd.d/00-header ; sudo touch /etc/update-motd.d/10-sysinfo ; sudo touch /etc/update-motd.d/90-footer ; sudo touch /etc/update-motd.d/91-contract-ua-esm-status.dpkg-dist
 	sudo chmod +x /etc/update-motd.d/*
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/00-header /etc/update-motd.d/
@@ -1729,12 +1729,12 @@ clear
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/screens /usr/bin/
 	sudo chmod +x /usr/bin/screens
 	
-	sudo mkdir -p /var/web/crons/
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/main.sh /var/web/crons/
+	sudo mkdir -p /var/web/crons/ >/dev/null 2>&1
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/main.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/main.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/loop2.sh /var/web/crons/
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/loop2.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/loop2.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/blocks.sh /var/web/crons/
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/blocks.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/blocks.sh
 
 	#Add to contrab screen-scrypt
