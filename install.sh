@@ -6,11 +6,11 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.6
+#   v0.7
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.6
+	TAG=v0.7
 fi
 
 NPROC=$(nproc)
@@ -106,19 +106,19 @@ clear
 
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
-	read -e -p "Domain Name (no http:// or www. just : example.com or 185.22.24.26) : " server_name
-	read -e -p "Enter subdomain from stratum connections miners (europe.example.com?) [y/N] : " sub_domain
+	read -e -p "Domain Name (no https:// or www. just : example.com or ${PUBLIC_IP}) : " server_name
+	read -e -p "Enter subdomain from stratum connections miners (e.g. europe) [y/N] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
 	read -e -p "Admin panel name desired => /site/ADMIN_NAME customize the Admin Panel entrance (e.g. myAdminpanel) : " admin_panel
-	read -e -p "Enter the Public IP of the system you will use to access the admin panel (http://www.whatsmyip.org/) : " Public
+	read -e -p "Enter the Public IP of the system you will use to access the admin panel : " Public
 	read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
-	read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior to running the script!! [Y/n]: " ssl_install
+	read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior! [Y/n]: " ssl_install
 	read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
 		read -e -p "Enter a Local Wireguard Private IP for this server (x.x.x.x): " wg_ip
 	# curl -q http://ifconfig.me
 	fi
-	read -e -p "Desired Yiimp install?(1=Kudaraidee or 2=tpruvot or 3=Afiniel-Tech 4= Afiniel 5= SabiasQue(beta)) [1 by default] : " yiimpver
+	read -e -p "Desired Yiimp install?(1=Kudaraidee,2=tpruvot,3=Afiniel-Tech,4=Afiniel,5=SabiasQue(beta)) [1 by default] : " yiimpver
 
 
 	clear
@@ -1353,7 +1353,11 @@ clear
 
 	cd /var/stratum/config
 	sudo sed -i 's/password = tu8tu5/password = '$blckntifypass'/g' *.conf
-	sudo sed -i 's/server = yaamp.com/server = '$server_name'/g' *.conf
+	if [[ ("$sub_domain" == "y" || "$sub_domain" == "Y") ]]; then
+		sudo sed -i 's/server = yaamp.com/server = '$sub_domain.$server_name'/g' *.conf
+	else
+		sudo sed -i 's/server = yaamp.com/server = '$server_name'/g' *.conf
+	fi
 	sudo sed -i 's/host = yaampdb/host = localhost/g' *.conf
 	sudo sed -i 's/database = yaamp/database = yiimpfrontend/g' *.conf
 	sudo sed -i 's/username = root/username = stratum/g' *.conf
@@ -1726,11 +1730,11 @@ clear
 	sudo chmod +x /usr/bin/screens
 	
 	sudo mkdir -p /var/web/crons/
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/main.sh /var/web/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/main.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/main.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/loop2.sh /var/web/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/loop2.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/loop2.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/blocks.sh /var/web/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/blocks.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/blocks.sh
 
 	#Add to contrab screen-scrypt
