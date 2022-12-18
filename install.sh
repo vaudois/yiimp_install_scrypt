@@ -133,7 +133,9 @@ clear
 	echo "Install Fail2ban:    $install_fail2ban"
 	echo "Install SSL now:     $ssl_install"
 	echo "Install wiregauard:  $wg_install"
-	echo "Wireguard wg0 IP:    $wg_ip"
+	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+		echo "Wireguard wg0 IP:    $wg_ip"
+	fi
 
     	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
     	echo -e "\n\n"
