@@ -111,7 +111,6 @@ clear
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
 	read -e -p "Admin panel name desired => /site/ADMIN_NAME customize the Admin Panel entrance (e.g. myAdminpanel) : " admin_panel
 	read -e -p "Enter the Public IP of the system you will use to access the admin panel (http://www.whatsmyip.org/) : " Public
-	read -e -p "Desired Yiimp install?(1=Kudaraidee or 2=tpruvot or 3=Afiniel-Tech 4= Afiniel 5= SabiasQue(beta)) [1 by default] : " yiimpver
 	read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
 	read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior to running the script!! [Y/n]: " ssl_install
 	read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
@@ -119,6 +118,8 @@ clear
 		read -e -p "Enter a Local Wireguard Private IP for this server (x.x.x.x): " wg_ip
 	# curl -q http://ifconfig.me
 	fi
+	read -e -p "Desired Yiimp install?(1=Kudaraidee or 2=tpruvot or 3=Afiniel-Tech 4= Afiniel 5= SabiasQue(beta)) [1 by default] : " yiimpver
+
 
 	clear
 	term_art_server
@@ -129,11 +130,13 @@ clear
 	echo "Support Email:       $EMAIL"
 	echo "Panel Url:           $admin_panel"
 	echo "IP Range for Admin:  $Public"
-	echo "Yiimb Github choice: $yiimpver"
 	echo "Install Fail2ban:    $install_fail2ban"
 	echo "Install SSL now:     $ssl_install"
 	echo "Install wiregauard:  $wg_install"
-	echo "Wireguard wg0 IP:    $wg_ip"
+	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
+		echo "Wireguard wg0 IP:    $wg_ip"
+	fi
+	echo "Yiimb Github choice: $yiimpver"
 
     	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
     	echo -e "\n\n"
