@@ -125,7 +125,7 @@ clear
 
 	clear
 	term_art_server
-	echo -e "\n\n\n\n"
+	echo -e "\n\n"
 	echo -e "$RED You entered the following. If it's wrong CTRL-C now to start over $COL_RESET"
 	echo "Domain Name:         $server_name"
 	echo "Stratum Subdomain:   $sub_domain"
