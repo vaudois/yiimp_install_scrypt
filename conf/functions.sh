@@ -219,6 +219,15 @@ function install_end_message
 	echo -e "$GREEN	To added stratum to coin and dedicated port : $COL_RESET $MAGENTA addport			$COL_RESET"
 	echo -e "$GREEN	To restart crons :$COL_RESET $MAGENTA restartlg							$COL_RESET"
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
+	donations
+	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
+	echo -e "$YELLOW |  YOU MUST$RED REBOOT$YELLOW NOW  TO FINALIZE INSTALLATION Thanks you! |			$COL_RESET"
+	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
+	echo
+}
+
+function donations
+{
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
 	echo -e "$GREEN	Donations are welcome at wallets below:								$COL_RESET"
 	echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA btcdons	$COL_RESET"
@@ -226,8 +235,4 @@ function install_end_message
 	echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA ethdons	$COL_RESET"
 	echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bchdons	$COL_RESET"
 	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
-	echo -e "$YELLOW |  YOU MUST$RED REBOOT$YELLOW NOW  TO FINALIZE INSTALLATION Thanks you! |			$COL_RESET"
-	echo -e "$CYAN  --------------------------------------------------------------------------------		$COL_RESET"
-	echo
 }
