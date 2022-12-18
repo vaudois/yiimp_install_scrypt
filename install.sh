@@ -1779,5 +1779,5 @@ clear
 	echo
 	install_end_message
 
-	echo ""
 	cd ${absolutepath}
+	echo
