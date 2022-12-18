@@ -1705,7 +1705,7 @@ clear
 	sudo chgrp www-data /var/web -R
 	sudo chmod g+w /var/web -R
 
-	sudo mkdir /var/log/yiimp/
+	sudo mkdir /var/log/yiimp/ >/dev/null 2>&1
 	sudo touch /var/log/yiimp/debug.log
 	sudo chgrp www-data /var/log/yiimp -R
 	sudo chmod 775 /var/log/yiimp -R
