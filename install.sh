@@ -1618,7 +1618,7 @@ clear
 	fi
 
 	# check time when we last booted
-	last_boot=$(date -d "now - $(awk '"'{print '$1'}'"' /proc/uptime) seconds" +%s)
+	last_boot=$(date -d "now - $(awk '"'{print "'$1'"}'"' /proc/uptime) seconds" +%s)
 
 	now=$(date +%s)
 	if [ $(($stampt + 3600)) -lt $now ] || [ $stampt -gt $now ] \
@@ -1633,7 +1633,7 @@ clear
 	  {
 		check_occur_any=
 
-		ext_partitions=$(mount | awk '"''$5' ~ /^ext(2|3|4)$/ { print '$1' }'"')
+		ext_partitions=$(mount | awk '"'"'$5'" ~ /^ext(2|3|4)$/ { print "'$1'" }'"')
 		for part in $ext_partitions; do
 			dumpe2fs_out=$(dumpe2fs -h $part 2>/dev/null)
 			mount_count=$(echo "$dumpe2fs_out" | grep "^Mount count:"|cut -d'"':'"' -f 2-)
@@ -1645,9 +1645,6 @@ clear
 			next_check_date=$(echo "$dumpe2fs_out" | grep "^Next check after:" | cut -d'"':'"' -f 2-)
 			if [ -z "$next_check_interval" ]; then next_check_interval=0; fi
 			next_check_tstamp=$(date -d "$next_check_date" +%s)
-
-			#echo "next_check_date=\"$next_check_date\" next_check_tstamp=\"$next_check_tstamp\""
-			#echo "part=\"$part\" mount_count=\"$mount_count\" / max=\"$max_mount_count\" "
 
 			check_occur=
 			# Check based on mount counts?
@@ -1662,8 +1659,8 @@ clear
 			fi
 			if [ -n "$check_occur" ]; then
 				check_occur_any=yes
-				mountpoint=$(mount | grep "^$part" | cut -d ' ' -f 3)
-				pass=$(grep -v '"'^#'"' /etc/fstab | tr -s ' ' '"'\t'"' | cut -s -f 2,6 | grep -w "$mountpoint" | cut -f 2)
+				mountpoint=$(mount | grep "^$part" | cut -d '"' '"' -f 3)
+				pass=$(grep -v '"'^#'"' /etc/fstab | tr -s '"' '"' '"'\t'"' | cut -s -f 2,6 | grep -w "$mountpoint" | cut -f 2)
 				if [ "$pass" = "0" ]; then
 					echo "*** $part should be checked for errors ***"
 				else
