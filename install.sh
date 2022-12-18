@@ -1615,7 +1615,7 @@ clear
 	fi
 
 	# check time when we last booted
-	last_boot=$(date -d "now - $(awk '"'{print $1}'"' /proc/uptime) seconds" +%s)
+	last_boot=$(date -d "now - $(awk '"'{print '$1'}'"' /proc/uptime) seconds" +%s)
 
 	now=$(date +%s)
 	if [ $(($stampt + 3600)) -lt $now ] || [ $stampt -gt $now ] \
@@ -1630,7 +1630,7 @@ clear
 	  {
 		check_occur_any=
 
-		ext_partitions=$(mount | awk '"'$5 ~ /^ext(2|3|4)$/ { print $1 }'"')
+		ext_partitions=$(mount | awk '"''$5' ~ /^ext(2|3|4)$/ { print '$1' }'"')
 		for part in $ext_partitions; do
 			dumpe2fs_out=$(dumpe2fs -h $part 2>/dev/null)
 			mount_count=$(echo "$dumpe2fs_out" | grep "^Mount count:"|cut -d'"':'"' -f 2-)
@@ -1726,11 +1726,11 @@ clear
 	sudo chmod +x /usr/bin/screens
 	
 	sudo mkdir -p /var/web/crons/
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/main.sh /var/web/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/main.sh /var/web/
 	sudo chmod +x /var/web/crons/main.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/loop2.sh /var/web/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/loop2.sh /var/web/
 	sudo chmod +x /var/web/crons/loop2.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/blocks.sh /var/web/
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/blocks.sh /var/web/
 	sudo chmod +x /var/web/crons/blocks.sh
 
 	#Add to contrab screen-scrypt
