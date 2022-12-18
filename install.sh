@@ -6,12 +6,11 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v0.5
-# 
+#   v0.6
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v0.5
+	TAG=v0.6
 fi
 
 NPROC=$(nproc)
@@ -148,7 +147,7 @@ clear
 	hide_output sudo apt -y upgrade
 	hide_output sudo apt -y autoremove
 	apt_install dialog python3 python3-pip acl nano apt-transport-https
-	apt_install figlet curl jq
+	apt_install figlet curl jq update-motd
 	echo -e "$GREEN Done...$COL_RESET"
 
 	echo 'PUBLIC_IP='"${PUBLIC_IP}"'
@@ -1707,13 +1706,22 @@ clear
 	sudo mkdir -p /var/yiimp/sauv/
 	sudo chgrp www-data /var/yiimp -R
 	sudo chmod 775 /var/yiimp -R
-    
+
+	sudo rm -r /etc/update-motd.d/
+	sudo mkdir /etc/update-motd.d/
+	sudo touch /etc/update-motd.d/00-header ; sudo touch /etc/update-motd.d/10-sysinfo ; sudo touch /etc/update-motd.d/90-footer ; sudo touch /etc/update-motd.d/91-contract-ua-esm-status.dpkg-dist
+	sudo chmod +x /etc/update-motd.d/*
+    sudo cp -r ${absolutepath}/${nameofinstall}/00-header /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/10-sysinfo /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/90-footer /etc/update-motd.d/
+	sudo cp -r ${absolutepath}/${nameofinstall}/91-contract-ua-esm-status.dpkg-dist /etc/update-motd.d/
+	
 	sudo mkdir -p /var/web/crons/
-	sudo cp -r ${absolutepath}/${nameofinstall}/utils/main.sh /var/web
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/main.sh /var/web/
 	sudo chmod +x /var/web/crons/main.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/utils/loop2.sh /var/web
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/loop2.sh /var/web/
 	sudo chmod +x /var/web/crons/loop2.sh
-	sudo cp -r ${absolutepath}/${nameofinstall}/utils/blocks.sh /var/web
+	sudo cp -r ${absolutepath}/${nameofinstall}/conf/update-motd.d/blocks.sh /var/web/
 	sudo chmod +x /var/web/crons/blocks.sh
 
 	#Add to contrab screen-scrypt
