@@ -1780,3 +1780,4 @@ clear
 	install_end_message
 
 	echo ""
+	cd ${absolutepath}
