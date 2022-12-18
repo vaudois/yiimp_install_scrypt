@@ -106,7 +106,7 @@ clear
 
 	echo
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
-	read -e -p "Domain Name (no http:// or www. just : example.com or ${PUBLIC_IP}) : " server_name
+	read -e -p "Domain Name (no http:// or www. just : example.com or 185.22.24.26) : " server_name
 	read -e -p "Enter subdomain from stratum connections miners (europe.example.com?) [y/N] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
 	read -e -p "Admin panel name desired => /site/ADMIN_NAME customize the Admin Panel entrance (e.g. myAdminpanel) : " admin_panel
@@ -133,9 +133,7 @@ clear
 	echo "Install Fail2ban:    $install_fail2ban"
 	echo "Install SSL now:     $ssl_install"
 	echo "Install wiregauard:  $wg_install"
-	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
-		echo "Wireguard wg0 IP:    $wg_ip"
-	fi
+	echo "Wireguard wg0 IP:    $wg_ip"
 
     	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
     	echo -e "\n\n"
@@ -1635,13 +1633,13 @@ clear
 		ext_partitions=$(mount | awk '"'$5 ~ /^ext(2|3|4)$/ { print $1 }'"')
 		for part in $ext_partitions; do
 			dumpe2fs_out=$(dumpe2fs -h $part 2>/dev/null)
-			mount_count=$(echo "$dumpe2fs_out" | grep "^Mount count:"|cut -d':' -f 2-)
+			mount_count=$(echo "$dumpe2fs_out" | grep "^Mount count:"|cut -d'"':'"' -f 2-)
 			if [ -z "$mount_count" ]; then mount_count=0; fi
-			max_mount_count=$(echo "$dumpe2fs_out" | grep "^Maximum mount count:"|cut -d':' -f 2-)
+			max_mount_count=$(echo "$dumpe2fs_out" | grep "^Maximum mount count:"|cut -d'"':'"' -f 2-)
 			if [ -z "$max_mount_count" ]; then max_mount_count=0; fi
-			check_interval=$(echo "$dumpe2fs_out" | grep "^Check interval:" | cut -d':' -f 2- | cut -d'(' -f 1)
+			check_interval=$(echo "$dumpe2fs_out" | grep "^Check interval:" | cut -d'"':'"' -f 2- | cut -d'"'('"' -f 1)
 			if [ -z "$check_interval" ]; then check_interval=0; fi
-			next_check_date=$(echo "$dumpe2fs_out" | grep "^Next check after:" | cut -d':' -f 2-)
+			next_check_date=$(echo "$dumpe2fs_out" | grep "^Next check after:" | cut -d'"':'"' -f 2-)
 			if [ -z "$next_check_interval" ]; then next_check_interval=0; fi
 			next_check_tstamp=$(date -d "$next_check_date" +%s)
 
