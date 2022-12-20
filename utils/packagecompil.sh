@@ -18,7 +18,7 @@ function package_compile_crypto
     hide_output sudo apt -y install software-properties-common build-essential
     hide_output sudo apt -y install libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils git cmake libboost-all-dev zlib1g-dev libz-dev libseccomp-dev libcap-dev libminiupnpc-dev gettext
     hide_output sudo apt -y install libzmq5
-	if [[ ("${DISTRO}" == "16" || "${DISTRO}" == "18") ]]; then
+	if [ "${DISTRO}" == "16" ] || [ "${DISTRO}" == "18" ]; then
 		hide_output sudo apt -y install libminiupnpc10
 		sudo add-apt-repository -y ppa:bitcoin/bitcoin -qq > /dev/null 2>&1
 		sudo apt -y update && sudo apt -y upgrade -qq > /dev/null 2>&1
