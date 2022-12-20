@@ -922,6 +922,8 @@ clear
 	sudo rm -rf /var/log/nginx/*
 
 	sleep 2
+	sudo update-alternatives --set php /usr/bin/php7.3 >/dev/null 2>&1
+	sleep 2
 	sudo systemctl restart cron.service
 	sleep 2
 	sudo systemctl restart mysql
