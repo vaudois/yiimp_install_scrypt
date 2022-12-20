@@ -934,6 +934,10 @@ clear
 	sleep 2
 	sudo systemctl status php7.3-fpm | sed -n "1,3p"
 	sleep 2
+	sudo chmmod 777 /var/web/yaamp/runtime >/dev/null 2>&1
+	sleep 2
+	sudo chmmod 777 /var/log/yiimp/debug.log >/dev/null 2>&1
+	sleep 2
 	sudo screens restart main >/dev/null 2>&1
 	sleep 2
 	sudo screens restart blocks >/dev/null 2>&1
