@@ -934,6 +934,14 @@ clear
 	sleep 2
 	sudo systemctl status php7.3-fpm | sed -n "1,3p"
 	sleep 2
+	sudo screens restart main >/dev/null 2>&1
+	sleep 2
+	sudo screens restart blocks >/dev/null 2>&1
+	sleep 2
+	sudo screens restart debug >/dev/null 2>&1
+	sleep 2
+	sudo screens restart loop2 >/dev/null 2>&1
+	sleep 2
 
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
