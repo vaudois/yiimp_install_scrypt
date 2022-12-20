@@ -679,8 +679,8 @@ define('"'"'RPC_ERROR_PAIMENT'"'"', array(
 
 function addmoreserverconfig5
 {
-	echo -e "\n\n// #### More configs from Others Yiimp (BETA) ####" | sudo tee -a /var/web/serverconfig.php >/dev/null 2>&1
-	echo -e "define('YAAMP_ADIM_LTE', true);\ndefine('LTE_SHOW_MESSAGES_DROPDOWN_MENU', true);\ndefine('LTE_SHOW_NOTIFICATIONS_MENU', true);\ndefine('YAAMP_NEW_COINS', 20*86400);" | sudo tee -a /var/web/serverconfig.php >/dev/null 2>&1
+	echo -e "\n\n// #### More configs from Others Yiimp (BETA) ####" | sudo tee -a /var/web/serverconfig.php >/dev/null 2>&1	
+	echo -e "define('YAAMP_ADIM_LTE', true);\ndefine('LTE_LAYAUT', 'lte');\ndefine('LTE_DEFAULT_CARD', '');\ndefine('LTE_SHOW_MESSAGES_DROPDOWN_MENU', true);\ndefine('LTE_SHOW_NOTIFICATIONS_MENU', true);\ndefine('YAAMP_NEW_COINS', 20*86400);" | sudo tee -a /var/web/serverconfig.php >/dev/null 2>&1
 	echo -e "define('YAAMP_URGEN_NOTE',\n	array(\n		array(\n			'HOME',\n			'#33FF4C',\n			null,\n			'This urgent note is configured in: var/web/serverconfig.php'\n		),\n	)\n);" | sudo tee -a /var/web/serverconfig.php >/dev/null 2>&1
 }
 
