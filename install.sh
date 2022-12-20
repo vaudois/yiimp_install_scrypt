@@ -154,7 +154,7 @@ clear
 	hide_output sudo apt -y update 
 	hide_output sudo apt -y upgrade
 	hide_output sudo apt -y autoremove
-	apt_install dialog python3 python3-pip acl nano apt-transport-https
+	apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
 	apt_install figlet curl jq update-motd
 	echo -e "$GREEN Done...$COL_RESET"
 
@@ -241,6 +241,8 @@ clear
 		apt_install php7.3-cgi php-pear imagemagick libruby php7.3-curl php7.3-intl php7.3-pspell mcrypt
 		apt_install php7.3-recode php7.3-sqlite3 php7.3-tidy php7.3-xmlrpc php7.3-xsl memcached php-memcache php-imagick php7.3-zip
 		apt_install php7.3-mbstring libpsl-dev libnghttp2-dev php7.3-memcache php7.3-memcached php-curl
+		apt_install php-mbstring php-zip php-gd php-json
+		sudo phpenmod mbstring
 	fi
 	if [[ ("$DISTRO" == "18") ]]; then
 		apt_install php-gettext
