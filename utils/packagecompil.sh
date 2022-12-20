@@ -15,7 +15,6 @@ function package_compile_crypto
     output " "
     sleep 3
 
-	apt_install software-properties-common build-essential
     	apt_install libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils git cmake libboost-all-dev zlib1g-dev libz-dev
 	apt_install libzmq5 libseccomp-dev libcap-dev libminiupnpc-dev gettext
 	if [ "${DISTRO}" == "16" ] || [ "${DISTRO}" == "18" ]; then
