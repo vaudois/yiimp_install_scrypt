@@ -519,36 +519,7 @@ clear
 	# Adding user to group, creating dir structure, setting permissions
 	sudo mkdir -p /var/www/$server_name/html
 
-	if [[ ("$sub_domain" == "y" || "$sub_domain" == "Y") ]]; then
-		confnginxnotsslsub "${server_name}"
-	
-	sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
-	sudo ln -s /var/web /var/www/$server_name/html
-	hide_output sudo systemctl reload php7.3-fpm.service
-	hide_output sudo systemctl restart nginx.service
-	echo -e "$GREEN Done...$COL_RESET"
-    	
-    if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
-
-		# Install SSL (with SubDomain)
-		echo
-		echo -e "Install LetsEncrypt and setting SSL (with SubDomain)"
-		
-		apt_install letsencrypt
-		sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name"
-		sudo rm /etc/nginx/sites-available/$server_name.conf
-		sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-
-		# I am SSL Man!
-		confnginxsslsub "${server_name}"
-	fi
-
-	hide_output sudo systemctl reload php7.3-fpm.service
-	hide_output sudo systemctl restart nginx.service
-	echo -e "$GREEN Done...$COL_RESET"
-
-	else
-
+	if [[ ("$sub_domain" == "n" || "$sub_domain" == "N") ]]; then
 		confnginxnotssl "${server_name}"
 
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
@@ -576,6 +547,33 @@ clear
 
 		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
+	else
+		confnginxnotsslsub "${server_name}"
+	
+		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
+		sudo ln -s /var/web /var/www/$server_name/html
+		hide_output sudo systemctl reload php7.3-fpm.service
+		hide_output sudo systemctl restart nginx.service
+		echo -e "$GREEN Done...$COL_RESET"
+    	
+		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
+
+			# Install SSL (with SubDomain)
+			echo
+			echo -e "Install LetsEncrypt and setting SSL (with SubDomain)"
+			
+			apt_install letsencrypt
+			sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name"
+			sudo rm /etc/nginx/sites-available/$server_name.conf
+			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+
+			# I am SSL Man!
+			confnginxsslsub "${server_name}"
+		fi
+
+		hide_output sudo systemctl reload php7.3-fpm.service
+		hide_output sudo systemctl restart nginx.service
+		echo -e "$GREEN Done...$COL_RESET"
     fi
 
 	# Config Database
