@@ -921,9 +921,13 @@ clear
 	fi
 
 	#Misc
+	cd ${absolutepath}
 	sudo rm -rf ${absolutepath}/yiimp
+	sleep 1
 	sudo rm -rf ${absolutepath}/stratum
+	sleep 1
 	sudo rm -rf ${absolutepath}/${nameofinstall}
+	sleep 1
 	sudo rm -rf /var/log/nginx/*
 
 	sleep 2
@@ -961,4 +965,5 @@ clear
 	install_end_message
 
 	cd ${absolutepath}
+	cd ~
 	echo
