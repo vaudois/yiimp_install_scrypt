@@ -117,7 +117,7 @@ clear
 	read -e -p "Install SSL? IMPORTANT! Have your domain name pointed to this server prior! [Y/n]: " ssl_install
 	read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
-		read -e -p "Enter a Local Wireguard Private IP for this server (x.x.x.x): " wg_ip
+		read -e -p "Enter a Local Wireguard Private IP for this server (${PRIVATE_IP}): " wg_ip
 	# curl -q http://ifconfig.me
 	fi
 	read -e -p "Desired Yiimp install?(1=Kudaraidee,2=tpruvot,3=Afiniel-Tech,4=Afiniel,5=SabiasQue(beta)) [1 by default] : " yiimpver
