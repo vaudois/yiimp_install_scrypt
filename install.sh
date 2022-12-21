@@ -109,7 +109,7 @@ clear
 	echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
 	echo
 	read -e -p "Domain Name (no https:// or www. just : example.com or ${PUBLIC_IP}) : " server_name
-	read -e -p "Enter subdomain from stratum connections miners (e.g. europe) [N = not subdomain] : " sub_domain
+	read -e -p "Enter subdomain for stratum connections (e.g. europe) [N => not subdomain] : " sub_domain
 	read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
 	read -e -p "Admin panel: desired customized name Admin url (e.g. myAdminpanel) : " admin_panel
 	read -e -p "Enter the Public IP of the system you will use to access the admin panel : " Public
