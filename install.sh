@@ -95,7 +95,7 @@ clear
 	sudo cp -r utils/blocknotify.sh /usr/bin/
 	sudo chmod +x /usr/bin/editconf.py
 	sudo chmod +x /etc/screen-scrypt.sh
-	sudo chmod +x /usr/bin/blocknotify.py
+	sudo chmod +x /usr/bin/blocknotify.sh
 
 	source /etc/functions.sh
 	source conf/prerequisite.sh
