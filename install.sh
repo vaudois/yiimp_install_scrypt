@@ -431,7 +431,7 @@ clear
 	sudo find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sleep 3
 
-	URLREPLACEWEBWAL=/home/wallets/
+	URLREPLACEWEBWAL=${absolutepath}/wallets/
 	URLSCRYPTODATAWALLET=/home/crypto-data/wallets/
 	URLSYIIMPDATAWALLET=/home/yiimp-data/wallets/
 
