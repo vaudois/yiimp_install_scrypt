@@ -249,6 +249,15 @@ clear
 	if [[ ("$DISTRO" == "18") ]]; then
 		apt_install php-gettext
 	fi
+	if [[ ("$DISTRO" == "20") ]]; then
+		sudo apt install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
+		sudo apt install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
+		sudo apt install php8.2-sqlite3 php8.2-tidy php8.2-xmlrpc php8.2-xsl php8.2-zip
+		sudo apt install php8.2-mbstring php8.2-memcache php8.2-memcached
+		# sleep 2
+		# hide_output sudo systemctl start php8.2-fpm
+		# sudo systemctl status php8.2-fpm | sed -n "1,3p"
+	fi
 
 	sleep 5
 	hide_output sudo systemctl start php7.3-fpm
