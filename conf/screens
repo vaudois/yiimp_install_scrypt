@@ -7,23 +7,23 @@ source /etc/functions.sh
 source /etc/serveryiimp.conf
 #!/bin/sh -e
 
-if [ ! -x ${CRONS}/main.sh ]; then
-sudo chmod 774 ${CRONS}/main.sh
-echo -e "$RED => File is not Executable Modify and executing... $COL_RESET"
+if [ ! -x ${CRONS}/$2.sh ]; then
+sudo chmod 774 ${CRONS}/$2.sh
+echo -e "$RED => File $YELLOW$2.sh$RED is not Executable Modify and executing... $COL_RESET"
 echo ""
 echo -e "$GREEN => Done run... $COL_RESET"
 else
-echo -e "$GREEN => File is Executable run $COL_RESET"
+echo -e "$GREEN => File $YELLOW$2.sh$GREEN is Executable run $COL_RESET"
 fi
 
 main="screen -dmS main ${CRONS}/main.sh"
 mainstop='screen -X -S main quit'
 loop2="screen -dmS loop2 ${CRONS}/loop2.sh"
-loop2quit='screen -X -S loop2 quit'
+loop2stop='screen -X -S loop2 quit'
 blocks="screen -dmS blocks ${CRONS}/blocks.sh"
-blocksquit='screen -X -S blocks quit'
+blocksstop='screen -X -S blocks quit'
 debug="screen -dmS debug tail -f ${LOG_DIR}/debug.log"
-debugquit='screen -X -S debug quit'
+debugstop='screen -X -S debug quit'
 
 startstop_service() {
     cmd=$1
