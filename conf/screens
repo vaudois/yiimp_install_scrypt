@@ -1,6 +1,6 @@
 ############################################################################################################################
 # Source code from https://codereview.stackexchange.com/questions/55077/small-bash-script-to-start-and-stop-named-services #
-# Updated by Afiniel for Yiimpool use...                                                                                   #
+# Updated by Vaudois for Yiimpool use...                                                                                   #
 ############################################################################################################################
 
 source /etc/functions.sh
@@ -50,7 +50,7 @@ startstop_loop2() {
         stop) $loop2stop ;;
         start) $loop2 ;;
         restart)
-            $loop2nstop
+            $loop2stop
             sleep 1
             $loop2
             ;;
