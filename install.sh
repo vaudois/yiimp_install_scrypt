@@ -468,15 +468,24 @@ clear
 	sudo cp -r stratum /var/stratum/
 	sudo cp -r run.sh /var/stratum/
 	cd ${absolutepath}/yiimp
-	sudo cp -r ${absolutepath}/yiimp/bin/. /bin/
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /var/stratum/
 	sudo mkdir -p /etc/yiimp
 	sudo mkdir -p /${absolutepath}/backup/
-	#fixing yiimp
-	sudo sed -i "s|ROOTDIR=/data/yiimp|ROOTDIR=/var|g" /bin/yiimp
+
+	echo '#!/usr/bin/env bash
+
+	ROOTDIR=/var
+	DIR=`pwd`
+
+	cd "$ROOTDIR/web" && php yaamp/yiic.php "$@"
+
+	cd $DIR' | sudo -E tee /bin/yiimp >/dev/null 2>&1
+	sudo chmod +x /bin/yiimp
+
 	#fixing run.sh
 	sudo rm -r /var/stratum/config/run.sh
+
 	echo '
 	#!/bin/bash
 	ulimit -n 10240
