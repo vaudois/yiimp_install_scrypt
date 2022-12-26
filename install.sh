@@ -387,6 +387,9 @@ clear
 	elif [[ "$yiimpver" == "4" ]]; then
 		cd ~
 		hide_output sudo git clone $githubrepoAfiniel -b next
+	else
+		cd ~
+		hide_output sudo git clone $githubrepoKudaraidee
 	fi
 
 	cd ~
