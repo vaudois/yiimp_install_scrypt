@@ -22,6 +22,7 @@ clear
 	githubrepoKudaraidee=https://github.com/Kudaraidee/yiimp.git
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
 	githubrepoAfiniel=https://github.com/afiniel/yiimp.git
+	githubrepoSabiasQue=https://github.com/SabiasQueSpace/yiimp.git
 	
 	githubstratum=https://github.com/vaudois/stratum.git
 
@@ -121,7 +122,7 @@ clear
 		read -e -p "Enter a Local Wireguard Private IP for this server (${PRIVATE_IP}): " wg_ip
 	# curl -q http://ifconfig.me
 	fi
-	read -e -p "Desired Yiimp install?(1=Kudaraidee,2=tpruvot,3=Afiniel-Tech,4=Afiniel) [1 by default] : " yiimpver
+	read -e -p "Desired Yiimp install?(1=Kudaraidee,2=tpruvot,3=Afiniel-Tech,4=Afiniel,5=SabiasQue) [1 by default] : " yiimpver
 
 
 	clear
@@ -387,6 +388,9 @@ clear
 	elif [[ "$yiimpver" == "4" ]]; then
 		cd ~
 		hide_output sudo git clone $githubrepoAfiniel -b next
+	elif [[ "$yiimpver" == "5" ]]; then
+		cd ~
+		hide_output sudo git clone $githubrepoSabiasQue
 	else
 		cd ~
 		hide_output sudo git clone $githubrepoKudaraidee
