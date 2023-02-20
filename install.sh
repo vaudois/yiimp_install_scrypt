@@ -684,6 +684,9 @@ clear
 		hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2020-06-03-blocks.sql
 		hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2022-10-29-blocks_effort.sql
 		hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2022-10-14-shares_solo.sql
+		if [[ "$yiimpver" == "5" ]]; then
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2023-02-20-coins.sql
+		fi
 	else
 		# Import sql dump
 		sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
@@ -720,6 +723,9 @@ clear
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2020-06-03-blocks.sql
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2022-10-29-blocks_effort.sql
 		hide_output sudo mysql --defaults-group-suffix=host1 --force < 2022-10-14-shares_solo.sql
+		if [[ "$yiimpver" == "5" ]]; then
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 2023-02-20-coins.sql
+		fi
 	fi
 	cd ~
 
