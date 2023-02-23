@@ -96,6 +96,11 @@ clear
 	sudo chmod +x /usr/bin/editconf.py
 	sudo chmod +x /etc/screen-scrypt.sh
 	sudo chmod +x /usr/bin/blocknotify.sh
+	
+	sudo mkdir /var/log/yiimp/ >/dev/null 2>&1
+	sudo touch /var/log/yiimp/debug.log
+	sudo chgrp www-data /var/log/yiimp -R
+	sudo chmod 775 /var/log/yiimp -R
 
 	source /etc/functions.sh
 	source conf/prerequisite.sh
@@ -570,7 +575,7 @@ clear
 		hide_output sudo systemctl restart nginx.service
 		hide_output sudo systemctl restart php7.3-fpm.service
 	else
-		confnginxnotsslsub "${server_name}" "$(sub_domain)"
+		confnginxnotsslsub "${server_name}" "${sub_domain}"
 	
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
@@ -590,7 +595,7 @@ clear
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 			# I am SSL Man!
-			confnginxsslsub "${server_name}" "$(sub_domain)"
+			confnginxsslsub "${server_name}" "${sub_domain}"
 		fi
 
 		hide_output sudo systemctl restart nginx.service
@@ -899,11 +904,6 @@ clear
 	sudo find /var/web -type f -exec chmod 664 {} +
 	sudo chgrp www-data /var/web -R
 	sudo chmod g+w /var/web -R
-
-	sudo mkdir /var/log/yiimp/ >/dev/null 2>&1
-	sudo touch /var/log/yiimp/debug.log
-	sudo chgrp www-data /var/log/yiimp -R
-	sudo chmod 775 /var/log/yiimp -R
 
 	sudo chgrp www-data /var/stratum -R
 	sudo chmod 775 /var/stratum
