@@ -6,11 +6,11 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v1.0
+#   v1.1
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v1.0
+	TAG=v1.1
 fi
 
 NPROC=$(nproc)
@@ -546,8 +546,8 @@ clear
 
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
-		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
+		hide_output sudo systemctl restart php7.3-fpm.service
 		echo -e "$GREEN Done...$COL_RESET"
 
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -567,15 +567,15 @@ clear
 
 		fi
 
-		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
+		hide_output sudo systemctl restart php7.3-fpm.service
 	else
-		confnginxnotsslsub "${server_name}"
+		confnginxnotsslsub "${server_name}" "$(sub_domain)"
 	
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
-		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
+		hide_output sudo systemctl restart php7.3-fpm.service
 		echo -e "$GREEN Done...$COL_RESET"
     	
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -590,11 +590,11 @@ clear
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 			# I am SSL Man!
-			confnginxsslsub "${server_name}"
+			confnginxsslsub "${server_name}" "$(sub_domain)"
 		fi
 
-		hide_output sudo systemctl reload php7.3-fpm.service
 		hide_output sudo systemctl restart nginx.service
+		hide_output sudo systemctl restart php7.3-fpm.service
 		echo -e "$GREEN Done...$COL_RESET"
     fi
 
