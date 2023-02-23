@@ -6,11 +6,11 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 16.04/18.04 running Nginx, MariaDB, and php7.3
-#   v1.1
+#   v1.0
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v1.1
+	TAG=v1.0
 fi
 
 NPROC=$(nproc)
@@ -585,7 +585,7 @@ clear
 			echo -e "Install LetsEncrypt and setting SSL (with SubDomain)"
 			
 			apt_install letsencrypt
-			sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name"
+			sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name" -d "$sub_domain.$server_name"
 			sudo rm /etc/nginx/sites-available/$server_name.conf
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
