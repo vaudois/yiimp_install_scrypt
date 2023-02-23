@@ -22,7 +22,7 @@ server
 	}
 	listen 80;
 	listen [::]:80;
-	server_name '"$1"';
+	server_name '"$1"' '"$2"'.'"$1"';
 
 	# enforce https
 	return 301 https://$server_name$request_uri;
@@ -39,7 +39,7 @@ server
 	}
 	listen 443 ssl http2;
 	listen [::]:443 ssl http2;
-	server_name '"$1"';
+	server_name '"$1"' '"$2"'.'"$1"';
 	root /var/www/'"$1"'/html/web;
 	index index.php;
 	access_log /var/log/yiimp/'"$1"'.app-access.log;
@@ -269,10 +269,10 @@ server
 	}
 	listen 80;
 	listen [::]:80;
-	server_name '"$1"';
+	server_name '"$1"' '"$2"'.'"$1"';
 	root "/var/www/'"$1"'/html/web";
-	index index.html index.htm index.php;
-	charset utf-8;
+	index index.php;
+	#charset utf-8;
 
 	location /
 	{
@@ -368,7 +368,7 @@ server
 	server_name '"$1"' www.'"$1"';
 	root "/var/www/'"$1"'/html/web";
 	index index.html index.htm index.php;
-	charset utf-8;
+	#charset utf-8;
 	location /
 	{
 		try_files $uri $uri/ /index.php?$args;
