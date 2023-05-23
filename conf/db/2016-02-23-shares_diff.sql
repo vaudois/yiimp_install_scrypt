@@ -6,4 +6,4 @@ ALTER TABLE `shares` CHANGE COLUMN `difficulty` `difficulty` DOUBLE NOT NULL DEF
 
 ALTER TABLE `shares` ADD `share_diff` DOUBLE NOT NULL DEFAULT '0' AFTER `difficulty`;
 
-
+ALTER TABLE `shares` ADD `solo` TINYINT(1) NULL DEFAULT NULL AFTER `algo`;
