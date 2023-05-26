@@ -146,7 +146,11 @@ clear
 		echo "Wireguard wg0 IP:    $wg_ip"
 	fi
 	echo "Yiimb Github choice: $yiimpver"
-
+	if [ "$yiimpver" -gt "5" || "$yiimpver" -lt "1" ] ; then
+		echo -e "$RED SELECTED $yiimpver it is not correct you have to choose between 1 to 5 !!!!...$COL_RESET"
+		echo -e "$YELLOW SELECTED RESTART your install again! $COL_RESET"
+		exit
+	fi
     	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
     	echo -e "\n\n"
 	
