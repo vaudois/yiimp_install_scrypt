@@ -152,6 +152,7 @@ clear
 		echo -e "$YELLOW RESTARTING your install again... $COL_RESET"
 		echo ""
 		sleep 5
+		bash install.sh
 	fi
     	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
     	echo -e "\n\n"
