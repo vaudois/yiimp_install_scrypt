@@ -675,6 +675,7 @@ clear
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
+			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2023-02-20-coins.sql
 		fi
 	else
 		# Import sql dump
@@ -688,6 +689,7 @@ clear
 			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles.sql
 			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings.sql
 			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments.sql
+			sudo mysql --defaults-group-suffix=host1 --force < 2023-02-20-coins.sql
 		fi
 	fi
 	cd ~
