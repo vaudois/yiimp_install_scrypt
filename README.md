@@ -1,4 +1,4 @@
-# Yiimp_install_scrypt v1.4 (update May, 2023)
+# Yiimp_install_scrypt v1.5 (update May, 2023)
 
 Original SCRIPT : https://github.com/cryptopool-builders/multipool_original_yiimp_installer
 
