@@ -669,9 +669,9 @@ clear
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
 		
 		if [[ "$yiimpver" == "5" ]]; then
-			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles
-			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings
-			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles.sql
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings.sql
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
 		fi
 	else
 		# Import sql dump
@@ -679,9 +679,9 @@ clear
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		
 		if [[ "$yiimpver" == "5" ]]; then
-			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles
-			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings
-			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles.sql
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings.sql
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments.sql
 		fi
 	fi
 	cd ~
