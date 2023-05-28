@@ -667,10 +667,22 @@ clear
 		# Import sql dump
 		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
+		
+		if [[ "$yiimpver" == "5" ]]; then
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings
+			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments
+		fi
 	else
 		# Import sql dump
 		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
+		
+		if [[ "$yiimpver" == "5" ]]; then
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings
+			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments
+		fi
 	fi
 	cd ~
 
