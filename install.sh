@@ -668,25 +668,31 @@ clear
 		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
 		
-		if [[ "$yiimpver" == "5" ]]; then
-			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles.sql
-			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings.sql
-			hide_output sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
+		if [[ ("$yiimpver" == "5") ]]; then
+			echo -e "$YELLOW => Selected install $yiimpver more sql adding... $COL_RESET"
+			sleep 5
+			cd ${absolutepath}/${nameofinstall}/conf/db
+			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles.sql
+			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings.sql
+			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
 		fi
 	else
 		# Import sql dump
 		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		
-		if [[ "$yiimpver" == "5" ]]; then
-			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles.sql
-			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings.sql
-			hide_output sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments.sql
+		if [[ ("$yiimpver" == "5") ]]; then
+			echo -e "$YELLOW => Selected install $yiimpver more sql adding... $COL_RESET"
+			sleep 5
+			cd ${absolutepath}/${nameofinstall}/conf/db
+			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles.sql
+			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings.sql
+			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments.sql
 		fi
 	fi
 	cd ~
 
-	echo -e "$GREEN Done...$COL_RESET"    
+	echo -e "$GREEN Done...$COL_RESET"
 
 	# Generating a basic Yiimp serverconfig.php
 	echo
