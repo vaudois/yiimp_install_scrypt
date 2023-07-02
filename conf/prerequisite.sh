@@ -19,6 +19,8 @@ echo -e "$CYAN => Check prerequisite : $COL_RESET"
 
 if [ "`lsb_release -d | sed 's/.*:\s*//' | sed 's/18\.04\.[0-9]/18.04/' `" == "Ubuntu 18.04 LTS" ]; then
 	DISTRO=18
+ 	echo -E "$YELLOW WARRING$RED php7.3 not supported on Ubuntu 18.*"
+  	sleep 7
 	sudo chmod g-w /etc /etc/default /usr
 elif [ "`lsb_release -d | sed 's/.*:\s*//' | sed 's/16\.04\.[0-9]/16.04/' `" == "Ubuntu 16.04 LTS" ]; then
   DISTRO=16
