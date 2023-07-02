@@ -487,7 +487,6 @@ clear
 	cd ${absolutepath}/stratum
 	sudo cp -a config.sample/. /var/stratum/config/
 	sudo cp -r stratum /var/stratum/
-	sudo cp -r run.sh /var/stratum/
 	cd ${absolutepath}/yiimp
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /var/stratum/
@@ -507,6 +506,12 @@ clear
 	#fixing run.sh
 	sudo rm -r /var/stratum/config/run.sh
 
+	echo '#!/bin/bash
+ 	cd /var/stratum/config/ && sudo bash run.sh $*' | sudo -E tee /var/stratum/run.sh >/dev/null 2>&1
+	sudo chmod +x /var/stratum/run.sh
+ 
+ 	sleep 2
+  
 	echo '
 	#!/bin/bash
 	ulimit -n 10240
