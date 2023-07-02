@@ -245,8 +245,8 @@ clear
 
 	if [ ! -f /etc/apt/sources.list.d/ondrej-php-bionic.list ]; then
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
-	fi
 		hide_output sudo apt -y update
+	fi
   
 	if [[ ("$DISTRO" == "18") ]]; then
 		apt_install php7.3-fpm php7.3-opcache php7.3 php7.3-common php7.3-gd php7.3-mysql php7.3-imap php7.3-cli
