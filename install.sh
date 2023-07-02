@@ -235,11 +235,10 @@ clear
 	sudo systemctl status mysql | sed -n "1,3p"
 	echo -e "$GREEN Done...$COL_RESET"
 
-	# Installing Installing php
+	# Installing Installing php and other files
 	echo
-	echo -e "$CYAN => Installing PHP : $COL_RESET"
+	echo -e "$CYAN => Update system & Install PHP & build-essential : $COL_RESET"
 	sleep 3
-
 
 	apt_install software-properties-common build-essential
 	hide_output sudo apt -y update
@@ -283,7 +282,11 @@ clear
 	# fix CDbConnection failed to open the DB connection.
 	echo
 	echo -e "$CYAN => Fixing DBconnection issue $COL_RESET"
-	apt_install php8.1-mysql
+ 	if [[ ("$DISTRO" == "18") ]]; then
+		apt_install php8.1-mysql
+ 	else
+ 		apt_install php8.2-mysql
+  	fi
 	echo
 	hide_output service nginx restart
 
