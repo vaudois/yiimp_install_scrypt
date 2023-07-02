@@ -914,6 +914,10 @@ clear
 		sudo sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
 	fi
 
+ 	if [[ ("$DISTRO" == "20") ]]; then
+ 		sudo sed -i "s|ExplorerController::createUrl|Yii::app()->createUrl|g" /var/web/yaamp/models/db_coinsModel.php
+  	fi
+
 	#Misc
 	cd ${absolutepath}
 	sudo rm -rf ${absolutepath}/yiimp
