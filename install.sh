@@ -296,16 +296,6 @@ clear
 
 	apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev gnutls-dev \
 	librtmp-dev sendmail mutt screen git
-	apt_install pwgen -y
-	apt_install libgtest-dev
- 	cd /usr/src/gtest
-	hide_output sudo cmake .
- 	hide_output sudo make
-	if [[ -d "/usr/src/gtest/lib" ]]; then
-	    hide_output sudo mv /usr/src/gtest/lib/libg* /usr/lib/
-	else
-	    hide_output sudo mv /usr/src/gtest/libg* /usr/lib/
-	fi
 	
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
