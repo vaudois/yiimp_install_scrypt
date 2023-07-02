@@ -241,13 +241,13 @@ clear
 	sleep 3
 
 	apt_install software-properties-common build-essential
-	hide_output sudo apt -y update
 
 	if [ ! -f /etc/apt/sources.list.d/ondrej-php-bionic.list ]; then
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
-		hide_output sudo apt -y update
 	fi
-  
+ 	echo -e "$YELLOW >--> Updating system...$COL_RESET"
+  	hide_output sudo apt -y update
+   	echo -e "$YELLOW >--> Installing php...$COL_RESET"
 	if [[ ("$DISTRO" == "18") ]]; then
 		apt_install php7.3-fpm php7.3-opcache php7.3 php7.3-common php7.3-gd php7.3-mysql php7.3-imap php7.3-cli
 		apt_install php7.3-cgi php-pear imagemagick libruby php7.3-curl php7.3-intl php7.3-pspell mcrypt
