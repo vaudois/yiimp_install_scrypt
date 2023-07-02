@@ -310,8 +310,6 @@ clear
 
 	sleep 3
 	package_compile_crypto
-
-	echo
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Generating Random Passwords
@@ -385,7 +383,7 @@ clear
 	# Installing Yiimp
 	echo
 	echo -e "$CYAN => Installing Yiimp $COL_RESET"
-	echo -e "$YELLOW Grabbing yiimp fron Github, building files and setting file structure.$COL_RESET "
+	echo -e "$YELLOW >--> Grabbing yiimp fron Github, building files and setting file structure.$COL_RESET "
 	sleep 3
 
     # Generating Random Password for stratum
