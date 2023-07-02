@@ -275,9 +275,7 @@ clear
 		PHPVERSION=8.2
 	fi
 
- 	
 	sleep 5
-
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# fix CDbConnection failed to open the DB connection.
