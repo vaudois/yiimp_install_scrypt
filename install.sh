@@ -5,8 +5,9 @@
 # Current Author: Vaudois
 #
 # Program:
-#   Install yiimp on Ubuntu 18.04 running Nginx, MariaDB, and (php7.3*)
-#   * not supported
+#   Install yiimp on Ubuntu 18.04 & 20.04* running Nginx, MariaDB, and php7.3**
+#   *  phase beta for testing (possible not run good)
+#   ** not supported
 #   v1.5
 ################################################################################
 
@@ -234,9 +235,9 @@ clear
 	sudo systemctl status mysql | sed -n "1,3p"
 	echo -e "$GREEN Done...$COL_RESET"
 
-	# Installing Installing php7.3
+	# Installing Installing php
 	echo
-	echo -e "$CYAN => Installing php7.3 : $COL_RESET"
+	echo -e "$CYAN => Installing PHP : $COL_RESET"
 	sleep 3
 
 
@@ -256,20 +257,24 @@ clear
 		apt_install php-mbstring php-zip php-gd php-json
 		sudo phpenmod mbstring
 		apt_install php-gettext
+  
+		sleep 2
+		hide_output sudo systemctl start php7.3-fpm
+		sudo systemctl status php7.3-fpm | sed -n "1,3p"
 	fi
 	if [[ ("$DISTRO" == "20") ]]; then
 		sudo apt install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
 		sudo apt install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
 		sudo apt install php8.2-sqlite3 php8.2-tidy php8.2-xmlrpc php8.2-xsl php8.2-zip
 		sudo apt install php8.2-mbstring php8.2-memcache php8.2-memcached
-		# sleep 2
-		# hide_output sudo systemctl start php8.2-fpm
-		# sudo systemctl status php8.2-fpm | sed -n "1,3p"
+
+		sleep 2
+		hide_output sudo systemctl start php8.2-fpm
+		sudo systemctl status php8.2-fpm | sed -n "1,3p"
 	fi
 
+ 	
 	sleep 5
-	hide_output sudo systemctl start php7.3-fpm
-	sudo systemctl status php7.3-fpm | sed -n "1,3p"
 
 	echo -e "$GREEN Done...$COL_RESET"
 
@@ -564,7 +569,12 @@ clear
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
-		hide_output sudo systemctl restart php7.3-fpm.service
+
+    		if [[ ("$DISTRO" == "18") ]]; then
+			hide_output sudo systemctl restart php7.3-fpm.service
+   		else
+     			hide_output sudo systemctl restart php8.2-fpm.service
+		fi
 		echo -e "$GREEN Done...$COL_RESET"
 
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -585,14 +595,22 @@ clear
 		fi
 
 		hide_output sudo systemctl restart nginx.service
-		hide_output sudo systemctl restart php7.3-fpm.service
+  		if [[ ("$DISTRO" == "18") ]]; then
+			hide_output sudo systemctl restart php7.3-fpm.service
+  		else
+    			hide_output sudo systemctl restart php8.2-fpm.service
+    		fi
 	else
 		confnginxnotsslsub "${server_name}" "${sub_domain}"
 	
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
-		hide_output sudo systemctl restart php7.3-fpm.service
+  		if [[ ("$DISTRO" == "18") ]]; then
+			hide_output sudo systemctl restart php7.3-fpm.service
+  		else
+    			hide_output sudo systemctl restart php8.2-fpm.service
+    		fi
 		echo -e "$GREEN Done...$COL_RESET"
     	
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -611,7 +629,11 @@ clear
 		fi
 
 		hide_output sudo systemctl restart nginx.service
-		hide_output sudo systemctl restart php7.3-fpm.service
+  		if [[ ("$DISTRO" == "18") ]]; then
+			hide_output sudo systemctl restart php7.3-fpm.service
+  		else
+    			hide_output sudo systemctl restart php8.2-fpm.service
+    		fi
 		echo -e "$GREEN Done...$COL_RESET"
     fi
 
@@ -922,7 +944,11 @@ clear
 	sudo rm -rf /var/log/nginx/*
 
 	sleep 2
-	sudo update-alternatives --set php /usr/bin/php7.3 >/dev/null 2>&1
+	if [[ ("$DISTRO" == "18") ]]; then
+		sudo update-alternatives --set php /usr/bin/php7.3 >/dev/null 2>&1
+	else
+		sudo update-alternatives --set php /usr/bin/php8.2 >/dev/null 2>&1
+	fi
 	sleep 2
 	sudo systemctl restart cron.service
 	sleep 2
@@ -932,9 +958,15 @@ clear
 	sudo systemctl restart nginx.service
 	sleep 2
 	sudo systemctl status nginx | sed -n "1,3p"
-	sudo systemctl restart php7.3-fpm.service
-	sleep 2
-	sudo systemctl status php7.3-fpm | sed -n "1,3p"
+	if [[ ("$DISTRO" == "18") ]]; then
+		sudo systemctl restart php7.3-fpm.service
+	  	sleep 2
+		sudo systemctl status php7.3-fpm | sed -n "1,3p"
+	else
+		sudo systemctl restart php8.2-fpm.service
+		sleep 2
+		sudo systemctl status php8.2-fpm | sed -n "1,3p"
+	fi
 	sleep 2
 	sudo chmmod 777 /var/web/yaamp/runtime >/dev/null 2>&1
 	sleep 2
