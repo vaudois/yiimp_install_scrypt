@@ -173,7 +173,7 @@ clear
 	hide_output sudo apt -y upgrade
 	hide_output sudo apt -y autoremove
 	apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
-	apt_install figlet curl jq update-motd
+	apt_install figlet curl jq update-motd pwgen
 	echo -e "$GREEN Done...$COL_RESET"
 
 	echo 'PUBLIC_IP='"${PUBLIC_IP}"'
