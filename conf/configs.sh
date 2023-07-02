@@ -78,7 +78,7 @@ server
 	location ~ ^/index\.php$
 	{
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+		fastcgi_pass unix:/var/run/php/php'"$3"'-fpm.sock;
 		fastcgi_index index.php;
 		include fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -114,7 +114,7 @@ server
 		}
 		location ~ /phpmyadmin/(.+\.php)$
 		{
-			fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+			fastcgi_pass unix:/run/php/php'"$3"'-fpm.sock;
 			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 			include fastcgi_params;
 			include snippets/fastcgi-php.conf;
@@ -203,7 +203,7 @@ server
 	location ~ ^/index\.php$
 	{
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+		fastcgi_pass unix:/var/run/php/php'"$2"'-fpm.sock;
 		fastcgi_index index.php;
 		include fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -239,7 +239,7 @@ server
 		}
 			location ~ /phpmyadmin/(.+\.php)$
 		{
-			fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+			fastcgi_pass unix:/run/php/php'"$2"'-fpm.sock;
 			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 			include fastcgi_params;
 			include snippets/fastcgi-php.conf;
@@ -296,7 +296,7 @@ server
 	location ~ ^/index\.php$
 	{
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+		fastcgi_pass unix:/var/run/php/php'"$3"'-fpm.sock;
 		fastcgi_index index.php;
 		include fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -335,7 +335,7 @@ server
 		}
 		location ~ /phpmyadmin/(.+\.php)$
 		{
-			fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+			fastcgi_pass unix:/run/php/php'"$3"'-fpm.sock;
 			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 			include fastcgi_params;
 			include snippets/fastcgi-php.conf;
@@ -390,7 +390,7 @@ server
 	location ~ ^/index\.php$
 	{
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+		fastcgi_pass unix:/var/run/php/php'"$2"'-fpm.sock;
 		fastcgi_index index.php;
 		include fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -429,7 +429,7 @@ server
 		}
 		location ~ /phpmyadmin/(.+\.php)$
 		{
-		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+		fastcgi_pass unix:/run/php/php'"$2"'-fpm.sock;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 		include fastcgi_params;
 		include snippets/fastcgi-php.conf;
