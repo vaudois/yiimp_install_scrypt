@@ -256,7 +256,7 @@ clear
 		apt_install php-mbstring php-zip php-gd php-json
 		sudo phpenmod mbstring
 		apt_install php-gettext
-  
+  		echo
 		sleep 2
 		hide_output sudo systemctl start php7.3-fpm
 		sudo systemctl status php7.3-fpm | sed -n "1,3p"
@@ -267,7 +267,7 @@ clear
 		apt_install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
 		apt_install php8.2-sqlite3 php8.2-tidy php8.2-xmlrpc php8.2-xsl php8.2-zip
 		apt_install php8.2-mbstring php8.2-memcache php8.2-memcached
-
+		echo
 		sleep 2
 		hide_output sudo systemctl start php8.2-fpm
 		sudo systemctl status php8.2-fpm | sed -n "1,3p"
