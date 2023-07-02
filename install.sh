@@ -246,21 +246,14 @@ clear
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
 	fi
 		hide_output sudo apt -y update
-
-	if [[ ("$DISTRO" == "16") ]]; then
-		apt_install php7.3-fpm php7.3-opcache php7.3 php7.3-common php7.3-gd php7.3-mysql php7.3-imap php7.3-cli
-		apt_install php7.3-cgi php-pear php-auth imagemagick libruby php7.3-curl php7.3-intl php7.3-pspell mcrypt
-		apt_install php7.3-recode php7.3-sqlite3 php7.3-tidy php7.3-xmlrpc php7.3-xsl memcached php-memcache php-imagick
-		apt_install php-gettext php7.3-zip php7.3-mbstring php7.3-memcache php7.3-memcached
-	else
+  
+	if [[ ("$DISTRO" == "18") ]]; then
 		apt_install php7.3-fpm php7.3-opcache php7.3 php7.3-common php7.3-gd php7.3-mysql php7.3-imap php7.3-cli
 		apt_install php7.3-cgi php-pear imagemagick libruby php7.3-curl php7.3-intl php7.3-pspell mcrypt
 		apt_install php7.3-recode php7.3-sqlite3 php7.3-tidy php7.3-xmlrpc php7.3-xsl memcached php-memcache php-imagick php7.3-zip
 		apt_install php7.3-mbstring libpsl-dev libnghttp2-dev php7.3-memcache php7.3-memcached php-curl
 		apt_install php-mbstring php-zip php-gd php-json
 		sudo phpenmod mbstring
-	fi
-	if [[ ("$DISTRO" == "18") ]]; then
 		apt_install php-gettext
 	fi
 	if [[ ("$DISTRO" == "20") ]]; then
@@ -296,6 +289,15 @@ clear
 	apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev gnutls-dev \
 	librtmp-dev sendmail mutt screen git
 	apt_install pwgen -y
+	apt_install libgtest-dev
+ 	cd /usr/src/gtest
+	hide_output sudo cmake .
+ 	hide_output sudo make
+	if [[ -d "/usr/src/gtest/lib" ]]; then
+	    hide_output sudo mv /usr/src/gtest/lib/libg* /usr/lib/
+	else
+	    hide_output sudo mv /usr/src/gtest/libg* /usr/lib/
+	fi
 	
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
