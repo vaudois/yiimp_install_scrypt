@@ -13,8 +13,8 @@ function package_compile_crypto
     output " >--> Installing needed Package to compile crypto currency"
     sleep 3
 
-    	apt_install libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils git cmake libboost-all-dev zlib1g-dev libz-dev
-	apt_install libzmq5 libseccomp-dev libcap-dev libminiupnpc-dev gettext
+    	apt_install build-essential libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq5
+	apt_install libssl-dev libevent-dev libseccomp-dev libcap-dev libminiupnpc-dev libboost-all-dev zlib1g-dev libz-dev
 	if [ "${DISTRO}" == "16" ] || [ "${DISTRO}" == "18" ]; then
 		apt_install libminiupnpc10
 		sudo add-apt-repository -y ppa:bitcoin/bitcoin -qq > /dev/null 2>&1
@@ -27,7 +27,6 @@ function package_compile_crypto
 	fi
     	apt_install libcanberra-gtk-module libqrencode-dev libzmq3-dev
     	apt_install libqt5gui5 libqt5core5a libqt5webkit5-dev libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
-	apt_install build-essential libzmq5 libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils git cmake libboost-all-dev
 	apt_install zlib1g-dev libz-dev libseccomp-dev libcap-dev libminiupnpc-dev gettext libcanberra-gtk-module libqrencode-dev libzmq3-dev
 	apt_install libqt5gui5 libqt5core5a libqt5webkit5-dev libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
  	output " >--> Updating system Distro ${DISTRO}..."
@@ -37,5 +36,5 @@ function package_compile_crypto
 	apt_install libpgm-dev libhidapi-dev libusb-1.0-0-dev libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev
 	apt_install libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev
 	apt_install python3 ccache doxygen graphviz default-libmysqlclient-dev libnghttp2-dev librtmp-dev libssh2-1 libssh2-1-dev libldap2-dev libidn11-dev libpsl-dev
- 	apt_install libbrotli-dev liblbfgs-dev liblbfgsb-dev libssh-dev
+ 	apt_install liblbfgs-dev liblbfgsb-dev libbrotli-dev libssh-dev
 }
