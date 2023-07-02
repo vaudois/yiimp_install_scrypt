@@ -164,17 +164,23 @@ function get_default_privateip {
 
 
 # terminal art start screen.
-function term_art_server {
+function term_art_server
+{
+	if [[ "${DISTRO}" == "20" ]]; then
+ 		PHPINSTALL=8.2
+   	else
+    		PHPINSTALL=7.3
+      	fi
 	clear
 	echo
 	startlogo
 	echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!				$COL_RESET"
-	echo -e "$GREEN  Version:$COL_RESET$MAGENTA ${TAG}$GREEN Installation on Distro ${MAGENTA}${DISTRO}		$COL_RESET"
+	echo -e "$GREEN  Version:$COL_RESET$MAGENTA ${TAG}$GREEN Installation on Distro ${MAGENTA}${DISTRO}	$COL_RESET"
 	echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
-	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.	$COL_RESET"
+	echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.			$COL_RESET"
 	echo -e "$YELLOW  It will also install a MySQL database and a Web server.				$COL_RESET"
-	echo -e "$YELLOW  MariaDB is used for the database.										$COL_RESET"
-	echo -e "$YELLOW  Nginx is used for the Web server, PHP 7.3 is also installed.			$COL_RESET"
+	echo -e "$YELLOW  MariaDB is used for the database.							$COL_RESET"
+	echo -e "$YELLOW  Nginx is used for the Web server, PHP$MAGENTA ${PHPINSTALL}$YELLOW is also installed.	$COL_RESET"
 	echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
 	echo
 }
