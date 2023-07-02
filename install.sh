@@ -261,6 +261,7 @@ clear
 		sleep 2
 		hide_output sudo systemctl start php7.3-fpm
 		sudo systemctl status php7.3-fpm | sed -n "1,3p"
+		PHPVERSION=7.3
 	fi
 	if [[ ("$DISTRO" == "20") ]]; then
 		sudo apt install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
@@ -271,6 +272,7 @@ clear
 		sleep 2
 		hide_output sudo systemctl start php8.2-fpm
 		sudo systemctl status php8.2-fpm | sed -n "1,3p"
+		PHPVERSION=8.2
 	fi
 
  	
@@ -558,23 +560,19 @@ clear
 	echo
 	echo -e "$CYAN => Creating webserver initial config file $COL_RESET"
 
-	nginxcustomconf "${server_name}"
+	nginxcustomconf "${server_name}" "${PHPVERSION}"
 
 	# Adding user to group, creating dir structure, setting permissions
 	sudo mkdir -p /var/www/$server_name/html
 
 	if [[ ("$sub_domain" == "n" || "$sub_domain" == "N") ]]; then
-		confnginxnotssl "${server_name}"
+		confnginxnotssl "${server_name}" "${PHPVERSION}"
 
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
+		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
 
-    		if [[ ("$DISTRO" == "18") ]]; then
-			hide_output sudo systemctl restart php7.3-fpm.service
-   		else
-     			hide_output sudo systemctl restart php8.2-fpm.service
-		fi
 		echo -e "$GREEN Done...$COL_RESET"
 
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -589,28 +587,21 @@ clear
 			sudo rm /etc/nginx/sites-available/$server_name.conf
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 			# I am SSL Man!
-			confnginxsslnotsub "${server_name}"
+			confnginxsslnotsub "${server_name}" "${PHPVERSION}"
 			echo -e "$GREEN Done...$COL_RESET"
 
 		fi
 
 		hide_output sudo systemctl restart nginx.service
-  		if [[ ("$DISTRO" == "18") ]]; then
-			hide_output sudo systemctl restart php7.3-fpm.service
-  		else
-    			hide_output sudo systemctl restart php8.2-fpm.service
-    		fi
+		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
 	else
-		confnginxnotsslsub "${server_name}" "${sub_domain}"
+		confnginxnotsslsub "${server_name}" "${sub_domain}" "${PHPVERSION}"
 	
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
-  		if [[ ("$DISTRO" == "18") ]]; then
-			hide_output sudo systemctl restart php7.3-fpm.service
-  		else
-    			hide_output sudo systemctl restart php8.2-fpm.service
-    		fi
+		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+
 		echo -e "$GREEN Done...$COL_RESET"
     	
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -625,15 +616,12 @@ clear
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 			# I am SSL Man!
-			confnginxsslsub "${server_name}" "${sub_domain}"
+			confnginxsslsub "${server_name}" "${sub_domain}" "${PHPVERSION}"
 		fi
 
 		hide_output sudo systemctl restart nginx.service
-  		if [[ ("$DISTRO" == "18") ]]; then
-			hide_output sudo systemctl restart php7.3-fpm.service
-  		else
-    			hide_output sudo systemctl restart php8.2-fpm.service
-    		fi
+		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+
 		echo -e "$GREEN Done...$COL_RESET"
     fi
 
@@ -942,13 +930,8 @@ clear
 	sudo rm -rf ${absolutepath}/${nameofinstall}
 	sleep 1
 	sudo rm -rf /var/log/nginx/*
-
 	sleep 2
-	if [[ ("$DISTRO" == "18") ]]; then
-		sudo update-alternatives --set php /usr/bin/php7.3 >/dev/null 2>&1
-	else
-		sudo update-alternatives --set php /usr/bin/php8.2 >/dev/null 2>&1
-	fi
+	sudo update-alternatives --set php /usr/bin/php${PHPVERSION} >/dev/null 2>&1
 	sleep 2
 	sudo systemctl restart cron.service
 	sleep 2
@@ -958,15 +941,9 @@ clear
 	sudo systemctl restart nginx.service
 	sleep 2
 	sudo systemctl status nginx | sed -n "1,3p"
-	if [[ ("$DISTRO" == "18") ]]; then
-		sudo systemctl restart php7.3-fpm.service
-	  	sleep 2
-		sudo systemctl status php7.3-fpm | sed -n "1,3p"
-	else
-		sudo systemctl restart php8.2-fpm.service
-		sleep 2
-		sudo systemctl status php8.2-fpm | sed -n "1,3p"
-	fi
+	sudo systemctl restart php${PHPVERSION}-fpm.service
+	sleep 2
+	sudo systemctl status php${PHPVERSION}-fpm | sed -n "1,3p"
 	sleep 2
 	sudo chmmod 777 /var/web/yaamp/runtime >/dev/null 2>&1
 	sleep 2
