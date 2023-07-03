@@ -100,6 +100,8 @@ clear
 	sudo chmod +x /usr/bin/blocknotify.sh
 	
 	sudo mkdir /var/log/yiimp/ >/dev/null 2>&1
+        hide_output sudo chgrp ${whoami} /var/log/yiimp
+     	hide_output sudo chown ${whoami} /var/log/yiimp
 	sudo touch /var/log/yiimp/debug.log
 	sudo chgrp www-data /var/log/yiimp -R
 	sudo chmod 775 /var/log/yiimp -R
@@ -484,6 +486,8 @@ clear
 	cd ${absolutepath}/yiimp
 	sudo cp -r ${absolutepath}/yiimp/web/ /var/
 	sudo mkdir -p /var/stratum
+        hide_output sudo chgrp ${whoami} /var/stratum
+     	hide_output sudo chown ${whoami} /var/stratum
 	cd ${absolutepath}/stratum
 	sudo cp -a config.sample/. /var/stratum/config/
 	sudo cp -r stratum /var/stratum/
@@ -491,7 +495,11 @@ clear
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /var/stratum/
 	sudo mkdir -p /etc/yiimp
+        hide_output sudo chgrp ${whoami} /etc/yiimp
+     	hide_output sudo chown ${whoami} /etc/yiimp
 	sudo mkdir -p /${absolutepath}/backup/
+        hide_output sudo chgrp ${whoami} /${absolutepath}/backup
+     	hide_output sudo chown ${whoami} /${absolutepath}/backup
 
 	echo '#!/usr/bin/env bash
 
@@ -877,6 +885,8 @@ clear
 	sudo chmod 775 /var/stratum
 
 	sudo mkdir -p /var/yiimp/sauv/ >/dev/null 2>&1
+        hide_output sudo chgrp ${whoami} /var/yiimp/sauv
+     	hide_output sudo chown ${whoami} /var/yiimp/sauv
 	sudo chgrp www-data /var/yiimp -R
 	sudo chmod 775 /var/yiimp -R
 
@@ -893,6 +903,8 @@ clear
 	sudo chmod +x /usr/bin/screens
 	
 	sudo mkdir -p /var/web/crons/ >/dev/null 2>&1
+        hide_output sudo chgrp ${whoami} /var/web/crons
+     	hide_output sudo chown ${whoami} /var/web/crons
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/main.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/main.sh
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/loop2.sh /var/web/crons/
