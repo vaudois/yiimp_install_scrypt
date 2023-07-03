@@ -100,8 +100,8 @@ clear
 	sudo chmod +x /usr/bin/blocknotify.sh
 	
 	sudo mkdir /var/log/yiimp/ >/dev/null 2>&1
-        hide_output sudo chgrp ${whoami} /var/log/yiimp
-     	hide_output sudo chown ${whoami} /var/log/yiimp
+        sudo chgrp ${whoami} /var/log/yiimp
+     	sudo chown ${whoami} /var/log/yiimp
 	sudo touch /var/log/yiimp/debug.log
 	sudo chgrp www-data /var/log/yiimp -R
 	sudo chmod 775 /var/log/yiimp -R
