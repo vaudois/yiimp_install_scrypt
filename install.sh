@@ -517,6 +517,8 @@ clear
 	echo '#!/bin/bash
  	cd /var/stratum/config/ && sudo bash run.sh $*' | sudo -E tee /var/stratum/run.sh >/dev/null 2>&1
 	sudo chmod +x /var/stratum/run.sh
+        hide_output sudo chgrp ${whoami} /var/stratum/run.sh
+     	hide_output sudo chown ${whoami} /var/stratum/run.sh
  
  	sleep 2
   
@@ -531,6 +533,8 @@ clear
 	done
 	exec bash' | sudo -E tee /var/stratum/config/run.sh >/dev/null 2>&1
 	sudo chmod +x /var/stratum/config/run.sh
+        hide_output sudo chgrp ${whoami} /var/stratum/config/run.sh
+     	hide_output sudo chown ${whoami} /var/stratum/config/run.sh
 	sleep 2
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/yaamp.php /var/web/yaamp/core/functions
 
@@ -664,7 +668,10 @@ clear
 	[mysql]
 	user=root
 	password='"${rootpasswd}"'' | sudo -E tee ~/.my.cnf >/dev/null 2>&1
+        hide_output sudo chgrp ${whoami} ~/.my.cnf
+     	hide_output sudo chown ${whoami} ~/.my.cnf
 	sudo chmod 0600 ~/.my.cnf
+
 
 	# Create keys file
 	getconfkeys "panel" "${password}"
@@ -837,6 +844,8 @@ clear
 	[mysql]
 	user=root
 	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/server.conf >/dev/null 2>&1
+        hide_output sudo chgrp ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
+     	hide_output sudo chown ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
 	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/server.conf
 
 	echo 'STORAGE_USER='"${absolutepath}"'
@@ -849,6 +858,8 @@ clear
 	LOG_DIR=/var/log/yiimp
 	PATH_STRATUM='"${STRATUMFILE}"'
 	' | sudo -E tee /etc/serveryiimp.conf >/dev/null 2>&1
+        hide_output sudo chgrp ${whoami} /etc/serveryiimp.conf
+     	hide_output sudo chown ${whoami} /etc/serveryiimp.conf
 
 	updatemotdrebootrequired
 	
