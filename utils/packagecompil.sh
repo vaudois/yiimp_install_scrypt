@@ -35,6 +35,8 @@ function package_compile_crypto
 	apt_install install libgmp-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev
 	apt_install libpgm-dev libhidapi-dev libusb-1.0-0-dev libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev
 	apt_install libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev
-	apt_install python3 ccache doxygen graphviz default-libmysqlclient-dev libnghttp2-dev librtmp-dev libssh2-1 libssh2-1-dev libldap2-dev libidn11-dev libpsl-dev
- 	apt_install liblbfgs-dev liblbfgsb-dev libbrotli-dev libssh-dev
+	apt_install default-libmysqlclient-dev librtmp-dev libssh2-1 libssh2-1-dev libldap2-dev libidn11-dev
+ 	apt_install liblbfgs-dev liblbfgsb-dev libbrotli-dev libssh-dev libnghttp2-dev libpsl-dev
+  	apt_install python3 ccache doxygen graphviz
+
 }
