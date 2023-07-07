@@ -870,11 +870,11 @@ clear
 	updatemotdfsckatreboot
 
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
-	# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
-	VPNSERVER=`curl -q http://ifconfig.me`
-	echo "export yiimpver=$yiimpver" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo "export blckntifypass=$blckntifypass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-	echo "export server_name=\$(hostname -f)" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+		# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
+		VPNSERVER=`curl -q http://ifconfig.me`
+		echo "export yiimpver=$yiimpver" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+		echo "export blckntifypass=$blckntifypass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+		echo "export server_name=\$(hostname -f)" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 		WGPUBKEY=`sudo cat /etc/wireguard/publickey`
 		echo "export MYSQLIP=$wg_ip" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 		echo "export VPNPUBBKEY=$WGPUBKEY" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
