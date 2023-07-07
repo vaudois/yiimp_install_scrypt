@@ -941,6 +941,10 @@ clear
 
  	if [[ ("$DISTRO" == "20") ]]; then
  		sudo sed -i "s|ExplorerController::createUrl|Yii::app()->createUrl|g" /var/web/yaamp/models/db_coinsModel.php
+   		sleep 2
+		SEARCHLINECOINID="echo\sCUFHtml::openTag('fieldset',\sarray('class'=>'inlineLabels'));"
+		INSERTLINESCOINID="echo\tCUFHtml::openTag('fieldset',\tarray('class'=>'inlineLabels'));\nif(empty(\$coin\->id))\t\$coin\->id\t=\tdbolist(\"SELECT\t(MAX(id)+1)\tFROM\tcoins\")[0]['(MAX(id)+1)'];"
+		sudo sed -i "s#${SEARCHLINECOINID}#"${INSERTLINESCOINID}"#" /var/web/yaamp/modules/site/coin_form.php
   	fi
 
 	#Misc
