@@ -444,6 +444,12 @@ clear
   	sleep 1
    	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
     	sleep 1
+   	sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+    	sleep 1
+   	sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+    	sleep 1
+   	sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+    	sleep 1
 
 	URLREPLACEWEBVAR=/var/web
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
