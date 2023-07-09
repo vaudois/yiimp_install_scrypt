@@ -488,8 +488,12 @@ clear
 	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sleep 3
-
-	# Copy Files (Blocknotify,iniparser,Stratum)
+ 
+	# Copy Files (Blocknotify,iniparser,Stratum,web)
+	sudo rm -f ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
+ 	sleep 1
+	sudo cp -r ${absolutepath}/${nameofinstall}/utils/coins ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
+ 	sleep 1  
 	cd ${absolutepath}/yiimp
 	sudo cp -r ${absolutepath}/yiimp/web/ /var/
 	sudo mkdir -p /var/stratum
@@ -679,7 +683,6 @@ clear
      	hide_output sudo chown ${whoami} ~/.my.cnf
 	sudo chmod 0600 ~/.my.cnf
 
-
 	# Create keys file
 	getconfkeys "panel" "${password}"
 
@@ -707,9 +710,6 @@ clear
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2023-02-20-coins.sql
 		fi
-
-
-  
 	else
 		# Import sql dump
 		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
