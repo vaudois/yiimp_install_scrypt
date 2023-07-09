@@ -419,16 +419,19 @@ clear
 	cd ${absolutepath}/stratum/blocknotify
 	sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
 	hide_output sudo make
+ 	sleep 1
 
 	# Compil iniparser
 	cd ${absolutepath}/stratum/iniparser
 	hide_output sudo make
+ 	sleep 1
 
 	# Compil Stratum
 	cd ${absolutepath}/stratum
 	hide_output sudo make
 
 	# Modify Files (Admin_panel), Wallets path, Web Path footer
+ 	sleep 3
 	sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	sleep 3
 	sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
@@ -437,6 +440,10 @@ clear
 	sleep 3
 	sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
 	sleep 3
+ 	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
+  	sleep 1
+   	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
+    	sleep 1
 
 	URLREPLACEWEBVAR=/var/web
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
@@ -700,6 +707,9 @@ clear
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2023-02-20-coins.sql
 		fi
+
+
+  
 	else
 		# Import sql dump
 		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
