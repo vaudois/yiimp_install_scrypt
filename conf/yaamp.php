@@ -6,7 +6,9 @@ function yaamp_get_algos()
 	return array(
 		'sha256',
 		'sha256csm',
+		'sha256dt',
 		'sha256t',
+		'sha3d',
 		'sha512256d',
 		'scrypt',
 		'scryptn',
@@ -32,6 +34,7 @@ function yaamp_get_algos()
 		'decred',
 		'dedal',
 		'deep',
+		'equihash',
 		'heavyhash',
 		'hmq1725',
 		'honeycomb',
@@ -85,6 +88,7 @@ function yaamp_get_algos()
 		'dmd-gr',
 		'myr-gr',
 		'm7m',
+		'memehash',
 		'megabtx',
 		'megamec',
 		'mike',
@@ -125,13 +129,13 @@ function yaamp_get_algos()
 		'yespowerARWN',
 		'whirlpool',
 		'zr5',
-		
 		'astralhash',
 		'globalhash',
 		'jeonghash',
 		'padihash',
 		'pawelhash',
-		
+		'kawpow',
+		'firopow',
 	);
 }
 
@@ -141,6 +145,7 @@ function yaamp_algo_mBTC_factor($algo)
 {
 	switch($algo) {
 	case 'sha256':
+		return 1000;
 	case 'sha256t':
 	case 'blake':
 	case 'blakecoin':
@@ -151,14 +156,27 @@ function yaamp_algo_mBTC_factor($algo)
 	case 'lbry':
 	case 'power2b':
 		return 0.001;
+	case 'scrypt':
+		return 1;
 	case 'gr':
 		return 0.001;
 	case 'mike':
 		return 0.001;
 	case 'yespowerARWN':
 		return 0.001;
+	case 'yespowerLTNCG':
+		return 0.001;
 	case 'vanilla':
 		return 1000;
+	case 'heavyhash':
+	case 'sha512256d':
+		return 1000;
+	case 'equihash':
+		return 0.001;
+	case 'kawpow':
+		return 100;
+	case 'firopow':
+		return 0.001;
 	default:
 		return 1;
 	}
@@ -182,6 +200,7 @@ function yaamp_get_algo_norm($algo)
 		'argon2d250'	=> 1.0,
 		'argon2d-dyn'	=> 1.0,
 		'argon2d4096'	=> 1.0,
+		'equihash'	=> 1.0,
 		'lyra2'		=> 1.0,
 		'lyra2v2'	=> 1.0,
 		'lyra2v3'	=> 1.0,
@@ -205,6 +224,7 @@ function yaamp_get_algo_norm($algo)
 		'yescryptR16'	=> 1.0,
 		'yescryptR32'	=> 1.0,
 		'zr5'		=> 1.0,
+		'kawpow'	=> 1000,
 	);
 
 	if(!isset($a[$algo]))
@@ -218,11 +238,15 @@ function getAlgoColors($algo)
 	$a = array(
 		'sha256'	=> '#d0d0a0',
 		'sha256csm'	=> '#d0d0a0',
+		'sha256dt'	=> '#d0d0f0',
 		'sha256t'	=> '#d0d0f0',
+		'sha3d'		=> '#d0d0f0',
 		'sha512256d'	=> '#d0d0a0',
 		'scrypt'	=> '#c0c0e0',
 		'neoscrypt'	=> '#a0d0f0',
+		'neoscrypt-xaya'	=> '#a0d0f0',
 		'scryptn'	=> '#d0d0d0',
+		'equihash'	=> '#a0c0c0',
 		'c11'		=> '#a0a0d0',
 		'cosa'		=> '#a0a0d0',
 		'decred'	=> '#f0f0f0',
@@ -270,14 +294,16 @@ function getAlgoColors($algo)
 		'myr-gr'	=> '#a0c0f0',
 		'hmq1725'	=> '#ffa0a0',
 		'hsr'		=> '#aa70ff',
+		'kawpow'	=> '#0000ff',
 		'keccak'	=> '#c0f0c0',
 		'keccakc'	=> '#c0f0c0',
 		'heavyhash'	=> '#c0f0c0',
 		'hex'		=> '#c0f0c0',
-		'honeycomb'		=> '#c0f0c0',
+		'honeycomb'	=> '#c0f0c0',
 		'lbry'		=> '#b0d0e0',
 		'luffa'		=> '#a0c0c0',
 		'm7m'		=> '#d0a0a0',
+		'memehash'	=> '#d0f0a0',
 		'megabtx'	=> '#d0f0a0',
 		'megamec'	=> '#d0f0a0',
 		'mike'		=> '#d0f0a0',
@@ -342,6 +368,7 @@ function getAlgoColors($algo)
 		'jeonghash' => '#e2d0d2',
 		'padihash' => '#e2d0d2',
 		'pawelhash' => '#e2d0d2',
+		'firopow'	=> '#F39C12',
 		
 
 		'MN'		=> '#ffffff', // MasterNode Earnings
@@ -359,7 +386,9 @@ function getAlgoPort($algo)
 	$a = array(
 		'sha256'	=> 3333,
 		'sha256csm'	=> 3340,
+		'sha256dt'	=> 3338,
 		'sha256t'	=> 3339,
+		'sha3d'		=> 3335,
 		'sha512256d'	=> 7086,
 		'lbry'		=> 3334,
 		'scrypt'	=> 3433,
@@ -373,6 +402,7 @@ function getAlgoPort($algo)
 		'curvehash'	=> 3343,
 		'dedal'		=> 8833,
 		'deep'		=> 3535,
+		'equihash'	=> 8888,
 		'x11'		=> 3533,
 		'x11evo'	=> 3553,
 		'x11k'		=> 3534,
@@ -422,6 +452,7 @@ function getAlgoPort($algo)
 		'skein'		=> 4933,
 		'sib'		=> 5033,
 		'sonoa'		=> 8733,
+		'kawpow'	=> 5050,
 		'keccak'	=> 5133,
 		'keccakc'	=> 5134,
 		'heavyhash'	=> 5136,
@@ -441,9 +472,10 @@ function getAlgoPort($algo)
 		'blake2s'	=> 5766,
 		'penta'		=> 5833,
 		'rainforest'	=> 7443,
-		'renesis' => 5252,
+		'renesis'	=> 5252,
 		'luffa'		=> 5933,
 		'm7m'		=> 6033,
+		'memehash'	=> 7020,
 		'veltor'	=> 5034,
 		'velvet'	=> 6133,
 		'vitalium'	=> 3233,
@@ -451,7 +483,7 @@ function getAlgoPort($algo)
 		'yescryptR8'	=> 6353,
 		'yescryptR16'	=> 6333,
 		'yescryptR32'	=> 6343,
-		'yespower'	=> 6234,
+		'yespower'		=> 6234,
 		'yespowerIC'	=> 6235,
 		'yespowerR16'	=> 6236,
 		'yespowerRES'	=> 6237,
@@ -486,7 +518,7 @@ function getAlgoPort($algo)
 		'jeonghash'   	=> 8660,
 		'padihash'   	=> 8670,
 		'pawelhash'   	=> 8680,
-		
+		'firopow'		=> 6060,		
 	);
 
 	global $configCustomPorts;
