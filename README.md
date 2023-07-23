@@ -12,7 +12,7 @@ USE THIS SCRIPT ON FRESH INSTALL UBUNTU Server 18.04 / 20.04(beta(final) for tes
 Connect on your VPS =>
 - adduser pool
 - adduser pool sudo
-- su - pool
+- sudo su - pool
 - sudo apt -y install git
 - git clone https://github.com/vaudois/yiimp_install_scrypt.git
 - cd yiimp_install_scrypt/
