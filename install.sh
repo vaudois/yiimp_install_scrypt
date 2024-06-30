@@ -24,7 +24,7 @@ clear
 	githubrepoKudaraidee=https://github.com/firefox2014/yiimp.git
 	githubrepoAfinielTech=https://github.com/Afiniel-tech/yiimp.git
 	githubrepoAfiniel=https://github.com/afiniel/yiimp.git
-	githubrepoSabiasQue=https://github.com/SabiasQueSpace/yiimp.git
+	githubrepoSabiasQue=https://github.com/cryptopool-builders/yiimp.git
 	
 	githubstratum=https://github.com/vaudois/stratum.git
 
