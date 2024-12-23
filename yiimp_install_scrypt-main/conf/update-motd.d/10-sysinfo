@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+#
+#    10-sysinfo - generate the system information
+#    Copyright (c) 2013 Nick Charlton
+#
+#    Authors: Nick Charlton <hello@nickcharlton.net>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#####################################################
+# Updated by Vaudois for Crypto use...
+#####################################################
+source /etc/functions.sh
+source /etc/serveryiimp.conf
+
+startlogo
+printf "\n"
+printf "  Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "Server Yiimp Version versiontag"
+printf "\n"
+
+date=`date`
+ps -aux | grep "[m]ain" > /dev/null 2>&1
+if [[ "$?" == "0" ]]; then
+        main="running"
+else
+        main="stopped"
+fi
+ps -aux | grep "[b]locks" > /dev/null 2>&1
+if [[ "$?" == "0" ]]; then
+        blocks="running"
+else
+        blocks="stopped"
+fi
+ps -aux | grep "[l]oop2" > /dev/null 2>&1
+if [[ "$?" == "0" ]]; then
+        loop2="running"
+else
+        loop2="stopped"
+fi
+ps -aux | grep "[l]og/yiimp/debug.log" > /dev/null 2>&1
+if [[ "$?" == "0" ]]; then
+        debug="running"
+else
+        debug="stopped"
+fi
+daemon="${STORAGE_USER}/wallets"
+site="${STORAGE_SITE}"
+hint1="To view a screen type,screen -r main|loop2|blocks|debug"
+hint2="To detach from a screen type, ctrl+a+d"
+function likame {
+	echo "  ====================================================================================="
+}
+header=" %-7s %-25s %-16s %-15s\n"
+width=50
+RED=$'\033[00;31m'
+GREEN=$'\033[00;32m'
+YELLO=$'\033[00;33m'    # YELLO=$ESC_SEQ"33;01m" Darker Yello
+YELLOL=$'\033[33;01m'   # YELLOL=$'\033[33;01m' Smooth Yellow
+RESTORE=$'\033[0m'
+likame
+echo -e "$YELLOL  Current date and time:$GREEN $date $COL_RESET $RESTORE"
+echo
+echo -e "$YELLOL  System information:$RESTORE"
+echo
+/usr/bin/landscape-sysinfo
+likame
+echo -e "$YELLOL  Pool Status:$RESTORE"
+
+if [[ $main = stopped ]]; then
+printf "$header" "  Main:  "  $RED$main$RESTORE"$YELLO 	Daemon Directory:$RESTORE $YELLOL$daemon$RESTORE"
+else
+printf "$header" "  Main:  "  $GREEN$main$RESTORE"$YELLO 	Daemon Directory:$RESTORE $YELLOL$daemon$RESTORE"
+fi
+if [[ $blocks = stopped ]]; then
+printf "$header" "  Blocks:" $RED$blocks$RESTORE"$YELLO 	YiiMP Directory:$RESTORE $YELLOL$site$RESTORE"
+else
+printf "$header" "  Blocks:" $GREEN$blocks$RESTORE"$YELLO 	YiiMP Directory:$RESTORE $YELLOL$site$RESTORE"
+fi
+if [[ $debug = stopped ]]; then
+printf "$header" "  Debug: "  $RED$debug$RESTORE"$GREEN 	Hint:$RESTORE $YELLOL$hint2$RESTORE"
+else
+printf "$header" "  Debug: "  $GREEN$debug$RESTORE"$GREEN 	Hint:$RESTORE $YELLOL$hint2$RESTORE"
+fi
+if [[ $loop2 = stopped ]]; then
+printf "$header" "  Loop2:  "$RED$loop2$RESTORE"$GREEN 	Hint:$RESTORE $YELLOL$hint1$RESTORE"
+else
+printf "$header" "  Loop2:  "$GREEN$loop2$RESTORE"$GREEN 	Hint:$RESTORE $YELLOL$hint1$RESTORE"
+fi
+likame
+echo -e "$YELLOL  To$GREEN Start $YELLOL|$RED stop $YELLOL| $YELLO restart $YELLOL| a screen use the following command.$RESTORE"
+echo
+echo -e "$YELLOL  screens$GREEN start $YELLOL|$RED stop $YELLOL|$YELLO restart $YELLOL|$RESTORE main $YELLOL|$RESTORE loop2 $YELLOL|$RESTORE blocks $YELLOL|$RESTORE debug"
+likame
+echo -e "$YELLOL  To reload this page just type:$RESTORE$GREEN motd $RESTORE"
+echo
+donations
+echo
+/usr/lib/update-notifier/update-motd-reboot-required
+/usr/lib/update-notifier/apt-check --human-readable
+echo
