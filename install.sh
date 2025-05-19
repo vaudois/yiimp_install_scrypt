@@ -8,11 +8,11 @@
 #   Install yiimp on Ubuntu 18.04 & 20.04* running Nginx, MariaDB, and php7.3**
 #   *  phase beta (final if run :-D ) for testing (possible more errors)
 #   ** not supported
-#   v2.2
+#   v2.3
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v2.2
+	TAG=v2.3
 fi
 
 NPROC=$(nproc)
