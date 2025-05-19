@@ -5,14 +5,13 @@
 # Current Author: Vaudois
 #
 # Program:
-#   Install yiimp on Ubuntu 18.04 & 20.04* running Nginx, MariaDB, and php7.3**
-#   *  phase beta (final if run :-D ) for testing (possible more errors)
-#   ** not supported
-#   v2.3
+#   Install yiimp on Ubuntu 20.04 & 22.04 running Nginx, MariaDB, and PHP 8.2/8.3
+#   Removed support for Ubuntu 18.04 (end of standard support)
+#   v2.2.9 beta
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v2.3
+	TAG=v2.2.9
 fi
 
 NPROC=$(nproc)
@@ -101,8 +100,8 @@ clear
 	sudo chmod +x /usr/bin/blocknotify.sh
 	
 	sudo mkdir /var/log/yiimp/ >/dev/null 2>&1
-        sudo chgrp ${whoami} /var/log/yiimp
-     	sudo chown ${whoami} /var/log/yiimp
+	sudo chgrp ${whoami} /var/log/yiimp
+	sudo chown ${whoami} /var/log/yiimp
 	sudo touch /var/log/yiimp/debug.log
 	sudo chgrp www-data /var/log/yiimp -R
 	sudo chmod 775 /var/log/yiimp -R
@@ -130,10 +129,8 @@ clear
 	read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
 		read -e -p "Enter a Local Wireguard Private IP for this server (${PRIVATE_IP}): " wg_ip
-	# curl -q http://ifconfig.me
 	fi
 	read -e -p "Desired Yiimp install?(1=Kudaraidee(error white page),2=tpruvot,3=Afiniel-Tech,4=Afiniel,5=SabiasQue,6=Tpfuemp) [6 by default] : " yiimpver
-
 
 	clear
 	term_art_server
@@ -159,12 +156,12 @@ clear
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
 		echo "Wireguard wg0 IP:    $wg_ip"
 	fi
-	echo "Yiimb Github choice: $yiimpver"
+	echo "Yiimp Github choice: $yiimpver"
 
-    	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
-    	echo -e "\n\n"
+	read -e -p "Press ENTER to continue or CTRL-C to exit and start over" dummy
+	echo -e "\n\n"
 	
-    	clear
+	clear
 	term_art_server
 
 	# Update package and Upgrade Ubuntu
@@ -189,7 +186,7 @@ clear
 	echo -e "$CYAN Switching to Aptitude $COL_RESET"
 	sleep 3
 	apt_install aptitude
-	echo -e "$GREEN Done...$COL_RESET $COL_RESET"
+	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing Nginx
 	echo
@@ -238,60 +235,52 @@ clear
 	sudo systemctl status mysql | sed -n "1,3p"
 	echo -e "$GREEN Done...$COL_RESET"
 
-	# Installing Installing php and other files
+	# Installing PHP and other files
 	echo
 	echo -e "$CYAN => Update system & Install PHP & build-essential : $COL_RESET"
 	sleep 3
 
 	apt_install software-properties-common build-essential
 
-	if [ ! -f /etc/apt/sources.list.d/ondrej-php-bionic.list ]; then
+	if [ ! -f /etc/apt/sources.list.d/ondrej-php.list ]; then
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
+		hide_output sudo apt -y update
 	fi
- 	echo -e "$YELLOW >--> Updating system...$COL_RESET"
-  	hide_output sudo apt -y update
-   	sleep 2
-   	echo -e "$YELLOW >--> Installing php...$COL_RESET"
-	if [[ ("$DISTRO" == "18") ]]; then
-		apt_install php7.3-fpm php7.3-opcache php7.3 php7.3-common php7.3-gd php7.3-mysql php7.3-imap php7.3-cli
-		apt_install php7.3-cgi php-pear imagemagick libruby php7.3-curl php7.3-intl php7.3-pspell mcrypt
-		apt_install php7.3-recode php7.3-sqlite3 php7.3-tidy php7.3-xmlrpc php7.3-xsl php-imagick php7.3-zip
-		apt_install php7.3-mbstring libpsl-dev libnghttp2-dev php7.3-memcache php7.3-memcached php-curl
-		apt_install php-mbstring php-zip php-gd php-json memcached php-memcache
-		sudo phpenmod mbstring
-		apt_install php-gettext
-  		echo
-		sleep 2
-		hide_output sudo systemctl start php7.3-fpm
-		sudo systemctl status php7.3-fpm | sed -n "1,3p"
-		PHPVERSION=7.3
-	fi
-	if [[ ("$DISTRO" == "20") ]]; then
+	echo -e "$YELLOW >--> Installing php...$COL_RESET"
+	if [[ "$DISTRO" == "20" ]]; then
 		apt_install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
 		apt_install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
-		apt_install php8.2-sqlite3 php8.2-tidy php8.2-xmlrpc php8.2-xsl php8.2-zip
+		apt_install php8.2-sqlite3 php8.2-tidy php8.2-xml php8.2-zip
 		apt_install php8.2-mbstring php8.2-memcache php8.2-memcached memcached php-memcache php-memcached
-		echo
-		sleep 2
+		sudo phpenmod mbstring
+		apt_install php8.2-gettext
 		hide_output sudo systemctl start php8.2-fpm
 		sudo systemctl status php8.2-fpm | sed -n "1,3p"
 		PHPVERSION=8.2
+	elif [[ "$DISTRO" == "22" ]]; then
+		apt_install php8.3-fpm php8.3-opcache php8.3 php8.3-common php8.3-gd php8.3-mysql php8.3-imap php8.3-cli
+		apt_install php8.3-cgi php8.3-curl php8.3-intl php8.3-pspell
+		apt_install php8.3-sqlite3 php8.3-tidy php8.3-xml php8.3-zip
+		apt_install php8.3-mbstring php8.3-memcache php8.3-memcached memcached php-memcache php-memcached
+		sudo phpenmod mbstring
+		apt_install php8.3-gettext
+		hide_output sudo systemctl start php8.3-fpm
+		sudo systemctl status php8.3-fpm | sed -n "1,3p"
+		PHPVERSION=8.3
 	fi
 
 	sleep 5
 	echo -e "$GREEN Done...$COL_RESET"
 
-	# fix CDbConnection failed to open the DB connection.
+	# Fix CDbConnection failed to open the DB connection.
 	echo
 	echo -e "$CYAN => Fixing DBconnection issue $COL_RESET"
- 	if [[ ("$DISTRO" == "18") ]]; then
-		apt_install php8.1-mysql
- 	else
- 		apt_install php8.2-mysql
-  	fi
-	echo
+	if [[ "$DISTRO" == "20" ]]; then
+		apt_install php8.2-mysql
+	elif [[ "$DISTRO" == "22" ]]; then
+		apt_install php8.3-mysql
+	fi
 	hide_output service nginx restart
-
 	echo -e "$GREEN Done$COL_RESET"
     
 	# Installing other needed files
@@ -299,24 +288,27 @@ clear
 	echo -e "$CYAN => Installing other needed files : $COL_RESET"
 	sleep 3
 
-	apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev gnutls-dev \
-	librtmp-dev sendmail mutt screen git
-	
+	if [[ "$DISTRO" == "22" ]]; then
+		apt_install libgmp-dev libmariadb-dev libcurl4-openssl-dev libkrb5-dev libldap2-dev libidn2-dev \
+		gnutls-dev librtmp-dev sendmail mutt screen git
+	else
+		apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev \
+		gnutls-dev librtmp-dev sendmail mutt screen git
+	fi
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
 	# Installing Package to compile crypto currency
 	echo
 	echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
-
 	sleep 3
 	package_compile_crypto
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Generating Random Passwords
-	password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
-	password2=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
-	AUTOGENERATED_PASS=`pwgen -c -1 20`
+	password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+	password2=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+	AUTOGENERATED_PASS=$(pwgen -c -1 20)
 
 	# Test Email
 	echo
@@ -324,16 +316,15 @@ clear
 	sleep 3
 
 	if [[ "$root_email" != "" ]]; then
-		echo $root_email > sudo tee --append ~/.email
-		echo $root_email > sudo tee --append ~/.forward
+		echo $root_email | sudo tee --append ~/.email
+		echo $root_email | sudo tee --append ~/.forward
 
 		if [[ ("$send_email" == "y" || "$send_email" == "Y" || "$send_email" == "") ]]; then
-			echo "This is a mail test for the SMTP Service." > sudo tee --append /tmp/email.message
-			echo "You should receive this !" >> sudo tee --append /tmp/email.message
-			echo "" >> sudo tee --append /tmp/email.message
-			echo "Cheers" >> sudo tee --append /tmp/email.message
-			sudo sendmail -s "SMTP Testing" $root_email < sudo tee --append /tmp/email.message
-
+			echo "This is a mail test for the SMTP Service." | sudo tee --append /tmp/email.message
+			echo "You should receive this !" >> /tmp/email.message
+			echo "" >> /tmp/email.message
+			echo "Cheers" >> /tmp/email.message
+			sudo sendmail -s "SMTP Testing" $root_email < /tmp/email.message
 			sudo rm -f /tmp/email.message
 			echo "Mail sent"
 		fi
@@ -345,25 +336,21 @@ clear
 	echo -e "$CYAN => Some optional installs (Fail2Ban & UFW) $COL_RESET"
 	sleep 3
 
-    if [[ ("$install_fail2ban" == "y" || "$install_fail2ban" == "Y" || "$install_fail2ban" == "") ]]; then
+	if [[ ("$install_fail2ban" == "y" || "$install_fail2ban" == "Y" || "$install_fail2ban" == "") ]]; then
 		apt_install fail2ban
 		sudo systemctl status fail2ban | sed -n "1,3p"
 	fi
 
 	apt_install ufw
-
 	hide_output sudo ufw default deny incoming
 	hide_output sudo ufw default allow outgoing
-
 	hide_output sudo ufw allow ssh
 	hide_output sudo ufw allow http
 	hide_output sudo ufw allow https
-
 	hide_output sudo ufw --force enable
 	sleep 3
 	sudo systemctl status ufw | sed -n "1,3p"
-
-    echo -e "$GREEN Done...$COL_RESET"
+	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing PhpMyAdmin
 	echo
@@ -378,64 +365,54 @@ clear
 	echo "phpmyadmin phpmyadmin/app-password-confirm password $AUTOGENERATED_PASS" | sudo debconf-set-selections
 
 	apt_install phpmyadmin
-	
-    echo -e "$GREEN Done...$COL_RESET"
+	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing Yiimp
 	echo
 	echo -e "$CYAN => Installing Yiimp $COL_RESET"
-	echo -e "$YELLOW >--> Grabbing yiimp fron Github, building files and setting file structure.$COL_RESET "
+	echo -e "$YELLOW >--> Grabbing yiimp from Github, building files and setting file structure.$COL_RESET "
 	sleep 3
 
-    # Generating Random Password for stratum
-	blckntifypass=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
+	# Generating Random Password for stratum
+	blckntifypass=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
-    # Download Version of Yiimp and stratum
-    cd ~
-    if [[ ("$yiimpver" == "1" || "$yiimpver" == "") ]];then
-		cd ~
+	# Download Version of Yiimp and stratum
+	cd ~
+	if [[ ("$yiimpver" == "1" || "$yiimpver" == "") ]]; then
 		hide_output sudo git clone $githubrepoKudaraidee
 	elif [[ "$yiimpver" == "2" ]]; then
-		cd ~
 		hide_output sudo git clone $githubyiimptpruvot
-		cd ~
 	elif [[ "$yiimpver" == "3" ]]; then
-		cd ~
 		hide_output sudo git clone $githubrepoAfinielTech
 	elif [[ "$yiimpver" == "4" ]]; then
-		cd ~
 		hide_output sudo git clone $githubrepoAfiniel -b next
 	elif [[ "$yiimpver" == "5" ]]; then
-		cd ~
 		hide_output sudo git clone $githubrepoSabiasQue
 	elif [[ "$yiimpver" == "6" ]]; then
-		cd ~
 		hide_output sudo git clone $githubrepoTpfuemp
 	else
-		cd ~
 		hide_output sudo git clone $githubrepoTpfuemp
 	fi
 
-	cd ~
 	hide_output sudo git clone $githubstratum
 
-	# Compil Blocknotify
+	# Compile Blocknotify
 	cd ${absolutepath}/stratum/blocknotify
 	sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
 	hide_output sudo make
- 	sleep 1
+	sleep 1
 
-	# Compil iniparser
+	# Compile iniparser
 	cd ${absolutepath}/stratum/iniparser
 	hide_output sudo make
- 	sleep 1
+	sleep 1
 
-	# Compil Stratum
+	# Compile Stratum
 	cd ${absolutepath}/stratum
 	hide_output sudo make
 
 	# Modify Files (Admin_panel), Wallets path, Web Path footer
- 	sleep 3
+	sleep 3
 	sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 	sleep 3
 	sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
@@ -444,16 +421,14 @@ clear
 	sleep 3
 	sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
 	sleep 3
- 	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
-  	sleep 1
-   	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
-    	sleep 1
-   	sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-    	sleep 1
-   	sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-    	sleep 1
-   	sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-    	sleep 1
+	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
+	sleep 1
+	sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+	sleep 1
+	sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+	sleep 1
+	sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+	sleep 1
 
 	URLREPLACEWEBVAR=/var/web
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
@@ -462,20 +437,7 @@ clear
 	cd ${absolutepath}/yiimp/web/yaamp/
 	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
-	sleep 3
-
-	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
-	sleep 3
-
-	cd ${absolutepath}/yiimp/web/yaamp/
-	sleep 3
-	sudo find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
-	sleep 3
-
-	sleep 3
-	sudo find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
-	sleep 3
 
 	URLREPLACEWEBWAL=${absolutepath}/wallets/
 	URLSCRYPTODATAWALLET=/home/crypto-data/wallets/
@@ -484,31 +446,16 @@ clear
 	cd ${absolutepath}/yiimp/web/yaamp/
 	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
-	sleep 3
-
-	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
-	sleep 3
-
-	cd ${absolutepath}/yiimp/web/yaamp/
-	sleep 3
-	sudo find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
-	sleep 3
-
-	sleep 3
-	sudo find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
-	sleep 3
  
-	# Copy Files (Blocknotify,iniparser,Stratum,web)
+	# Copy Files (Blocknotify, iniparser, Stratum, web)
 	sudo rm -f ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
- 	sleep 1
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/coins ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
- 	sleep 1  
 	cd ${absolutepath}/yiimp
 	sudo cp -r ${absolutepath}/yiimp/web/ /var/
 	sudo mkdir -p /var/stratum
-        hide_output sudo chgrp ${whoami} /var/stratum
-     	hide_output sudo chown ${whoami} /var/stratum
+	sudo chgrp ${whoami} /var/stratum
+	sudo chown ${whoami} /var/stratum
 	cd ${absolutepath}/stratum
 	sudo cp -a config.sample/. /var/stratum/config/
 	sudo cp -r stratum /var/stratum/
@@ -516,11 +463,11 @@ clear
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
 	sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /var/stratum/
 	sudo mkdir -p /etc/yiimp
-        hide_output sudo chgrp ${whoami} /etc/yiimp
-     	hide_output sudo chown ${whoami} /etc/yiimp
+	sudo chgrp ${whoami} /etc/yiimp
+	sudo chown ${whoami} /etc/yiimp
 	sudo mkdir -p /${absolutepath}/backup/
-        hide_output sudo chgrp ${whoami} /${absolutepath}/backup
-     	hide_output sudo chown ${whoami} /${absolutepath}/backup
+	sudo chgrp ${whoami} /${absolutepath}/backup
+	sudo chown ${whoami} /${absolutepath}/backup
 
 	echo '#!/usr/bin/env bash
 
@@ -532,16 +479,15 @@ clear
 	cd $DIR' | sudo -E tee /bin/yiimp >/dev/null 2>&1
 	sudo chmod +x /bin/yiimp
 
-	#fixing run.sh
+	# Fixing run.sh
 	sudo rm -r /var/stratum/config/run.sh
-
 	echo '#!/bin/bash
- 	cd /var/stratum/config/ && sudo bash run.sh $*' | sudo -E tee /var/stratum/run.sh >/dev/null 2>&1
+	cd /var/stratum/config/ && sudo bash run.sh $*' | sudo -E tee /var/stratum/run.sh >/dev/null 2>&1
 	sudo chmod +x /var/stratum/run.sh
-        hide_output sudo chgrp ${whoami} /var/stratum/run.sh
-     	hide_output sudo chown ${whoami} /var/stratum/run.sh
+	sudo chgrp ${whoami} /var/stratum/run.sh
+	sudo chown ${whoami} /var/stratum/run.sh
  
- 	sleep 2
+	sleep 2
   
 	echo '
 	#!/bin/bash
@@ -549,39 +495,28 @@ clear
 	ulimit -u 10240
 	cd /var/stratum
 	while true; do
-	./stratum /var/stratum/config/$1
-	sleep 2
+		./stratum /var/stratum/config/$1
+		sleep 2
 	done
 	exec bash' | sudo -E tee /var/stratum/config/run.sh >/dev/null 2>&1
 	sudo chmod +x /var/stratum/config/run.sh
-        hide_output sudo chgrp ${whoami} /var/stratum/config/run.sh
-     	hide_output sudo chown ${whoami} /var/stratum/config/run.sh
+	sudo chgrp ${whoami} /var/stratum/config/run.sh
+	sudo chown ${whoami} /var/stratum/config/run.sh
 	sleep 2
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/yaamp.php /var/web/yaamp/core/functions
 
-    echo -e "$GREEN Done...$COL_RESET"
+	echo -e "$GREEN Done...$COL_RESET"
 
 	# Update Timezone
 	echo
 	echo -e "$CYAN => Update default timezone. $COL_RESET"
-
-	# Check if link file
-	#sudo [ -L /etc/localtime ] &&  sudo unlink /etc/localtime
-	# Update time zone
-	#sudo ln -sf /usr/share/zoneinfo/$TIME /etc/localtime
-	#apt_install ntpdate
-	# Write time to clock.
-	#sudo hwclock -w
-	#echo -e "$GREEN Done...$COL_RESET"
-
 	echo -e " Setting TimeZone to UTC...$COL_RESET"
 	if [ ! -f /etc/timezone ]; then
 		echo "Setting timezone to UTC."
-		echo "Etc/UTC" > sudo /etc/timezone
+		echo "Etc/UTC" | sudo tee /etc/timezone
 		sudo systemctl restart rsyslog
 	fi
 	sudo systemctl status rsyslog | sed -n "1,3p"
-
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Creating webserver initial config file
@@ -595,63 +530,44 @@ clear
 
 	if [[ ("$sub_domain" == "n" || "$sub_domain" == "N") ]]; then
 		confnginxnotssl "${server_name}" "${PHPVERSION}"
-
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
 		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
-
 		echo -e "$GREEN Done...$COL_RESET"
 
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
-		
 			# Install SSL (without SubDomain)
 			echo
-			echo -e "Install LetsEncrypt and setting SSL (without SubDomain)"
+			echo -e "Install Certbot and setting SSL (without SubDomain)"
 			sleep 3
-			
-			apt_install letsencrypt
-			sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name" -d www."$server_name"
-			sudo rm /etc/nginx/sites-available/$server_name.conf
+			apt_install certbot python3-certbot-nginx
+			sudo certbot --nginx --email "$EMAIL" --agree-tos --no-eff-email -d "$server_name" -d www."$server_name"
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-			# I am SSL Man!
-			confnginxsslnotsub "${server_name}" "${PHPVERSION}"
+			hide_output sudo systemctl restart nginx.service
+			hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
 			echo -e "$GREEN Done...$COL_RESET"
-
 		fi
-
-		hide_output sudo systemctl restart nginx.service
-		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
 	else
 		confnginxnotsslsub "${server_name}" "${sub_domain}" "${PHPVERSION}"
-	
 		sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
 		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
-
 		echo -e "$GREEN Done...$COL_RESET"
-    	
+    
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
-
 			# Install SSL (with SubDomain)
 			echo
-			echo -e "Install LetsEncrypt and setting SSL (with SubDomain)"
-			
-			apt_install letsencrypt
-			sudo letsencrypt certonly -a webroot --webroot-path=/var/web --email "$EMAIL" --agree-tos -d "$server_name" -d "$sub_domain.$server_name"
-			sudo rm /etc/nginx/sites-available/$server_name.conf
+			echo -e "Install Certbot and setting SSL (with SubDomain)"
+			apt_install certbot python3-certbot-nginx
+			sudo certbot --nginx --email "$EMAIL" --agree-tos --no-eff-email -d "$server_name" -d "$sub_domain.$server_name"
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-
-			# I am SSL Man!
-			confnginxsslsub "${server_name}" "${sub_domain}" "${PHPVERSION}"
+			hide_output sudo systemctl restart nginx.service
+			hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+			echo -e "$GREEN Done...$COL_RESET"
 		fi
-
-		hide_output sudo systemctl restart nginx.service
-		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
-
-		echo -e "$GREEN Done...$COL_RESET"
-    fi
+	fi
 
 	# Config Database
 	echo
@@ -671,8 +587,7 @@ clear
 	SQL="${Q1}${Q2}"
 	sudo mysql -u root -p="" -e "$SQL"  
     
-	#Create my.cnf
-
+	# Create my.cnf
 	echo '[clienthost1]
 	user=panel
 	password='"${password}"'
@@ -689,16 +604,15 @@ clear
 	[mysql]
 	user=root
 	password='"${rootpasswd}"'' | sudo -E tee ~/.my.cnf >/dev/null 2>&1
-        hide_output sudo chgrp ${whoami} ~/.my.cnf
-     	hide_output sudo chown ${whoami} ~/.my.cnf
+	sudo chgrp ${whoami} ~/.my.cnf
+	sudo chown ${whoami} ~/.my.cnf
 	sudo chmod 0600 ~/.my.cnf
 
 	# Create keys file
 	getconfkeys "panel" "${password}"
-
 	echo -e "$GREEN Done...$COL_RESET"
 
-	# Peforming the SQL import
+	# Performing the SQL import
 	echo
 	echo -e "$CYAN => Database 'yiimpfrontend' and users 'panel' and 'stratum' created with password $password and $password2, will be saved for you $COL_RESET"
 	sleep 3
@@ -706,29 +620,21 @@ clear
 	cd ~
 	cd ${absolutepath}/${nameofinstall}/conf/db
 	
-	if [[ ("$DISTRO" == "20") ]]; then
-		# Import sql dump
-		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
+	if [[ "$DISTRO" == "20" ]]; then
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
-		
-		if [[ ("$yiimpver" == "5") ]]; then
+		if [[ "$yiimpver" == "5" ]]; then
 			echo -e "$YELLOW => Selected install $yiimpver more sql adding... $COL_RESET"
 			sleep 5
-			cd ${absolutepath}/${nameofinstall}/conf/db
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-articles.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_ratings.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 28-05-2023-article_comments.sql
 			sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2023-02-20-coins.sql
 		fi
 	else
-		# Import sql dump
-		# sudo zcat 2019-11-10-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
 		sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
-		
-		if [[ ("$yiimpver" == "5") ]]; then
+		if [[ "$yiimpver" == "5" ]]; then
 			echo -e "$YELLOW => Selected install $yiimpver more sql adding... $COL_RESET"
 			sleep 5
-			cd ${absolutepath}/${nameofinstall}/conf/db
 			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-articles.sql
 			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_ratings.sql
 			sudo mysql --defaults-group-suffix=host1 --force < 28-05-2023-article_comments.sql
@@ -750,10 +656,7 @@ clear
 	if [[ "$yiimpver" == "5" ]]; then
 		addmoreserverconfig5
 	fi
-
 	echo -e "$GREEN Done...$COL_RESET"
-
-	sleep 3
 
 	# Updating stratum config files with database connection info
 	echo
@@ -790,16 +693,13 @@ clear
 		echo -e "$CYAN => Installing wireguard support.... $COL_RESET"
 		sleep 3
 		hide_output sudo apt update -y
-		hide_output sudo apt install wireguard-dkms wireguard-tools -y
-
+		apt_install wireguard wireguard-tools
 		(umask 077 && printf "[Interface]\nPrivateKey = " | sudo tee /etc/wireguard/wg0.conf > /dev/null)
 		wg genkey | sudo tee -a /etc/wireguard/wg0.conf | wg pubkey | sudo tee /etc/wireguard/publickey
 		sudo sed -i '$a Address = '$wg_ip'/24\nListenPort = 6121\n\n' /etc/wireguard/wg0.conf
 		sudo sed -i '$a #[Peer]\n#PublicKey= Remotes_Public_Key\n#AllowedIPs = Remote_wg0_IP/32\n#Endpoint=Remote_Public_IP:6121\n' /etc/wireguard/wg0.conf
-
 		sudo systemctl start wg-quick@wg0
 		sudo systemctl enable wg-quick@wg0
-
 		sudo ufw allow 6121
 		echo -e "$GREEN Done...$COL_RESET"
 		sleep 3
@@ -813,19 +713,19 @@ clear
 	sleep 2
 
 	REPO="vaudois/daemoncoin-addport-stratum"
-	LATESTVER=$(curl -sL 'https://api.github.com/repos/${REPO}/releases/latest' | jq -r ".tag_name")
+	LATESTVER=$(curl -sL "https://api.github.com/repos/${REPO}/releases/latest" | jq -r ".tag_name")
 
 	temp_dir="$(mktemp -d)" && \
 		sudo git clone -q git@github.com:${REPO%.git} "${temp_dir}" && \
-			cd "${temp_dir}/" && \
+			cd "${temp_dir}" && \
 				sudo git -c advice.detachedHead=false checkout -q tags/${LATESTVER} >/dev/null 2>&1
 	sleep 1
-	test $? -eq 0 ||
+	test $? -eq 0 || \
 		{ 
 			echo
 			echo -e "$RED Error cloning repository. $COL_RESET";
 			echo
-			sudo rm -f $temp_dir
+			sudo rm -rf $temp_dir
 			exit 1;
 		}
 
@@ -864,8 +764,8 @@ clear
 	[mysql]
 	user=root
 	password='"${rootpasswd}"'' | sudo -E tee ${absolutepath}/${installtoserver}/conf/server.conf >/dev/null 2>&1
-        hide_output sudo chgrp ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
-     	hide_output sudo chown ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
+	sudo chgrp ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
+	sudo chown ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
 	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/server.conf
 
 	echo 'STORAGE_USER='"${absolutepath}"'
@@ -878,24 +778,21 @@ clear
 	LOG_DIR=/var/log/yiimp
 	PATH_STRATUM='"${STRATUMFILE}"'
 	' | sudo -E tee /etc/serveryiimp.conf >/dev/null 2>&1
-        hide_output sudo chgrp ${whoami} /etc/serveryiimp.conf
-     	hide_output sudo chown ${whoami} /etc/serveryiimp.conf
+	sudo chgrp ${whoami} /etc/serveryiimp.conf
+	sudo chown ${whoami} /etc/serveryiimp.conf
 
 	updatemotdrebootrequired
-	
 	updatemotdupdatesavailable
-
 	updatemotdhweeol
-
 	updatemotdfsckatreboot
 
 	if [[ ("$wg_install" == "y" || "$wg_install" == "Y") ]]; then
-		# Saving data for possible remote stratum setups (east coast / west coast / europe / asia ????)
-		VPNSERVER=`curl -q http://ifconfig.me`
+		# Saving data for possible remote stratum setups
+		VPNSERVER=$(curl -q http://ifconfig.me)
 		echo "export yiimpver=$yiimpver" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 		echo "export blckntifypass=$blckntifypass" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-		echo "export server_name=\$(hostname -f)" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
-		WGPUBKEY=`sudo cat /etc/wireguard/publickey`
+		echo "export server_name=$(hostname -f)" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
+		WGPUBKEY=$(sudo cat /etc/wireguard/publickey)
 		echo "export MYSQLIP=$wg_ip" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 		echo "export VPNPUBBKEY=$WGPUBKEY" | sudo tee -a ${absolutepath}/${installtoserver}/conf/REMOTE_stratum.conf > /dev/null
 	else
@@ -916,8 +813,8 @@ clear
 	sudo chmod 775 /var/stratum
 
 	sudo mkdir -p /var/yiimp/sauv/ >/dev/null 2>&1
-        hide_output sudo chgrp ${whoami} /var/yiimp/sauv
-     	hide_output sudo chown ${whoami} /var/yiimp/sauv
+	sudo chgrp ${whoami} /var/yiimp/sauv
+	sudo chown ${whoami} /var/yiimp/sauv
 	sudo chgrp www-data /var/yiimp -R
 	sudo chmod 775 /var/yiimp -R
 
@@ -934,8 +831,8 @@ clear
 	sudo chmod +x /usr/bin/screens
 	
 	sudo mkdir -p /var/web/crons/ >/dev/null 2>&1
-        hide_output sudo chgrp ${whoami} /var/web/crons
-     	hide_output sudo chown ${whoami} /var/web/crons
+	sudo chgrp ${whoami} /var/web/crons
+	sudo chown ${whoami} /var/web/crons
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/main.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/main.sh
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/loop2.sh /var/web/crons/
@@ -943,73 +840,97 @@ clear
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/blocks.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/blocks.sh
 
-	#Add to contrab screen-scrypt
+	# Add to crontab screen-scrypt
 	(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
 
-	#fix error screen main
+	# Fix error screen main
 	sudo sed -i 's/"service $webserver start"/"sudo service $webserver start"/g' /var/web/yaamp/modules/thread/CronjobController.php
 	sudo sed -i 's/"service nginx stop"/"sudo service nginx stop"/g' /var/web/yaamp/modules/thread/CronjobController.php
 
-	#fix error screen main "backup sql frontend"
+# Fix error screen main "backup sql frontend"
 	sudo sed -i "s|/root/backup|/var/yiimp/sauv|g" /var/web/yaamp/core/backend/system.php
+	log_message "Fixed backup path in system.php"
 
-	#fix error phpmyadmin
+	# Fix error phpmyadmin
 	FILELIBPHPMYADMIN=/usr/share/phpmyadmin/libraries/sql.lib.php
 	if [[ -f "${FILELIBPHPMYADMIN}" ]]; then
 		sudo sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
+		log_message "Applied phpMyAdmin SQL fix"
+	else
+		log_message "phpMyAdmin SQL lib file not found, skipping fix"
 	fi
 
- 	if [[ ("$DISTRO" == "20") ]]; then
- 		sudo sed -i "s|ExplorerController::createUrl|Yii::app()->createUrl|g" /var/web/yaamp/models/db_coinsModel.php
-   		sleep 2
-		SEARCHLINECOINID="echo\sCUFHtml::openTag('fieldset',\sarray('class'=>'inlineLabels'));"
-		INSERTLINESCOINID="echo\tCUFHtml::openTag('fieldset',\tarray('class'=>'inlineLabels'));\nif(empty(\$coin\->id))\t\$coin\->id\t=\tdbolist(\"SELECT\t(MAX(id)+1)\tFROM\tcoins\")[0]['(MAX(id)+1)'];"
-		sudo sed -i "s#${SEARCHLINECOINID}#"${INSERTLINESCOINID}"#" /var/web/yaamp/modules/site/coin_form.php
-  	fi
+	# Apply Yiimp fixes for PHP 8.x
+	sudo sed -i "s|ExplorerController::createUrl|Yii::app()->createUrl|g" /var/web/yaamp/models/db_coinsModel.php
+	log_message "Applied PHP 8.x fix for db_coinsModel.php"
+	SEARCHLINECOINID="echo\sCUFHtml::openTag('fieldset',\sarray('class'=>'inlineLabels'));"
+	INSERTLINESCOINID="echo\tCUFHtml::openTag('fieldset',\tarray('class'=>'inlineLabels'));\nif(empty(\$coin\->id))\t\$coin\->id\t=\tdbolist(\"SELECT\t(MAX(id)+1)\tFROM\tcoins\")[0]['(MAX(id)+1)'];"
+	sudo sed -i "s#${SEARCHLINECOINID}#"${INSERTLINESCOINID}"#" /var/web/yaamp/modules/site/coin_form.php
+	log_message "Applied PHP 8.x fix for coin_form.php"
 
-	#Misc
+	# Misc
 	cd ${absolutepath}
 	sudo rm -rf ${absolutepath}/yiimp
-	sleep 1
 	sudo rm -rf ${absolutepath}/stratum
-	sleep 1
 	sudo rm -rf ${absolutepath}/${nameofinstall}
-	sleep 1
-	sudo rm -rf /var/log/nginx/*
-	sleep 2
+	log_message "Removed temporary directories: yiimp, stratum, ${nameofinstall}"
+
+	# Truncate Nginx logs instead of deleting
+	sudo truncate -s 0 /var/log/nginx/*.log >/dev/null 2>&1
+	log_message "Truncated Nginx logs"
+
 	sudo update-alternatives --set php /usr/bin/php${PHPVERSION} >/dev/null 2>&1
-	sleep 2
-	sudo systemctl restart cron.service
-	sleep 2
-	sudo systemctl restart mysql
-	sleep 2
-	sudo systemctl status mysql | sed -n "1,3p"
-	sudo systemctl restart nginx.service
-	sleep 2
-	sudo systemctl status nginx | sed -n "1,3p"
-	sudo systemctl restart php${PHPVERSION}-fpm.service
-	sleep 2
-	sudo systemctl status php${PHPVERSION}-fpm | sed -n "1,3p"
-	sleep 2
-	sudo chmmod 777 /var/web/yaamp/runtime >/dev/null 2>&1
-	sleep 2
-	sudo chmmod 777 /var/log/yiimp/debug.log >/dev/null 2>&1
-	sleep 2
-	sudo screens restart main >/dev/null 2>&1
-	sleep 2
-	sudo screens restart blocks >/dev/null 2>&1
-	sleep 2
-	sudo screens restart debug >/dev/null 2>&1
-	sleep 2
-	sudo screens restart loop2 >/dev/null 2>&1
-	sleep 2
+	log_message "Set PHP version to ${PHPVERSION}"
+
+	# Restart and verify services
+	for service in cron mysql nginx php${PHPVERSION}-fpm; do
+		sudo systemctl restart ${service}
+		if sudo systemctl is-active --quiet ${service}; then
+			log_message "Successfully restarted ${service}"
+			sudo systemctl status ${service} | sed -n "1,3p"
+		else
+			log_message "Failed to restart ${service}"
+			echo -e "$RED Failed to restart ${service}! Check logs for details.$COL_RESET"
+		fi
+	done
+
+	# Set secure permissions
+	sudo chmod 775 /var/web/yaamp/runtime >/dev/null 2>&1
+	sudo chown www-data:www-data /var/web/yaamp/runtime >/dev/null 2>&1
+	log_message "Set permissions for /var/web/yaamp/runtime"
+	sudo chmod 775 /var/log/yiimp/debug.log >/dev/null 2>&1
+	sudo chown www-data:www-data /var/log/yiimp/debug.log >/dev/null 2>&1
+	log_message "Set permissions for /var/log/yiimp/debug.log"
+
+	# Manage screens sessions
+	SCREEN_SESSIONS=("main" "blocks" "debug" "loop2")
+	for session in "${SCREEN_SESSIONS[@]}"; do
+		# Check if screens script exists and is executable
+		if [[ -x /usr/bin/screens ]]; then
+			# Attempt to restart the session
+			sudo /usr/bin/screens restart ${session} >/dev/null 2>&1
+			# Verify if the session is running (assuming screens creates a screen session detectable by screen -ls)
+			if screen -ls | grep -q "[0-9]\+\.${session}\s"; then
+				log_message "Successfully restarted screens session: ${session}"
+			else
+				log_message "Failed to restart screens session: ${session}"
+				echo -e "$RED Failed to restart screens session ${session}! Check /usr/bin/screens or session status.$COL_RESET"
+			fi
+		else
+			log_message "Screens script not found or not executable at /usr/bin/screens"
+			echo -e "$RED Screens script not found or not executable at /usr/bin/screens!$COL_RESET"
+		fi
+	done
 
 	echo -e "$GREEN Done...$COL_RESET"
+	log_message "Completed miscellaneous setup and service restarts"
 	sleep 3
 
 	echo
 	install_end_message
+	log_message "Displayed installation end message"
 
 	cd ${absolutepath}
 	cd ~
+	log_message "Installation script completed"
 	echo
