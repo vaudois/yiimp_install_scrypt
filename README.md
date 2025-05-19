@@ -1,7 +1,7 @@
 # Yiimp_install_scrypt v2.2.9 beta (update Mai, 2025)
 ***********************************
 
-## Install script for yiimp on Ubuntu Server  / 20.04 / 22.04 (beta for test)
+## Install script for yiimp on Ubuntu Server 20.04 / 22.04 (beta for test)
 
 USE THIS SCRIPT ON FRESH INSTALL UBUNTU Server 20.04 / 22.04 (beta for test) !
 
