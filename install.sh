@@ -8,10 +8,11 @@
 #   Install yiimp on Ubuntu 20.04 & 22.04 running Nginx, MariaDB, and PHP 8.2/8.3
 #   Removed support for Ubuntu 18.04 (end of standard support)
 #   v2.2.9 beta
+#   Modified for aarch64 compatibility
 ################################################################################
 
 if [ -z "${TAG}" ]; then
-	TAG=v2.2.9
+	TAG=v2.2.9_beta
 fi
 
 NPROC=$(nproc)
@@ -174,6 +175,7 @@ clear
 	hide_output sudo apt -y autoremove
 	apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
 	apt_install figlet curl jq update-motd pwgen
+	log_message "Installed base system packages"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	echo 'PUBLIC_IP='"${PUBLIC_IP}"'
@@ -186,6 +188,7 @@ clear
 	echo -e "$CYAN Switching to Aptitude $COL_RESET"
 	sleep 3
 	apt_install aptitude
+	log_message "Installed aptitude"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing Nginx
@@ -197,6 +200,7 @@ clear
 		echo -e "Removing apache..."
 		hide_output apt-get -y purge apache2 apache2-*
 		hide_output apt-get -y --purge autoremove
+		log_message "Removed Apache"
 	fi
 
 	apt_install nginx
@@ -206,6 +210,7 @@ clear
 	hide_output sudo systemctl start cron.service
 	hide_output sudo systemctl enable cron.service
 	sudo systemctl status nginx | sed -n "1,3p"
+	log_message "Installed and started Nginx"
 	echo -e "$GREEN Done...$COL_RESET"
 	
 
@@ -219,6 +224,7 @@ clear
 		~*crawler       1;
 		~*bandit        1;
 	}' | sudo -E tee /etc/nginx/blockuseragents.rules >/dev/null 2>&1
+	log_message "Configured Nginx user agent blocking"
 
 	# Installing Mariadb
 	echo
@@ -233,6 +239,7 @@ clear
 	hide_output sudo systemctl enable mysql
 	sleep 5
 	sudo systemctl status mysql | sed -n "1,3p"
+	log_message "Installed and started MariaDB"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing PHP and other files
@@ -245,6 +252,7 @@ clear
 	if [ ! -f /etc/apt/sources.list.d/ondrej-php.list ]; then
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
 		hide_output sudo apt -y update
+		log_message "Added ondrej/php PPA"
 	fi
 	echo -e "$YELLOW >--> Installing php...$COL_RESET"
 	if [[ "$DISTRO" == "20" ]]; then
@@ -257,6 +265,7 @@ clear
 		hide_output sudo systemctl start php8.2-fpm
 		sudo systemctl status php8.2-fpm | sed -n "1,3p"
 		PHPVERSION=8.2
+		log_message "Installed PHP 8.2 and dependencies"
 	elif [[ "$DISTRO" == "22" ]]; then
 		apt_install php8.3-fpm php8.3-opcache php8.3 php8.3-common php8.3-gd php8.3-mysql php8.3-imap php8.3-cli
 		apt_install php8.3-cgi php8.3-curl php8.3-intl php8.3-pspell
@@ -267,6 +276,7 @@ clear
 		hide_output sudo systemctl start php8.3-fpm
 		sudo systemctl status php8.3-fpm | sed -n "1,3p"
 		PHPVERSION=8.3
+		log_message "Installed PHP 8.3 and dependencies"
 	fi
 
 	sleep 5
@@ -281,6 +291,7 @@ clear
 		apt_install php8.3-mysql
 	fi
 	hide_output service nginx restart
+	log_message "Fixed DB connection issue"
 	echo -e "$GREEN Done$COL_RESET"
     
 	# Installing other needed files
@@ -292,9 +303,10 @@ clear
 		apt_install libgmp-dev libmariadb-dev libcurl4-openssl-dev libkrb5-dev libldap2-dev libidn2-dev \
 		gnutls-dev librtmp-dev sendmail mutt screen git
 	else
-		apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev \
+		apt_install libgmp-dev libmariadb-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev \
 		gnutls-dev librtmp-dev sendmail mutt screen git
 	fi
+	log_message "Installed additional dependencies"
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
@@ -302,8 +314,30 @@ clear
 	echo
 	echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
 	sleep 3
+
+	# Create temporary swap file for aarch64 with low RAM
+	if [[ "$ARCH" == "aarch64" ]]; then
+		TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+		if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+			log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for compilation."
+			sudo fallocate -l 2G /swapfile >/dev/null 2>&1
+			sudo chmod 600 /swapfile >/dev/null 2>&1
+			sudo mkswap /swapfile >/dev/null 2>&1
+			sudo swapon /swapfile >/dev/null 2>&1
+			log_message "Swap file created and enabled"
+		fi
+	fi
+
 	package_compile_crypto
+	log_message "Compiled cryptocurrency packages"
 	echo -e "$GREEN Done...$COL_RESET"
+
+	# Remove swap file after compilation
+	if [[ "$ARCH" == "aarch64" && "$TOTAL_RAM" -lt 4000 ]]; then
+		sudo swapoff /swapfile >/dev/null 2>&1
+		sudo rm -f /swapfile >/dev/null 2>&1
+		log_message "Removed temporary swap file after compilation"
+	fi
 
 	# Generating Random Passwords
 	password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
@@ -327,6 +361,7 @@ clear
 			sudo sendmail -s "SMTP Testing" $root_email < /tmp/email.message
 			sudo rm -f /tmp/email.message
 			echo "Mail sent"
+			log_message "Sent test email"
 		fi
 	fi
 	echo -e "$GREEN Done...$COL_RESET"
@@ -339,6 +374,7 @@ clear
 	if [[ ("$install_fail2ban" == "y" || "$install_fail2ban" == "Y" || "$install_fail2ban" == "") ]]; then
 		apt_install fail2ban
 		sudo systemctl status fail2ban | sed -n "1,3p"
+		log_message "Installed and started Fail2ban"
 	fi
 
 	apt_install ufw
@@ -350,6 +386,7 @@ clear
 	hide_output sudo ufw --force enable
 	sleep 3
 	sudo systemctl status ufw | sed -n "1,3p"
+	log_message "Installed and configured UFW"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing PhpMyAdmin
@@ -365,6 +402,7 @@ clear
 	echo "phpmyadmin phpmyadmin/app-password-confirm password $AUTOGENERATED_PASS" | sudo debconf-set-selections
 
 	apt_install phpmyadmin
+	log_message "Installed phpMyAdmin"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Installing Yiimp
@@ -395,47 +433,43 @@ clear
 	fi
 
 	hide_output sudo git clone $githubstratum
+	log_message "Cloned Yiimp and stratum repositories"
 
 	# Compile Blocknotify
 	cd ${absolutepath}/stratum/blocknotify
 	sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
 	hide_output sudo make
+	log_message "Compiled blocknotify"
 	sleep 1
 
 	# Compile iniparser
 	cd ${absolutepath}/stratum/iniparser
 	hide_output sudo make
+	log_message "Compiled iniparser"
 	sleep 1
 
 	# Compile Stratum
 	cd ${absolutepath}/stratum
 	hide_output sudo make
+	log_message "Compiled stratum"
+	sleep 1
 
 	# Modify Files (Admin_panel), Wallets path, Web Path footer
-	sleep 3
 	sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
-	sleep 3
 	sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
-	sleep 3
 	sudo sed -i 's@domain:@<?=YAAMP_SITE_URL ?>:@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
-	sleep 3
 	sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
-	sleep 3
 	sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
-	sleep 1
 	sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-	sleep 1
 	sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-	sleep 1
 	sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-	sleep 1
+	log_message "Modified Yiimp configuration files"
 
 	URLREPLACEWEBVAR=/var/web
 	URLSHYIIMPDATA=/home/yiimp-data/yiimp/site/web
 	URLSHCRYPTODATA=/home/crypto-data/yiimp/site/web
 
 	cd ${absolutepath}/yiimp/web/yaamp/
-	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSHYIIMPDATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 	sudo find ./ -type f -exec sed -i 's@'${URLSHCRYPTODATA}'@'${URLREPLACEWEBVAR}'@g' {} \;
 
@@ -443,10 +477,9 @@ clear
 	URLSCRYPTODATAWALLET=/home/crypto-data/wallets/
 	URLSYIIMPDATAWALLET=/home/yiimp-data/wallets/
 
-	cd ${absolutepath}/yiimp/web/yaamp/
-	sleep 3
 	sudo find ./ -type f -exec sed -i 's@'${URLSCRYPTODATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
 	sudo find ./ -type f -exec sed -i 's@'${URLSYIIMPDATAWALLET}'@'${URLREPLACEWEBWAL}'@g' {} \;
+	log_message "Updated file paths in Yiimp"
  
 	# Copy Files (Blocknotify, iniparser, Stratum, web)
 	sudo rm -f ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
@@ -468,6 +501,7 @@ clear
 	sudo mkdir -p /${absolutepath}/backup/
 	sudo chgrp ${whoami} /${absolutepath}/backup
 	sudo chown ${whoami} /${absolutepath}/backup
+	log_message "Copied Yiimp and stratum files"
 
 	echo '#!/usr/bin/env bash
 
@@ -487,8 +521,6 @@ clear
 	sudo chgrp ${whoami} /var/stratum/run.sh
 	sudo chown ${whoami} /var/stratum/run.sh
  
-	sleep 2
-  
 	echo '
 	#!/bin/bash
 	ulimit -n 10240
@@ -502,8 +534,8 @@ clear
 	sudo chmod +x /var/stratum/config/run.sh
 	sudo chgrp ${whoami} /var/stratum/config/run.sh
 	sudo chown ${whoami} /var/stratum/config/run.sh
-	sleep 2
 	sudo cp -r ${absolutepath}/${nameofinstall}/conf/yaamp.php /var/web/yaamp/core/functions
+	log_message "Configured stratum run scripts"
 
 	echo -e "$GREEN Done...$COL_RESET"
 
@@ -517,6 +549,7 @@ clear
 		sudo systemctl restart rsyslog
 	fi
 	sudo systemctl status rsyslog | sed -n "1,3p"
+	log_message "Set timezone to UTC"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Creating webserver initial config file
@@ -534,6 +567,7 @@ clear
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
 		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+		log_message "Configured Nginx without subdomain"
 		echo -e "$GREEN Done...$COL_RESET"
 
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -546,6 +580,7 @@ clear
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 			hide_output sudo systemctl restart nginx.service
 			hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+			log_message "Installed SSL without subdomain"
 			echo -e "$GREEN Done...$COL_RESET"
 		fi
 	else
@@ -554,6 +589,7 @@ clear
 		sudo ln -s /var/web /var/www/$server_name/html
 		hide_output sudo systemctl restart nginx.service
 		hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+		log_message "Configured Nginx with subdomain"
 		echo -e "$GREEN Done...$COL_RESET"
     
 		if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
@@ -565,6 +601,7 @@ clear
 			sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 			hide_output sudo systemctl restart nginx.service
 			hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+			log_message "Installed SSL with subdomain"
 			echo -e "$GREEN Done...$COL_RESET"
 		fi
 	fi
@@ -607,9 +644,11 @@ clear
 	sudo chgrp ${whoami} ~/.my.cnf
 	sudo chown ${whoami} ~/.my.cnf
 	sudo chmod 0600 ~/.my.cnf
+	log_message "Configured MySQL users and .my.cnf"
 
 	# Create keys file
 	getconfkeys "panel" "${password}"
+	log_message "Created Yiimp keys file"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Performing the SQL import
@@ -641,6 +680,7 @@ clear
 			sudo mysql --defaults-group-suffix=host1 --force < 2023-02-20-coins.sql
 		fi
 	fi
+	log_message "Imported Yiimp SQL database"
 	cd ~
 
 	echo -e "$GREEN Done...$COL_RESET"
@@ -656,6 +696,7 @@ clear
 	if [[ "$yiimpver" == "5" ]]; then
 		addmoreserverconfig5
 	fi
+	log_message "Generated Yiimp serverconfig.php"
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Updating stratum config files with database connection info
@@ -684,6 +725,7 @@ clear
 		sudo ssh-keyscan github.com >> ~/.ssh/known_hosts >/dev/null 2>&1
 		sudo ssh-keyscan github.com >> ~/known_hosts >/dev/null 2>&1
 	fi
+	log_message "Updated stratum configuration"
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
@@ -701,6 +743,7 @@ clear
 		sudo systemctl start wg-quick@wg0
 		sudo systemctl enable wg-quick@wg0
 		sudo ufw allow 6121
+		log_message "Installed and configured WireGuard"
 		echo -e "$GREEN Done...$COL_RESET"
 		sleep 3
 	fi
@@ -726,6 +769,7 @@ clear
 			echo -e "$RED Error cloning repository. $COL_RESET";
 			echo
 			sudo rm -rf $temp_dir
+			log_message "Failed to clone CoinBuild repository"
 			exit 1;
 		}
 
@@ -738,6 +782,7 @@ clear
 		sleep 1
 		./install.sh "${temp_dir}" "${STRATUMFILE}" "${DISTRO}"
 		sudo rm -rf $temp_dir
+		log_message "Installed CoinBuild"
 	fi
 	
 	clear
@@ -767,6 +812,7 @@ clear
 	sudo chgrp ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
 	sudo chown ${whoami} ${absolutepath}/${installtoserver}/conf/server.conf
 	sudo chmod 0600 ${absolutepath}/${installtoserver}/conf/server.conf
+	log_message "Created server.conf"
 
 	echo 'STORAGE_USER='"${absolutepath}"'
 	STORAGE_SITE=/var/web
@@ -780,6 +826,7 @@ clear
 	' | sudo -E tee /etc/serveryiimp.conf >/dev/null 2>&1
 	sudo chgrp ${whoami} /etc/serveryiimp.conf
 	sudo chown ${whoami} /etc/serveryiimp.conf
+	log_message "Created serveryiimp.conf"
 
 	updatemotdrebootrequired
 	updatemotdupdatesavailable
@@ -839,13 +886,16 @@ clear
 	sudo chmod +x /var/web/crons/loop2.sh
 	sudo cp -r ${absolutepath}/${nameofinstall}/utils/blocks.sh /var/web/crons/
 	sudo chmod +x /var/web/crons/blocks.sh
+	log_message "Set final directory permissions and copied MOTD/cron scripts"
 
 	# Add to crontab screen-scrypt
 	(crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
+	log_message "Added screen-scrypt to crontab"
 
 	# Fix error screen main
 	sudo sed -i 's/"service $webserver start"/"sudo service $webserver start"/g' /var/web/yaamp/modules/thread/CronjobController.php
 	sudo sed -i 's/"service nginx stop"/"sudo service nginx stop"/g' /var/web/yaamp/modules/thread/CronjobController.php
+	log_message "Fixed CronjobController.php for service commands"
 
 # Fix error screen main "backup sql frontend"
 	sudo sed -i "s|/root/backup|/var/yiimp/sauv|g" /var/web/yaamp/core/backend/system.php
@@ -869,7 +919,21 @@ clear
 	log_message "Applied PHP 8.x fix for coin_form.php"
 
 	# Misc
-	cd ${absolutepath}
+	log_message "Starting miscellaneous cleanup and service configuration"
+
+	# Create temporary swap file if RAM is low (useful for aarch64 devices like Raspberry Pi)
+	if [[ "$ARCH" == "aarch64" ]]; then
+		TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+		if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+			log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for services."
+			sudo fallocate -l 2G /swapfile >/dev/null 2>&1
+			sudo chmod 600 /swapfile >/dev/null 2>&1
+			sudo mkswap /swapfile >/dev/null 2>&1
+			sudo swapon /swapfile >/dev/null 2>&1
+			log_message "Swap file created and enabled"
+		fi
+	fi
+
 	sudo rm -rf ${absolutepath}/yiimp
 	sudo rm -rf ${absolutepath}/stratum
 	sudo rm -rf ${absolutepath}/${nameofinstall}
@@ -905,11 +969,8 @@ clear
 	# Manage screens sessions
 	SCREEN_SESSIONS=("main" "blocks" "debug" "loop2")
 	for session in "${SCREEN_SESSIONS[@]}"; do
-		# Check if screens script exists and is executable
 		if [[ -x /usr/bin/screens ]]; then
-			# Attempt to restart the session
 			sudo /usr/bin/screens restart ${session} >/dev/null 2>&1
-			# Verify if the session is running (assuming screens creates a screen session detectable by screen -ls)
 			if screen -ls | grep -q "[0-9]\+\.${session}\s"; then
 				log_message "Successfully restarted screens session: ${session}"
 			else
@@ -921,6 +982,13 @@ clear
 			echo -e "$RED Screens script not found or not executable at /usr/bin/screens!$COL_RESET"
 		fi
 	done
+
+	# Remove swap file if created
+	if [[ "$ARCH" == "aarch64" && "$TOTAL_RAM" -lt 4000 ]]; then
+		sudo swapoff /swapfile >/dev/null 2>&1
+		sudo rm -f /swapfile >/dev/null 2>&1
+		log_message "Removed temporary swap file"
+	fi
 
 	echo -e "$GREEN Done...$COL_RESET"
 	log_message "Completed miscellaneous setup and service restarts"
