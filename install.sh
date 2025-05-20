@@ -6,7 +6,6 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 20.04 & 22.04 running Nginx, MariaDB, and PHP 8.2/8.3
-#   Removed support for Ubuntu 18.04 (end of standard support)
 #   v2.2.9 beta
 #   Modified for aarch64 compatibility
 ################################################################################
@@ -135,7 +134,7 @@ clear
 
 	clear
 	term_art_server
-	if [[ ("$yiimpver" -gt "5" || "$yiimpver" -lt "1") ]]; then
+	if [[ ("$yiimpver" -gt "6" || "$yiimpver" -lt "1") ]]; then
 		echo ""
 		echo ""
 		echo -e "$RED  SELECTED $yiimpver it is not correct you have to choose between 1 to 5 !!!!...$COL_RESET"
@@ -316,16 +315,14 @@ clear
 	sleep 3
 
 	# Create temporary swap file for aarch64 with low RAM
-	if [[ "$ARCH" == "aarch64" ]]; then
-		TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
-		if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-			log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for compilation."
-			sudo fallocate -l 2G /swapfile >/dev/null 2>&1
-			sudo chmod 600 /swapfile >/dev/null 2>&1
-			sudo mkswap /swapfile >/dev/null 2>&1
-			sudo swapon /swapfile >/dev/null 2>&1
-			log_message "Swap file created and enabled"
-		fi
+	TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+	if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+		log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for compilation."
+		sudo fallocate -l 2G /swapfile >/dev/null 2>&1
+		sudo chmod 600 /swapfile >/dev/null 2>&1
+		sudo mkswap /swapfile >/dev/null 2>&1
+		sudo swapon /swapfile >/dev/null 2>&1
+		log_message "Swap file created and enabled"
 	fi
 
 	package_compile_crypto
@@ -333,7 +330,7 @@ clear
 	echo -e "$GREEN Done...$COL_RESET"
 
 	# Remove swap file after compilation
-	if [[ "$ARCH" == "aarch64" && "$TOTAL_RAM" -lt 4000 ]]; then
+	if [[ "$TOTAL_RAM" -lt 4000 ]]; then
 		sudo swapoff /swapfile >/dev/null 2>&1
 		sudo rm -f /swapfile >/dev/null 2>&1
 		log_message "Removed temporary swap file after compilation"
@@ -922,16 +919,14 @@ clear
 	log_message "Starting miscellaneous cleanup and service configuration"
 
 	# Create temporary swap file if RAM is low (useful for aarch64 devices like Raspberry Pi)
-	if [[ "$ARCH" == "aarch64" ]]; then
-		TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
-		if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-			log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for services."
-			sudo fallocate -l 2G /swapfile >/dev/null 2>&1
-			sudo chmod 600 /swapfile >/dev/null 2>&1
-			sudo mkswap /swapfile >/dev/null 2>&1
-			sudo swapon /swapfile >/dev/null 2>&1
-			log_message "Swap file created and enabled"
-		fi
+	TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+	if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+		log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for services."
+		sudo fallocate -l 2G /swapfile >/dev/null 2>&1
+		sudo chmod 600 /swapfile >/dev/null 2>&1
+		sudo mkswap /swapfile >/dev/null 2>&1
+		sudo swapon /swapfile >/dev/null 2>&1
+		log_message "Swap file created and enabled"
 	fi
 
 	sudo rm -rf ${absolutepath}/yiimp
@@ -984,7 +979,7 @@ clear
 	done
 
 	# Remove swap file if created
-	if [[ "$ARCH" == "aarch64" && "$TOTAL_RAM" -lt 4000 ]]; then
+	if [[ "$TOTAL_RAM" -lt 4000 ]]; then
 		sudo swapoff /swapfile >/dev/null 2>&1
 		sudo rm -f /swapfile >/dev/null 2>&1
 		log_message "Removed temporary swap file"
