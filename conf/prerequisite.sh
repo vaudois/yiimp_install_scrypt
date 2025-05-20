@@ -4,11 +4,7 @@
 # Updated by cryptopool.builders for crypto use...
 # Modified by Vaudois
 # Updated for Ubuntu 22.04 compatibility, removed Ubuntu 18.04 support
-# Changes:
-# - Added support for Ubuntu 22.04 (DISTRO=22)
-# - Removed support for Ubuntu 18.04 (DISTRO=18) as it is no longer supported
-# - Improved error handling and logging
-# - Maintained compatibility with Ubuntu 20.04
+# Modified for aarch64 compatibility
 #####################################################
 
 ESC_SEQ="\x1b["
@@ -62,15 +58,13 @@ fi
 
 # Check architecture
 ARCHITECTURE=$(uname -m)
-if [ "$ARCHITECTURE" != "x86_64" ]; then
-    if [ -z "$ARM" ]; then
-        echo -e "$RED Yiimp Install Script only supports x86_64 and will not work on other architectures, like ARM or 32-bit OS.$COL_RESET"
-        echo -e "$RED Your architecture is $ARCHITECTURE$COL_RESET"
-        log_message "Unsupported architecture detected: $ARCHITECTURE, exiting"
-        exit 1
-    fi
-    log_message "ARM architecture detected, proceeding with ARM flag"
+if [[ "$ARCHITECTURE" != "x86_64" && "$ARCHITECTURE" != "aarch64" ]]; then
+    echo -e "$RED Yiimp Install Script only supports x86_64 and aarch64 architectures.$COL_RESET"
+    echo -e "$RED Your architecture is $ARCHITECTURE$COL_RESET"
+    log_message "Unsupported architecture detected: $ARCHITECTURE, exiting"
+    exit 1
 fi
+log_message "Architecture detected: $ARCHITECTURE"
 
 # Verify lsb_release command
 if ! command -v lsb_release >/dev/null 2>&1; then
