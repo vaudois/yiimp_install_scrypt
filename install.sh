@@ -290,7 +290,7 @@ clear
         sleep 3
 
         # Create random password
-        root петров =$(openssl rand -base64 12)
+        rootpasswd=$(openssl rand -base64 12)
         export DEBIAN_FRONTEND="noninteractive"
         apt_install mariadb-server
         hide_output sudo systemctl start mysql
