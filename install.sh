@@ -166,12 +166,9 @@ clear
 
 	# Update package and Upgrade Ubuntu
 	echo
-	echo -e "$CYAN => Updating system and installing required packages :$COL_RESET"
+	echo -e "$CYAN => Installing base system packages for Yiimp :$COL_RESET"
 	sleep 3
-        
-	hide_output sudo apt -y update 
-	hide_output sudo apt -y upgrade
-	hide_output sudo apt -y autoremove
+
 	apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
 	apt_install figlet curl jq update-motd pwgen
 	log_message "Installed base system packages"
@@ -243,10 +240,10 @@ clear
 
 	# Installing PHP and other files
 	echo
-	echo -e "$CYAN => Update system & Install PHP & build-essential : $COL_RESET"
+	echo -e "$CYAN => Update system & Install PHP & software-properties $COL_RESET"
 	sleep 3
 
-	apt_install software-properties-common build-essential
+	apt_install software-properties-common
 
 	if [ ! -f /etc/apt/sources.list.d/ondrej-php.list ]; then
 		hide_output sudo add-apt-repository -y ppa:ondrej/php
@@ -295,17 +292,11 @@ clear
     
 	# Installing other needed files
 	echo
-	echo -e "$CYAN => Installing other needed files : $COL_RESET"
+	echo -e "$CYAN => Installing email and utility tools : $COL_RESET"
 	sleep 3
 
-	if [[ "$DISTRO" == "22" ]]; then
-		apt_install libgmp-dev libmariadb-dev libcurl4-openssl-dev libkrb5-dev libldap2-dev libidn2-dev \
-		gnutls-dev librtmp-dev sendmail mutt screen git
-	else
-		apt_install libgmp-dev libmariadb-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev \
-		gnutls-dev librtmp-dev sendmail mutt screen git
-	fi
-	log_message "Installed additional dependencies"
+	apt_install sendmail mutt
+	log_message "Installed email and utility tools"
 	echo -e "$GREEN Done...$COL_RESET"
 	sleep 3
 
@@ -731,7 +722,6 @@ clear
 		echo
 		echo -e "$CYAN => Installing wireguard support.... $COL_RESET"
 		sleep 3
-		hide_output sudo apt update -y
 		apt_install wireguard wireguard-tools
 		(umask 077 && printf "[Interface]\nPrivateKey = " | sudo tee /etc/wireguard/wg0.conf > /dev/null)
 		wg genkey | sudo tee -a /etc/wireguard/wg0.conf | wg pubkey | sudo tee /etc/wireguard/publickey
