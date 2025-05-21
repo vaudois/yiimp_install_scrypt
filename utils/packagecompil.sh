@@ -17,7 +17,7 @@ function package_compile_crypto
     sudo apt -y autoremove -qq > /dev/null 2>&1
 
     # Paquets de base pour la compilation
-    apt_install build-essential libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
+    apt_install build-essential libc6-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
     apt_install libssl-dev libevent-dev libseccomp-dev libcap-dev libminiupnpc-dev libboost-all-dev zlib1g-dev
     apt_install libgmp-dev libmariadb-dev libkrb5-dev gnutls-dev screen
 
