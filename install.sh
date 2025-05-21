@@ -501,13 +501,12 @@ clear
 		# Compile Stratum
 		cd ${absolutepath}/yiimp/stratum
 
-		# Vérifie l'architecture
+		# Detection system
 		ARCH=$(dpkg --print-architecture)
 		if [ "$ARCH" = "arm64" ]; then
-			echo "Architecture ARM64 détectée, exécution de stratum_arm.sh..."
+			echo "ARM64 detected, run script file stratum_arm.sh..."
 			sudo ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum
 		else
-			echo "Architecture non-ARM64, compilation avec paramètres par défaut..."
 			cd ${absolutepath}/yiimp/stratum
 			sudo make
 		fi
@@ -1034,8 +1033,14 @@ clear
 
 	cd ${absolutepath}/yiimp/stratum
 	sudo make clean
+	if [[ ! -f ${absolutepath}/yiimp/stratum/install.log ]]; then
+		sudo rm install.log
+	fi
 	cd ${absolutepath}/stratum
 	sudo make clean
+	if [[ ! -f ${absolutepath}/stratum/install.log ]]; then
+		sudo rm install.log
+	fi
 
 	sudo mv -r ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_${yiimpver}
 	sudo chown ${whoami} ${absolutepath}/stratum_${yiimpver}
