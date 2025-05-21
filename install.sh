@@ -493,26 +493,40 @@ clear
         sleep 1
 
         # Compile iniparser
-        cd ${absolutepath}/stratum/iniparser
+        cd ${absolutepath}/yiimp/stratum/iniparser
         hide_output sudo make
         log_message "Compiled iniparser"
         sleep 1
 
-        # Compile Stratum
-        cd ${absolutepath}/stratum
-        hide_output sudo make
-        log_message "Compiled stratum"
-        sleep 1
+		# Compile Stratum
+		cd ${absolutepath}/yiimp/stratum
+
+		# Vérifie l'architecture
+		ARCH=$(dpkg --print-architecture)
+		if [ "$ARCH" = "arm64" ]; then
+			echo "Architecture ARM64 détectée, exécution de stratum_arm.sh..."
+			sudo ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum
+		else
+			echo "Architecture non-ARM64, compilation avec paramètres par défaut..."
+			cd ${absolutepath}/yiimp/stratum
+			sudo make
+		fi
+		sleep 1
 
         # Modify Files (Admin_panel), Wallets path, Web Path footer
         sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
         sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
         sudo sed -i 's@domain:@<?=YAAMP_SITE_URL ?>:@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
         sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
-        sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
-        sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-        sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
-        sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+		if [[ -f ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php ]]; then
+			sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
+		fi
+		if [[ -f ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php ]]; then
+			sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+			sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+			sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+		fi
+
         log_message "Modified Yiimp configuration files"
 
         URLREPLACEWEBVAR=/var/web
@@ -532,16 +546,19 @@ clear
         log_message "Updated file paths in Yiimp"
  
         # Copy Files (Blocknotify, iniparser, Stratum, web)
-        sudo rm -f ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
-        sudo cp -r ${absolutepath}/${nameofinstall}/utils/coins ${absolutepath}/yiimp/web/yaamp/core/backend/coins.php
         cd ${absolutepath}/yiimp
         sudo cp -r ${absolutepath}/yiimp/web/ /var/
         sudo mkdir -p /var/stratum
         sudo chgrp ${whoami} /var/stratum
         sudo chown ${whoami} /var/stratum
-        cd ${absolutepath}/stratum
+        cd ${absolutepath}/yiimp/stratum
         sudo cp -a config.sample/. /var/stratum/config/
-        sudo cp -r stratum /var/stratum/
+		
+		if [[ -d stratum ]]; then
+			sudo cp -r stratum /var/stratum/
+			log_message "Copied stratum directory to /var/stratum/"
+		fi
+
         cd ${absolutepath}/yiimp
         sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /usr/bin/
         sudo cp -r ${absolutepath}/stratum/blocknotify/blocknotify /var/stratum/
@@ -584,7 +601,7 @@ clear
         sudo chmod +x /var/stratum/config/run.sh
         sudo chgrp ${whoami} /var/stratum/config/run.sh
         sudo chown ${whoami} /var/stratum/config/run.sh
-        sudo cp -r ${absolutepath}/${nameofinstall}/conf/yaamp.php /var/web/yaamp/core/functions
+        # sudo cp -r ${absolutepath}/${nameofinstall}/conf/yaamp.php /var/web/yaamp/core/functions
         log_message "Configured stratum run scripts"
 
         echo -e "$GREEN Done...$COL_RESET"
@@ -996,7 +1013,9 @@ clear
     log_message "Applied PHP 8.x fix for db_coinsModel.php"
     SEARCHLINECOINID="echo\sCUFHtml::openTag('fieldset',\sarray('class'=>'inlineLabels'));"
     INSERTLINESCOINID="echo\tCUFHtml::openTag('fieldset',\tarray('class'=>'inlineLabels'));\nif(empty(\$coin\->id))\t\$coin\->id\t=\tdbolist(\"SELECT\t(MAX(id)+1)\tFROM\tcoins\")[0]['(MAX(id)+1)'];"
-    sudo sed -i "s#${SEARCHLINECOINID}#"${INSERTLINESCOINID}"#" /var/web/yaamp/modules/site/coin_form.php
+	if [[ -f /var/web/yaamp/modules/site/coin_form.php ]]; then
+		sudo sed -i "s#${SEARCHLINECOINID}#${INSERTLINESCOINID}#" /var/web/yaamp/modules/site/coin_form.php
+	fi
     log_message "Applied PHP 8.x fix for coin_form.php"
 
     # Misc
@@ -1013,8 +1032,16 @@ clear
         log_message "Swap file created and enabled"
     fi
 
+	cd ${absolutepath}/yiimp/stratum
+	sudo make clean
+	cd ${absolutepath}/stratum
+	sudo make clean
+
+	sudo mv -r ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_${yiimpver}
+	sudo chown ${whoami} ${absolutepath}/stratum_${yiimpver}
+	sudo mv -r ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_default
+	sudo chown ${whoami} ${absolutepath}/stratum_default
     sudo rm -rf ${absolutepath}/yiimp
-    sudo rm -rf ${absolutepath}/stratum
     sudo rm -rf ${absolutepath}/${nameofinstall}
     log_message "Removed temporary directories: yiimp, stratum, ${nameofinstall}"
 
