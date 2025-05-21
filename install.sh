@@ -1,14 +1,12 @@
 #!/bin/bash
-################################################################################
-# Original Author:   crombiecrunch
-# Fork Author: manfromafar
-# Current Author: Vaudois
+#################################################################################
+# Author: Vaudois
 #
 # Program:
 #   Install yiimp on Ubuntu 20.04 & 22.04 running Nginx, MariaDB, and PHP 8.2/8.3
 #   v2.2.9 beta
-#   Modified for aarch64 compatibility
-################################################################################
+#   Modified for include aarch64 compatibility
+#################################################################################
 
 if [ -z "${TAG}" ]; then
     TAG=v2.2.9_beta
