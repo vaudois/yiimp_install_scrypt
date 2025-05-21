@@ -11,13 +11,14 @@ function package_compile_crypto
     echo " >--> Installing needed packages to compile cryptocurrency"
     sleep 3
 
-    # Mise à jour du système
-    echo " >--> Updating system for Ubuntu 20.04/22.04..."
+    # Activer le dépôt universe si nécessaire
+    echo " >--> Ensuring universe repository is enabled..."
+    sudo add-apt-repository universe -y > /dev/null 2>&1
     sudo apt -y update && sudo apt -y upgrade -qq > /dev/null 2>&1
     sudo apt -y autoremove -qq > /dev/null 2>&1
 
     # Paquets de base pour la compilation
-    apt_install build-essential libc6-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
+    apt_install build-essential libc6-dev libgcc-11-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
     apt_install libssl-dev libevent-dev libseccomp-dev libcap-dev libminiupnpc-dev libboost-all-dev zlib1g-dev
     apt_install libgmp-dev libmariadb-dev libkrb5-dev gnutls-dev screen
 
@@ -43,6 +44,13 @@ function package_compile_crypto
         apt_install libcurl4-gnutls-dev libidn11-dev
     elif [[ "$DISTRO" == "22" ]]; then
         apt_install libcurl4-openssl-dev libidn2-dev
+    fi
+
+    # Vérifier que libgcc-11-dev est installé
+    if ! dpkg -l | grep -q libgcc-11-dev; then
+        echo -e "$RED Error: Failed to install libgcc-11-dev.$COL_RESET"
+        log_message "Error: Failed to install libgcc-11-dev"
+        exit 1
     fi
 
     echo -e "$GREEN Done...$COL_RESET"
