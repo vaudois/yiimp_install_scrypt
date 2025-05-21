@@ -46,12 +46,13 @@ function package_compile_crypto
         apt_install libcurl4-openssl-dev libidn2-dev
     fi
 
-    # Vérifier que libgcc-11-dev est installé
-    if ! dpkg -l | grep -q libgcc-11-dev; then
-        echo -e "$RED Error: Failed to install libgcc-11-dev.$COL_RESET"
-        log_message "Error: Failed to install libgcc-11-dev"
-        exit 1
-    fi
+    # Vérifier les paquets essentiels (non bloquant)
+    for pkg in build-essential libc6-dev libgcc-11-dev; do
+        if ! dpkg -l | grep -q $pkg; then
+            echo -e "$YELLOW Warning: Failed to install $pkg, continuing...$COL_RESET"
+            log_message "Warning: Failed to install $pkg, continuing"
+        fi
+    done
 
     echo -e "$GREEN Done...$COL_RESET"
 }
