@@ -56,6 +56,3 @@ function package_compile_crypto
 
     echo -e "$GREEN Done...$COL_RESET"
 }
-
-# Appel de la fonction
-package_compile_crypto
