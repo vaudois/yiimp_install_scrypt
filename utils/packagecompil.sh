@@ -37,7 +37,7 @@ function package_compile_crypto
     apt_install libboost-system-dev libboost-thread-dev
     apt_install default-libmysqlclient-dev librtmp-dev libssh2-1-dev libldap2-dev
     apt_install libbrotli-dev libssh-dev libnghttp2-dev libpsl-dev
-    apt_install python3 ccache doxygen graphviz
+    apt_install python3 ccache doxygen graphviz libmysqlclient-dev
 
     # Paquets spécifiques à Ubuntu 20.04 ou 22.04
     if [[ "$DISTRO" == "20" ]]; then
