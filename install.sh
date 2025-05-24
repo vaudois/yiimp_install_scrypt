@@ -84,7 +84,7 @@ clear
     RESUME_MODE=false
     if [[ "$1" == "r" ]]; then
         RESUME_MODE=true
-        PARAMS_FILE="${absolutepath}/${nameofinstall}/conf/install_params.conf"
+        PARAMS_FILE="${absolutepath}/${installtoserver}/resume/install_params.conf"
         if [[ ! -f "$PARAMS_FILE" ]]; then
             echo -e "$RED Error: Resume mode requested but parameter file ($PARAMS_FILE) does not exist. Cannot resume installation.$COL_RESET"
             exit 1
@@ -101,7 +101,7 @@ clear
         done
     else
         # Ensure parameter file is removed in normal mode to avoid conflicts
-        sudo rm -f "${absolutepath}/${nameofinstall}/conf/install_params.conf" >/dev/null 2>&1
+        sudo rm -f "${absolutepath}/${installtoserver}/resume/install_params.conf" >/dev/null 2>&1
     fi
 
     # Source necessary files
@@ -198,19 +198,20 @@ clear
         echo -e "\n\n"
 
         # Save parameters to file
-        echo "server_name='$server_name'" | sudo tee ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "sub_domain='$sub_domain'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "EMAIL='$EMAIL'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "admin_panel='$admin_panel'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "Public='$Public'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "install_fail2ban='$install_fail2ban'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "ssl_install='$ssl_install'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "wg_install='$wg_install'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "wg_ip='$wg_ip'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        echo "yiimpver='$yiimpver'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
-        sudo chmod 600 ${absolutepath}/${nameofinstall}/conf/install_params.conf
-        sudo chown ${whoami} ${absolutepath}/${nameofinstall}/conf/install_params.conf
-        log_message "Saved installation parameters to ${absolutepath}/${nameofinstall}/conf/install_params.conf"
+        sudo mkdir -p ${absolutepath}/${installtoserver}/resume >/dev/null 2>&1
+        echo "server_name='$server_name'" | sudo tee ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "sub_domain='$sub_domain'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "EMAIL='$EMAIL'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "admin_panel='$admin_panel'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "Public='$Public'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "install_fail2ban='$install_fail2ban'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "ssl_install='$ssl_install'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "wg_install='$wg_install'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "wg_ip='$wg_ip'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        echo "yiimpver='$yiimpver'" | sudo tee -a ${absolutepath}/${installtoserver}/resume/install_params.conf >/dev/null 2>&1
+        sudo chmod 600 ${absolutepath}/${installtoserver}/resume/install_params.conf
+        sudo chown ${whoami} ${absolutepath}/${installtoserver}/resume/install_params.conf
+        log_message "Saved installation parameters to ${absolutepath}/${installtoserver}/resume/install_params.conf"
     fi
 
     clear
@@ -882,7 +883,7 @@ clear
     trap - INT
 
     # Remove parameter file after successful installation
-   # sudo rm -f "${absolutepath}/${nameofinstall}/conf/install_params.conf" >/dev/null 2>&1
+   # sudo rm -f "${absolutepath}/${installtoserver}/resume/install_params.conf" >/dev/null 2>&1
     log_message "Removed installation parameters file"
 
     clear
