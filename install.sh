@@ -84,7 +84,7 @@ clear
     RESUME_MODE=false
     if [[ "$1" == "r" ]]; then
         RESUME_MODE=true
-        PARAMS_FILE="${absolutepath}/${installtoserver}/conf/install_params.conf"
+        PARAMS_FILE="${absolutepath}/${nameofinstall}/conf/install_params.conf"
         if [[ ! -f "$PARAMS_FILE" ]]; then
             echo -e "$RED Error: Resume mode requested but parameter file ($PARAMS_FILE) does not exist. Cannot resume installation.$COL_RESET"
             exit 1
@@ -101,7 +101,7 @@ clear
         done
     else
         # Ensure parameter file is removed in normal mode to avoid conflicts
-        sudo rm -f "${absolutepath}/${installtoserver}/conf/install_params.conf" >/dev/null 2>&1
+        sudo rm -f "${absolutepath}/${nameofinstall}/conf/install_params.conf" >/dev/null 2>&1
     fi
 
     # Source necessary files
@@ -198,20 +198,19 @@ clear
         echo -e "\n\n"
 
         # Save parameters to file
-        sudo mkdir -p ${absolutepath}/${installtoserver}/conf >/dev/null 2>&1
-        echo "server_name='$server_name'" | sudo tee ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "sub_domain='$sub_domain'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "EMAIL='$EMAIL'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "admin_panel='$admin_panel'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "Public='$Public'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "install_fail2ban='$install_fail2ban'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "ssl_install='$ssl_install'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "wg_install='$wg_install'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "wg_ip='$wg_ip'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        echo "yiimpver='$yiimpver'" | sudo tee -a ${absolutepath}/${installtoserver}/conf/install_params.conf >/dev/null 2>&1
-        sudo chmod 600 ${absolutepath}/${installtoserver}/conf/install_params.conf
-        sudo chown ${whoami} ${absolutepath}/${installtoserver}/conf/install_params.conf
-        log_message "Saved installation parameters to ${absolutepath}/${installtoserver}/conf/install_params.conf"
+        echo "server_name='$server_name'" | sudo tee ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "sub_domain='$sub_domain'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "EMAIL='$EMAIL'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "admin_panel='$admin_panel'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "Public='$Public'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "install_fail2ban='$install_fail2ban'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "ssl_install='$ssl_install'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "wg_install='$wg_install'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "wg_ip='$wg_ip'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        echo "yiimpver='$yiimpver'" | sudo tee -a ${absolutepath}/${nameofinstall}/conf/install_params.conf >/dev/null 2>&1
+        sudo chmod 600 ${absolutepath}/${nameofinstall}/conf/install_params.conf
+        sudo chown ${whoami} ${absolutepath}/${nameofinstall}/conf/install_params.conf
+        log_message "Saved installation parameters to ${absolutepath}/${nameofinstall}/conf/install_params.conf"
     fi
 
     clear
@@ -370,46 +369,27 @@ clear
         echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
         sleep 3
 
-		# Check and manage swap for compilation
-		TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
-		SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
-		MIN_SWAP_MB=2048  # Minimum swap required (2GB)
-		SWAP_FILE="/swapfile_yiimp"
-		CREATED_SWAP=false
+        # Create temporary swap file for aarch64 with low RAM
+        TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+        if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+            log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for compilation."
+            sudo fallocate -l 2G /swapfile >/dev/null 2>&1
+            sudo chmod 600 /swapfile >/dev/null 2>&1
+            sudo mkswap /swapfile >/dev/null 2>&1
+            sudo swapon /swapfile >/dev/null 2>&1
+            log_message "Swap file created and enabled"
+        fi
 
-		if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-			log_message "Low RAM detected ($TOTAL_RAM MB). Checking swap configuration."
-			if [[ "$SWAP_TOTAL" -lt "$MIN_SWAP_MB" ]]; then
-				NEEDED_SWAP=$((MIN_SWAP_MB - SWAP_TOTAL))
-				log_message "Insufficient swap ($SWAP_TOTAL MB, need $MIN_SWAP_MB MB). Creating ${NEEDED_SWAP}MB swap file at $SWAP_FILE."
-				# Ensure no existing /swapfile_yiimp conflicts
-				if [[ -f "$SWAP_FILE" ]]; then
-					sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-					sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-				fi
-				sudo fallocate -l "${NEEDED_SWAP}M" "$SWAP_FILE" >/dev/null 2>&1
-				sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
-				sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
-				sudo swapon "$SWAP_FILE" >/dev/null 2>&1
-				CREATED_SWAP=true
-				log_message "Created and enabled ${NEEDED_SWAP}MB swap file at $SWAP_FILE"
-			else
-				log_message "Sufficient swap detected ($SWAP_TOTAL MB). No additional swap needed."
-			fi
-		else
-			log_message "Sufficient RAM detected ($TOTAL_RAM MB). No swap changes needed."
-		fi
+        package_compile_crypto
+        log_message "Compiled cryptocurrency packages"
+        echo -e "$GREEN Done...$COL_RESET"
 
-		package_compile_crypto
-		log_message "Compiled cryptocurrency packages"
-		echo -e "$GREEN Done...$COL_RESET"
-
-		# Remove temporary swap file if created
-		if [[ "$CREATED_SWAP" == "true" ]]; then
-			sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-			sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-			log_message "Removed temporary swap file $SWAP_FILE after compilation"
-		fi
+        # Remove swap file after compilation
+        if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+            sudo swapoff /swapfile >/dev/null 2>&1
+            sudo rm -f /swapfile >/dev/null 2>&1
+            log_message "Removed temporary swap file after compilation"
+        fi
 
         # Generating Random Passwords
         password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
@@ -576,9 +556,9 @@ clear
         cd ${absolutepath}/yiimp/stratum
         sudo cp -a config.sample/. /var/stratum/config/
 		
-		if [[ -f stratum ]]; then
-			sudo cp stratum /var/stratum/
-			log_message "Copied stratum file to /var/stratum/"
+		if [[ -d stratum ]]; then
+			sudo cp -r stratum /var/stratum/
+			log_message "Copied stratum directory to /var/stratum/"
 		fi
 
         cd ${absolutepath}/yiimp
@@ -869,7 +849,7 @@ clear
         echo -e "$YELLOW You can resume the installation by running: ./install.sh r $COL_RESET"
         sudo rm -rf "$temp_dir"
         log_message "Failed to clone CoinBuild repository"
-		sleep 3
+        sleep 3
     fi
 
     FILEINSTALLEXIST="${temp_dir}/install.sh"
@@ -902,7 +882,7 @@ clear
     trap - INT
 
     # Remove parameter file after successful installation
-    sudo rm -f "${absolutepath}/${installtoserver}/conf/install_params.conf" >/dev/null 2>&1
+   # sudo rm -f "${absolutepath}/${nameofinstall}/conf/install_params.conf" >/dev/null 2>&1
     log_message "Removed installation parameters file"
 
     clear
@@ -1043,35 +1023,16 @@ clear
     # Misc
     log_message "Starting miscellaneous cleanup and service configuration"
 
-	# Check and manage swap for services
-	TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
-	SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
-	MIN_SWAP_MB=2048  # Minimum swap required (2GB)
-	SWAP_FILE="/swapfile_yiimp_services"
-	CREATED_SWAP=false
-
-	if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-		log_message "Low RAM detected ($TOTAL_RAM MB). Checking swap configuration for services."
-		if [[ "$SWAP_TOTAL" -lt "$MIN_SWAP_MB" ]]; then
-			NEEDED_SWAP=$((MIN_SWAP_MB - SWAP_TOTAL))
-			log_message "Insufficient swap ($SWAP_TOTAL MB, need $MIN_SWAP_MB MB). Creating ${NEEDED_SWAP}MB swap file at $SWAP_FILE."
-			# Ensure no existing /swapfile_yiimp_services conflicts
-			if [[ -f "$SWAP_FILE" ]]; then
-				sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-				sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-			fi
-			sudo fallocate -l "${NEEDED_SWAP}M" "$SWAP_FILE" >/dev/null 2>&1
-			sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
-			sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
-			sudo swapon "$SWAP_FILE" >/dev/null 2>&1
-			CREATED_SWAP=true
-			log_message "Created and enabled ${NEEDED_SWAP}MB swap file at $SWAP_FILE"
-		else
-			log_message "Sufficient swap detected ($SWAP_TOTAL MB). No additional swap needed for services."
-		fi
-	else
-		log_message "Sufficient RAM detected ($TOTAL_RAM MB). No swap changes needed for services."
-	fi
+    # Create temporary swap file if RAM is low (useful for aarch64 devices like Raspberry Pi)
+    TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+    if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+        log_message "Low RAM detected ($TOTAL_RAM MB). Creating 2GB swap file for services."
+        sudo fallocate -l 2G /swapfile >/dev/null 2>&1
+        sudo chmod 600 /swapfile >/dev/null 2>&1
+        sudo mkswap /swapfile >/dev/null 2>&1
+        sudo swapon /swapfile >/dev/null 2>&1
+        log_message "Swap file created and enabled"
+    fi
 
 	cd ${absolutepath}/yiimp/stratum
 	sudo make clean
@@ -1136,12 +1097,12 @@ clear
         fi
     done
 
-	# Remove temporary swap file if created
-	if [[ "$CREATED_SWAP" == "true" ]]; then
-		sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-		sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-		log_message "Removed temporary swap file $SWAP_FILE"
-	fi
+    # Remove swap file if created
+    if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+        sudo swapoff /swapfile >/dev/null 2>&1
+        sudo rm -f /swapfile >/dev/null 2>&1
+        log_message "Removed temporary swap file"
+    fi
 
     echo -e "$GREEN Done...$COL_RESET"
     log_message "Completed miscellaneous setup and service restarts"
