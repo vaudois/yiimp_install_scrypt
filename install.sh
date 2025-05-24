@@ -885,7 +885,7 @@ clear
             echo -e "$YELLOW You can resume the installation by running: ./install.sh r $COL_RESET"
             sudo rm -rf "$temp_dir"
             log_message "CoinBuild installation script failed"
-            exit 1
+            sleep 3
         fi
         sudo rm -rf "$temp_dir"
         log_message "Installed CoinBuild"
@@ -895,7 +895,7 @@ clear
         echo -e "$YELLOW You can resume the installation by running: ./install.sh r $COL_RESET"
         sudo rm -rf "$temp_dir"
         log_message "CoinBuild install.sh not found"
-        exit 1
+        sleep 3
     fi
 
     # Remove trap after CoinBuild
