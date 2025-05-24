@@ -869,7 +869,7 @@ clear
         echo -e "$YELLOW You can resume the installation by running: ./install.sh r $COL_RESET"
         sudo rm -rf "$temp_dir"
         log_message "Failed to clone CoinBuild repository"
-        exit 1
+		sleep 3
     fi
 
     FILEINSTALLEXIST="${temp_dir}/install.sh"
