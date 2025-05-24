@@ -4,8 +4,12 @@
 YELLOW='\033[1;33m'
 COL_RESET='\033[0m'
 
-# Chemin absolu
-pathstratuminstall=$1
+# Définir le chemin d'installation : utiliser $1 si fourni, sinon valeur par défaut
+pathstratuminstall="${1:-$HOME/yiimp/stratum}"
+
+# Enlever le slash final de pathstratuminstall
+pathstratuminstall=$(echo "$pathstratuminstall" | sed 's/\/$//')
+
 # Créer un fichier swap de 4 Go si nécessaire
 if ! swapon --show | grep -q "/swapfile"; then
     if [ ! -f /swapfile ]; then
@@ -27,10 +31,6 @@ else
         sudo swapon /swapfile
     fi
 fi
-
-# S'assurer que le fichier de log est accessible
-sudo touch $pathstratuminstall/install.log
-sudo chmod 666 $pathstratuminstall/install.log
 
 # Compile Stratum
 cd ${pathstratuminstall}
@@ -137,40 +137,100 @@ EOF
         done <<< "$SIMDFILES"
     fi
 
-	# Patche xelisv2.c pour compatibilité ARM64
+	# Patcher blake2s.c dans sha3/
+	BLAKE2S_FILE="${pathstratuminstall}/sha3/blake2s.c"
+	if [ -f "$BLAKE2S_FILE" ]; then
+		sudo chmod 666 "$BLAKE2S_FILE"
+		if grep -q "blake2s_state[[:space:]]*S\[1\];" "$BLAKE2S_FILE"; then
+			sudo sed -i 's/blake2s_state[[:space:]]*S\[1\];/blake2s_state S;/' "$BLAKE2S_FILE"
+		fi
+		sudo sed -i 's/blake2s_init_key[[:space:]]*([[:space:]]*S/blake2s_init_key(\&S/' "$BLAKE2S_FILE"
+		sudo sed -i 's/blake2s_init[[:space:]]*([[:space:]]*S/blake2s_init(\&S/' "$BLAKE2S_FILE"
+		sudo sed -i 's/blake2s_update[[:space:]]*([[:space:]]*S/blake2s_update(\&S/' "$BLAKE2S_FILE"
+		sudo sed -i 's/blake2s_final[[:space:]]*([[:space:]]*S/blake2s_final(\&S/' "$BLAKE2S_FILE"
+	fi
+
+	# Corriger le conflit de la macro ROTR dans sha512_256.h
+	SHA512_256_FILE="${pathstratuminstall}/algos/sha512_256.h"
+	if [ -f "$SHA512_256_FILE" ]; then
+		sudo chmod 666 "$SHA512_256_FILE"
+		sudo sed -i 's/#define ROTR(x, n)/#define ROTR64(x, n)/' "$SHA512_256_FILE"
+	fi
+
+	# Fonction pour corriger un fichier
+	correct_file() {
+		local FILE="$1"
+		if [ -f "$FILE" ]; then
+			echo "Traitement de $FILE"
+			sudo chmod 666 "$FILE"
+			
+			# Ajouter #include <stdint.h> si absent
+			if ! grep -q "#include <stdint.h>" "$FILE"; then
+				sudo sed -i '1i #include <stdint.h>' "$FILE"
+			fi
+			
+			# Commenter toutes les lignes contenant bswapl
+			sudo sed -i '/bswapl/ s/^/\/\//' "$FILE"
+			
+			# Remplacer bswapl par swap32 dans les expressions C/C++
+			sudo sed -i 's/bswapl[[:space:]]*\([a-zA-Z0-9_]\+\)/swap32(\1)/g' "$FILE"
+			
+			# Remplacer les blocs assembleur inline contenant bswapl
+			sudo sed -i 's/__asm__ volatile ("bswapl %0" : "=r" (\([a-zA-Z0-9_]\+\)) : "0" (\1));/\1 = swap32(\1);/g' "$FILE"
+			
+			# Remplacer sprintf par snprintf pour params
+			sudo sed -i 's/sprintf(params/snprintf(params, 512/' "$FILE"
+			
+			# Remplacer sprintf par snprintf pour templ->coinbase
+			sudo sed -i 's/sprintf(templ->coinbase/snprintf(templ->coinbase, 4096/' "$FILE"
+		fi
+	}
+
+	# Vérifier si swap32 est déjà défini dans n'importe quel fichier
+	if ! grep -r -q "static inline uint32_t swap32(uint32_t x)" "$pathstratuminstall"; then
+		# Ajouter swap32 dans sha3/sph_types.h si absent
+		SPH_TYPES_FILE="$pathstratuminstall/sha3/sph_types.h"
+		if [ -f "$SPH_TYPES_FILE" ]; then
+			echo "Ajout de swap32 dans $SPH_TYPES_FILE"
+			sudo chmod 666 "$SPH_TYPES_FILE"
+			if ! grep -q "#include <stdint.h>" "$SPH_TYPES_FILE"; then
+				sudo sed -i '1i #include <stdint.h>' "$SPH_TYPES_FILE"
+			fi
+			sudo sed -i '1a static inline uint32_t swap32(uint32_t x) { return ((x >> 24) & 0x000000FF) | ((x >> 8) & 0x0000FF00) | ((x << 8) & 0x00FF0000) | ((x << 24) & 0xFF000000); }' "$SPH_TYPES_FILE"
+		fi
+	fi
+
+	# Traiter tous les fichiers .cpp et .h dans le répertoire
+	for FILE in "$pathstratuminstall"/*.cpp "$pathstratuminstall"/*.h "$pathstratuminstall"/algos/*/*.h "$pathstratuminstall"/sha3/*.h; do
+		correct_file "$FILE"
+	done
+
+	# Patcher xelisv2.c pour qu'il fonctionne sur ARM64
 	XELISV2_FILE="${pathstratuminstall}/algos/xelisv2.c"
 	if [ -f "$XELISV2_FILE" ]; then
 		sudo chmod 666 "$XELISV2_FILE"
-		# Corriger toutes les inclusions de sha3/
 		sudo sed -i 's/#include "sha3\/sph_blake.h"/#include "..\/sha3\/sph_blake.h"/' "$XELISV2_FILE"
 		sudo sed -i 's/#include "sha3\/sph_cubehash.h"/#include "..\/sha3\/sph_cubehash.h"/' "$XELISV2_FILE"
 		sudo sed -i 's/#include "sha3\/sph_shavite.h"/#include "..\/sha3\/sph_shavite.h"/' "$XELISV2_FILE"
 		sudo sed -i 's/#include "sha3\/sph_simd.h"/#include "..\/sha3\/sph_simd.h"/' "$XELISV2_FILE"
 		sudo sed -i 's/#include "sha3\/sph_echo.h"/#include "..\/sha3\/sph_echo.h"/' "$XELISV2_FILE"
 		sudo sed -i 's/#include "sha3\/sph_sha2.h"/#include "..\/sha3\/sph_sha2.h"/' "$XELISV2_FILE"
-		# Supprime toutes les définitions de aes_single_round sauf la première occurrence
 		sudo sed -i ':a;N;/aes_single_round(uint8_t *block, const uint8_t *key)/!ba;/^}/!d' "$XELISV2_FILE"
-		# Supprime les directives conditionnelles inutiles
 		sudo sed -i '/#if defined(__x86_64__)/d' "$XELISV2_FILE"
 		sudo sed -i '/#elif defined(__aarch64__)/d' "$XELISV2_FILE"
 		sudo sed -i '/#if defined(NO_AES_NI)/d' "$XELISV2_FILE"
 		sudo sed -i '/#else/d' "$XELISV2_FILE"
 		sudo sed -i '/#endif/d' "$XELISV2_FILE"
-		# Supprime #undef __x86_64__
 		sudo sed -i '/#undef __x86_64__/d' "$XELISV2_FILE"
-		# Commente les includes SIMD x86
 		sudo sed -i '/#include <emmintrin.h>/ s/^/\/\//' "$XELISV2_FILE"
 		sudo sed -i '/#include <immintrin.h>/ s/^/\/\//' "$XELISV2_FILE"
-		# Supprime les références à __m128i et _mm_, même commentées
 		sudo sed -i '/__m128i/d' "$XELISV2_FILE"
 		sudo sed -i '/_mm_/d' "$XELISV2_FILE"
-		# Vérifie la balance des accolades
 		opening_braces=$(sudo grep -c "{" "$XELISV2_FILE")
 		closing_braces=$(sudo grep -c "}" "$XELISV2_FILE")
 		if [ "$opening_braces" -ne "$closing_braces" ]; then
 			exit 1
 		fi
-		# Vérifie la syntaxe
 		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=armv8-a -DNO_SIMD -DNO_AES_NI -std=gnu99 "$XELISV2_FILE"; then
 			sudo sed -i 's/\(xelisv2\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
 			sudo sed -i 's/\($(CC) $(CFLAGS) -c xelisv2\.c -o xelisv2\.o\)/# \1/' "$ALGO_MAKEFILE"
@@ -415,23 +475,291 @@ EOF
         fi
     fi
     
-    # Patche yespower/yespower-blake2b.c
-    YESPOWER_FILE="${pathstratuminstall}/algos/yespower/yespower-blake2b.c"
-    if [ -f "$YESPOWER_FILE" ]; then
-        sudo chmod 666 "$YESPOWER_FILE"
-        sudo sed -i '/#ifndef NO_SIMD/d' "$YESPOWER_FILE"
-        sudo sed -i '/#endif/d' "$YESPOWER_FILE"
-        sudo sed -i '/#ifdef __SSE2__/,/#endif/ s/^/\/\//' "$YESPOWER_FILE"
-        sudo sed -i '/#ifdef __XOP__/,/#endif/ s/^/\/\//' "$YESPOWER_FILE"
-        sudo sed -i '/#ifdef __AVX__/,/#endif/ s/^/\/\//' "$YESPOWER_FILE"
-        sudo sed -i '/#if defined(__x86_64__)/,/#endif/ s/^/\/\//' "$YESPOWER_FILE"
-        sudo sed -i '/#ifndef _YESPOWER_OPT_C_PASS_/,/#endif/ s/^/\/\//' "$YESPOWER_FILE"
-        sudo sed -i '/static inline void salsa20_simd_shuffle/,/static inline void salsa20_simd_unshuffle.*}/ s/^/\/\//' "$YESPOWER_FILE"
-        if [ $(sudo grep -c "#if\|#ifdef\|#ifndef" "$YESPOWER_FILE") -ne $(sudo grep -c "#endif" "$YESPOWER_FILE") ]; then
-            sudo sed -i 's/\(yespower\/yespower-blake2b\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
-            sudo sed -i 's/\($(CC) $(CFLAGS) -c yespower\/yespower-blake2b\.c -o yespower\/yespower-blake2b\.o\)/# \1/' "$ALGO_MAKEFILE"
-        fi
+	# Patche yespower/yespower-blake2b.c
+	YESPOWER_FILE="${pathstratuminstall}/algos/yespower/yespower-blake2b.c"
+	if [ -f "$YESPOWER_FILE" ]; then
+		sudo chmod 666 "$YESPOWER_FILE"
+		# Nettoyer les commentaires multiples (////) pour partir d'un fichier propre
+		sudo sed -i 's/\/\/\+/\/\//' "$YESPOWER_FILE"
+		# Supprimer les directives NO_SIMD inutiles
+		sudo sed -i '/#ifndef NO_SIMD/d' "$YESPOWER_FILE"
+		# Commenter les blocs SIMD uniquement si non commentés
+		sudo sed -i '/#ifdef __SSE2__/,/#endif/ s/^\([^\/]\)/\/\/\1/' "$YESPOWER_FILE"
+		sudo sed -i '/#ifdef __XOP__/,/#endif/ s/^\([^\/]\)/\/\/\1/' "$YESPOWER_FILE"
+		sudo sed -i '/#ifdef __AVX__/,/#endif/ s/^\([^\/]\)/\/\/\1/' "$YESPOWER_FILE"
+		# Commenter les fonctions salsa20 SIMD uniquement si non commentées
+		sudo sed -i '/static inline void salsa20_simd_shuffle/,/static inline void salsa20_simd_unshuffle.*}/ s/^\([^\/]\)/\/\/\1/' "$YESPOWER_FILE"
+		# Décommenter yespower_b2b_tls et yespower_b2b si nécessaire
+		sudo sed -i 's/\/\/*int yespower_b2b_tls/int yespower_b2b_tls/' "$YESPOWER_FILE"
+		sudo sed -i 's/\/\/*int yespower_b2b/int yespower_b2b/' "$YESPOWER_FILE"
+		# Supprimer #if defined(__x86_64__) autour de yespower_b2b_tls et yespower_b2b
+		sudo sed -i '/#if defined(__x86_64__)/N;/#if defined(__x86_64__)\n.*yespower_b2b/d' "$YESPOWER_FILE"
+		sudo sed -i '/#endif/N;/#endif\n.*yespower_b2b/d' "$YESPOWER_FILE"
+		# Vérifier la balance des #if/#endif
+		if [ $(sudo grep -c "#if\|#ifdef\|#ifndef" "$YESPOWER_FILE") -ne $(sudo grep -c "#endif" "$YESPOWER_FILE") ] || ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=armv8-a -DNO_SIMD -std=gnu99 "$YESPOWER_FILE" 2>/dev/null; then
+			echo -e "$YELLOW Warning: Unbalanced preprocessor directives or syntax error in $YESPOWER_FILE, rewriting with generic implementation$COL_RESET"
+			# Réécrire avec une implémentation générique complète pour ARM64
+			sudo bash -c "cat > $YESPOWER_FILE" << 'EOF'
+#include <errno.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+#include "yespower.h"
+#include "sysendian.h"
+#include "crypto/blake2b-yp.h"
+#include "insecure_memzero.h"
+
+#define HUGEPAGE_THRESHOLD (12 * 1024 * 1024)
+#ifdef __unix__
+#include <sys/mman.h>
+#endif
+
+#ifdef __x86_64__
+#define HUGEPAGE_SIZE (2 * 1024 * 1024)
+#else
+#undef HUGEPAGE_SIZE
+#endif
+
+typedef struct {
+    uint32_t w[16];
+} salsa20_blk_t;
+
+static void *alloc_region(yespower_region_t *region, size_t size) {
+    size_t base_size = size;
+    uint8_t *base, *aligned;
+#ifdef MAP_ANON
+    int flags =
+#ifdef MAP_NOCORE
+        MAP_NOCORE |
+#endif
+        MAP_ANON | MAP_PRIVATE;
+#if defined(MAP_HUGETLB) && defined(HUGEPAGE_SIZE)
+    size_t new_size = size;
+    const size_t hugepage_mask = (size_t)HUGEPAGE_SIZE - 1;
+    if (size >= HUGEPAGE_THRESHOLD && size + hugepage_mask >= size) {
+        flags |= MAP_HUGETLB;
+        new_size = size + hugepage_mask;
+        new_size &= ~hugepage_mask;
+    }
+    base = mmap(NULL, new_size, PROT_READ | PROT_WRITE, flags, -1, 0);
+    if (base != MAP_FAILED) {
+        base_size = new_size;
+    } else if (flags & MAP_HUGETLB) {
+        flags &= ~MAP_HUGETLB;
+        base = mmap(NULL, size, PROT_READ | PROT_WRITE, flags, -1, 0);
+    }
+#else
+    base = mmap(NULL, size, PROT_READ | PROT_WRITE, flags, -1, 0);
+#endif
+    if (base == MAP_FAILED)
+        base = NULL;
+    aligned = base;
+#elif defined(HAVE_POSIX_MEMALIGN)
+    if ((errno = posix_memalign((void **)&base, 64, size)) != 0)
+        base = NULL;
+    aligned = base;
+#else
+    base = aligned = NULL;
+    if (size + 63 < size) {
+        errno = ENOMEM;
+    } else if ((base = malloc(size + 63)) != NULL) {
+        aligned = base + 63;
+        aligned -= (uintptr_t)aligned & 63;
+    }
+#endif
+    region->base = base;
+    region->aligned = aligned;
+    region->base_size = base ? base_size : 0;
+    region->aligned_size = base ? size : 0;
+    return aligned;
+}
+
+static inline void init_region(yespower_region_t *region) {
+    region->base = region->aligned = NULL;
+    region->base_size = region->aligned_size = 0;
+}
+
+static int free_region(yespower_region_t *region) {
+    if (region->base) {
+#ifdef MAP_ANON
+        if (munmap(region->base, region->base_size))
+            return -1;
+#else
+        free(region->base);
+#endif
+    }
+    init_region(region);
+    return 0;
+}
+
+static inline void salsa20(salsa20_blk_t *restrict B,
+    salsa20_blk_t *restrict Bout, uint32_t doublerounds) {
+    salsa20_blk_t X;
+    uint32_t x[16];
+    memcpy(x, B->w, sizeof(x));
+    for (; doublerounds; doublerounds--) {
+        x[ 4] ^= (x[ 0] + x[12]) << 7 | (x[ 0] + x[12]) >> (32 - 7);
+        x[ 8] ^= (x[ 4] + x[ 0]) << 9 | (x[ 4] + x[ 0]) >> (32 - 9);
+        x[12] ^= (x[ 8] + x[ 4]) << 13 | (x[ 8] + x[ 4]) >> (32 - 13);
+        x[ 0] ^= (x[12] + x[ 8]) << 18 | (x[12] + x[ 8]) >> (32 - 18);
+
+        x[ 9] ^= (x[ 5] + x[ 1]) << 7 | (x[ 5] + x[ 1]) >> (32 - 7);
+        x[13] ^= (x[ 9] + x[ 5]) << 9 | (x[ 9] + x[ 5]) >> (32 - 9);
+        x[ 1] ^= (x[13] + x[ 9]) << 13 | (x[13] + x[ 9]) >> (32 - 13);
+        x[ 5] ^= (x[ 1] + x[13]) << 18 | (x[ 1] + x[13]) >> (32 - 18);
+
+        x[14] ^= (x[10] + x[ 6]) << 7 | (x[10] + x[ 6]) >> (32 - 7);
+        x[ 2] ^= (x[14] + x[10]) << 9 | (x[14] + x[10]) >> (32 - 9);
+        x[ 6] ^= (x[ 2] + x[14]) << 13 | (x[ 2] + x[14]) >> (32 - 13);
+        x[10] ^= (x[ 6] + x[ 2]) << 18 | (x[ 6] + x[ 2]) >> (32 - 18);
+
+        x[ 3] ^= (x[15] + x[11]) << 7 | (x[15] + x[11]) >> (32 - 7);
+        x[ 7] ^= (x[ 3] + x[15]) << 9 | (x[ 3] + x[15]) >> (32 - 9);
+        x[11] ^= (x[ 7] + x[ 3]) << 13 | (x[ 7] + x[ 3]) >> (32 - 13);
+        x[15] ^= (x[11] + x[ 7]) << 18 | (x[11] + x[ 7]) >> (32 - 18);
+
+        x[ 1] ^= (x[ 0] + x[ 3]) << 7 | (x[ 0] + x[ 3]) >> (32 - 7);
+        x[ 2] ^= (x[ 1] + x[ 0]) << 9 | (x[ 1] + x[ 0]) >> (32 - 9);
+        x[ 3] ^= (x[ 2] + x[ 1]) << 13 | (x[ 2] + x[ 1]) >> (32 - 13);
+        x[ 0] ^= (x[ 3] + x[ 2]) << 18 | (x[ 3] + x[ 2]) >> (32 - 18);
+
+        x[ 6] ^= (x[ 5] + x[ 4]) << 7 | (x[ 5] + x[ 4]) >> (32 - 7);
+        x[ 7] ^= (x[ 6] + x[ 5]) << 9 | (x[ 6] + x[ 5]) >> (32 - 9);
+        x[ 4] ^= (x[ 7] + x[ 6]) << 13 | (x[ 7] + x[ 6]) >> (32 - 13);
+        x[ 5] ^= (x[ 4] + x[ 7]) << 18 | (x[ 4] + x[ 7]) >> (32 - 18);
+
+        x[11] ^= (x[10] + x[ 9]) << 7 | (x[10] + x[ 9]) >> (32 - 7);
+        x[ 8] ^= (x[11] + x[10]) << 9 | (x[11] + x[10]) >> (32 - 9);
+        x[ 9] ^= (x[ 8] + x[11]) << 13 | (x[ 8] + x[11]) >> (32 - 13);
+        x[10] ^= (x[ 9] + x[ 8]) << 18 | (x[ 9] + x[ 8]) >> (32 - 18);
+
+        x[12] ^= (x[15] + x[14]) << 7 | (x[15] + x[14]) >> (32 - 7);
+        x[13] ^= (x[12] + x[15]) << 9 | (x[12] + x[15]) >> (32 - 9);
+        x[14] ^= (x[13] + x[12]) << 13 | (x[13] + x[12]) >> (32 - 13);
+        x[15] ^= (x[14] + x[13]) << 18 | (x[14] + x[13]) >> (32 - 18);
+    }
+    for (int i = 0; i < 16; i++) {
+        Bout->w[i] = x[i] + B->w[i];
+    }
+}
+
+#define SALSA20_8(out) salsa20(&X, &out, 4)
+
+static inline void blockmix_salsa(const salsa20_blk_t *restrict Bin,
+    salsa20_blk_t *restrict Bout) {
+    salsa20_blk_t X;
+    memcpy(X.w, Bin[1].w, sizeof(X.w));
+    for (int i = 0; i < 16; i++) {
+        X.w[i] ^= Bin[0].w[i];
+    }
+    SALSA20_8(Bout[0]);
+    memcpy(X.w, Bin[1].w, sizeof(X.w));
+    SALSA20_8(Bout[1]);
+}
+
+static inline uint32_t integerify(const salsa20_blk_t *B, size_t r) {
+    return B[2 * r - 1].w[0];
+}
+
+static void smix(uint8_t *B, size_t r, uint32_t N, salsa20_blk_t *V, salsa20_blk_t *XY) {
+    salsa20_blk_t *X = V, *Y = &V[2 * r];
+    for (size_t i = 0; i < 2 * r; i++) {
+        const salsa20_blk_t *src = (salsa20_blk_t *)&B[i * 64];
+        memcpy(&X[i], src, sizeof(salsa20_blk_t));
+    }
+
+    for (uint32_t i = 0; i < N; i += 2) {
+        blockmix_salsa(X, Y);
+        memcpy(&V[i * 2 * r], Y, 2 * r * sizeof(salsa20_blk_t));
+        blockmix_salsa(Y, X);
+        memcpy(&V[(i + 1) * 2 * r], X, 2 * r * sizeof(salsa20_blk_t));
+    }
+
+    for (uint32_t i = 0; i < N; i += 2) {
+        uint32_t j = integerify(X, r) & (N - 1);
+        for (size_t k = 0; k < 2 * r; k++) {
+            X[k].w[0] ^= V[j * 2 * r + k].w[0];
+        }
+        blockmix_salsa(X, Y);
+        memcpy(X, Y, 2 * r * sizeof(salsa20_blk_t));
+    }
+
+    for (size_t i = 0; i < 2 * r; i++) {
+        memcpy(&B[i * 64], &X[i], sizeof(salsa20_blk_t));
+    }
+}
+
+int yespower_b2b(yespower_local_t *local,
+                 const uint8_t *src, size_t srclen,
+                 const yespower_params_t *params,
+                 yespower_binary_t *dst) {
+    uint32_t N = params->N;
+    uint32_t r = params->r;
+    const uint8_t *pers = params->pers;
+    size_t perslen = params->perslen;
+    size_t B_size = (size_t)128 * r;
+    size_t V_size = B_size * N;
+    size_t XY_size = B_size + 64;
+    uint8_t *B, *S;
+    salsa20_blk_t *V, *XY;
+
+    if (N < 1024 || N > 512 * 1024 || r < 8 || r > 32 || (N & (N - 1)) != 0 || (!pers && perslen)) {
+        errno = EINVAL;
+        memset(dst, 0xff, sizeof(*dst));
+        return -1;
+    }
+
+    size_t need = B_size + V_size + XY_size;
+    if (local->aligned_size < need) {
+        if (free_region(local))
+            return -1;
+        if (!alloc_region(local, need))
+            return -1;
+    }
+
+    B = (uint8_t *)local->aligned;
+    V = (salsa20_blk_t *)(B + B_size);
+    XY = (salsa20_blk_t *)(B + B_size + V_size);
+    S = (uint8_t *)XY + XY_size;
+
+    uint8_t init_hash[32];
+    blake2b_yp_hash(init_hash, src, srclen);
+
+    pbkdf2_blake2b_yp(init_hash, sizeof(init_hash), pers ? pers : src, pers ? perslen : 0, 1, B, 128);
+    memcpy(init_hash, B, sizeof(init_hash));
+    smix(B, r, N, V, XY);
+    hmac_blake2b_yp_hash((uint8_t *)dst, B + B_size - 64, 64, init_hash, sizeof(init_hash));
+
+    insecure_memzero(B, B_size);
+    free_region(local);
+    return 0;
+}
+
+int yespower_b2b_tls(const uint8_t *src, size_t srclen,
+                     const yespower_params_t *params, yespower_binary_t *dst) {
+    static __thread int initialized = 0;
+    static __thread yespower_local_t local;
+
+    if (!initialized) {
+        init_region(&local);
+        initialized = 1;
+    }
+
+    int ret = yespower_b2b(&local, src, srclen, params, dst);
+    return ret;
+}
+EOF
+        sudo chmod 644 "$YESPOWER_FILE"
     fi
+    # S'assurer que yespower-blake2b.o est inclus dans le Makefile
+    ALGO_MAKEFILE="${pathstratuminstall}/algos/makefile"
+    if ! sudo grep -q "yespower/yespower-blake2b.o" "$ALGO_MAKEFILE"; then
+        sudo sed -i 's/libalgos.a:.*$/& yespower\/yespower-blake2b.o/' "$ALGO_MAKEFILE"
+        sudo sed -i '$a\
+yespower\/yespower-blake2b.o: yespower\/yespower-blake2b.c\n\
+\t$(CC) $(CFLAGS) -c yespower\/yespower-blake2b.c -o yespower\/yespower-blake2b.o' "$ALGO_MAKEFILE"
+    fi
+fi
     
     # Patche blake2/blamka-round-opt.h
     if [ -f "$BLAMKA_FILE" ]; then
@@ -812,17 +1140,6 @@ else
     export CFLAGS="-DNO_SIMD"
 fi
 
-# Corriger blake2s.c pour restaurer le tableau S[1] si ce n'est pas déjà le cas
-BLAKE2S_FILE="${pathstratuminstall}/algos/blake2-ref/blake2s.c"
-if [ -f "$BLAKE2S_FILE" ]; then
-    sudo chmod 666 "$BLAKE2S_FILE"
-    # Vérifier si blake2s_state S[1]; existe déjà
-    if ! grep -q "blake2s_state S\[1\];" "$BLAKE2S_FILE"; then
-        # Remplacer blake2s_state S; par blake2s_state S[1];
-        sudo sed -i 's/blake2s_state S;/blake2s_state S\[1\];/' "$BLAKE2S_FILE"
-    fi
-fi
-
 # Compiler
 if sudo make; then
     echo " >--> Compiled stratum successfully"
@@ -837,4 +1154,4 @@ else
         exit 1
     fi
 fi
-sleep 1
+sleep 3
