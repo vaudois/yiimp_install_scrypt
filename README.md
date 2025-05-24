@@ -3,7 +3,7 @@
 
 ## Install script for yiimp on Ubuntu Server 20.04 / 22.04 (beta for test)
 
-USE THIS SCRIPT ON FRESH INSTALL UBUNTU Server 20.04 / 22.04 (beta for test) !
+USE THIS SCRIPT ON FRESH INSTALL UBUNTU Server 20.04 / 22.04 x64/ARM (beta for test) !
 
 Connect on your VPS =>
 - adduser pool
