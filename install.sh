@@ -687,7 +687,7 @@ clear
         Q3="FLUSH PRIVILEGES;"
         SQL="${Q1}${Q2}${Q3}"
         sudo mysql -u root -p="" -e "$SQL"
-        
+
         # Create stratum user
         Q1="GRANT ALL ON *.* TO 'stratum'@'localhost' IDENTIFIED BY '$password2';"
         Q2="FLUSH PRIVILEGES;"
@@ -740,7 +740,7 @@ clear
                 sudo mysql -u root -p=${rootpasswd} yiimpfrontend --force < 2023-02-20-coins.sql
             fi
         else
-            sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql --defaults-group-suffix=host1
+            sudo zcat 2023-05-28-yiimp.sql.gz | sudo mysql -u root -p=${rootpasswd} yiimpfrontend
             if [[ "$yiimpver" == "5" ]]; then
                 echo -e "$YELLOW => Selected install $yiimpver more sql adding... $COL_RESET"
                 sleep 5
