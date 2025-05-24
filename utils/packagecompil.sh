@@ -57,11 +57,5 @@ function package_compile_crypto
     echo -e "$GREEN Done...$COL_RESET"
 }
 
-# Fonction utilitaire pour installer les paquets
-function apt_install
-{
-    sudo apt install -y "$@"
-}
-
 # Appel de la fonction
 package_compile_crypto
