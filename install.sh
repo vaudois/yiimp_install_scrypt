@@ -576,9 +576,9 @@ clear
         cd ${absolutepath}/yiimp/stratum
         sudo cp -a config.sample/. /var/stratum/config/
 		
-		if [[ -d stratum ]]; then
-			sudo cp -r stratum /var/stratum/
-			log_message "Copied stratum directory to /var/stratum/"
+		if [[ -f stratum ]]; then
+			sudo cp stratum /var/stratum/
+			log_message "Copied stratum file to /var/stratum/"
 		fi
 
         cd ${absolutepath}/yiimp
