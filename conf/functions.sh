@@ -16,7 +16,7 @@ daemonname=daemonnameserver
 export TERM=xterm-256color
 export LC_ALL=C.UTF-8
 
-# Vérifier et installer ncurses-bin et dialog en silence
+# Vérifier et installer ncurses-bin et dialog en silence total
 function check_and_install_dependencies {
     local packages="ncurses-bin dialog"
     local missing_packages=""
@@ -26,10 +26,12 @@ function check_and_install_dependencies {
     done
 
     if [ -n "$missing_packages" ]; then
-        apt_get_quiet install $missing_packages
+        DEBIAN_FRONTEND=noninteractive apt install -y -qq $missing_packages >/dev/null 2>&1
         [ $? -ne 0 ] && exit 1
     fi
 }
+
+check_and_install_dependencies
 
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
