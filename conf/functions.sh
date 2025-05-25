@@ -1,7 +1,7 @@
 #!/bin/bash
 ########################################################
 # Modified by Vaudois for crypto use...
-# Updated for Ubuntu 22.04 compatibility with PHP 8.3
+# Updated for Ubuntu 20/22 compatibility with PHP 8.3
 # Changes:
 # - Added support for DISTRO=22 with PHP 8.3
 # - Improved error handling and logging
