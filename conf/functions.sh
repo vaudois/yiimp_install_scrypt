@@ -8,9 +8,9 @@
 # - Maintained compatibility with Ubuntu 20.04 (PHP 8.2)
 ########################################################
 
-absolutepath=absolutepathserver
-installtoserver=installpath
-daemonname=daemonnameserver
+absolutepath=/home/vaudois
+installtoserver=coin-setup
+daemonname=coinbuild
 
 # Forcer le terminal et l'encodage
 export TERM=xterm-256color
@@ -50,38 +50,60 @@ function log_message {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | sudo tee -a "$LOG_FILE" >/dev/null
 }
 
+
 function spinner {
     local pid=$1
     local message=${2:-"Traitement..."}
-    local delay=${3:-0.05} # Rapide pour un effet dynamique
-    local spinstr='→↘↓↙←↖↑↗*' # Caractères ASCII cool : flèches et étoile
-    local colors=("\033[33m" "\033[32m" "\033[36m" "\033[35m" "\033[34m" "\033[31m") # Jaune, Vert, Cyan, Magenta, Bleu, Rouge
+    local delay=${3:-0.1} # Vitesse modérée
+    local width=20 # Largeur de la barre
+    local max_bars=12 # Nombre maximal de barres avant réinitialisation
+    local bar_char="━" # Caractère de barre (remplacer par "-" si Unicode pose problème)
+    local arrow=">" # Nouvelle flèche (remplacer par ">" si Unicode pose problème)
+    local colors=("\033[38;5;26m" "\033[38;5;27m" "\033[38;5;33m" "\033[38;5;39m" "\033[38;5;45m" "\033[38;5;51m") # Dégradé bleu
     local reset="\033[0m"
-    local color_idx=0
     local i=0
 
-    # Vérifier si le terminal est interactif et supporte les couleurs
     if [[ -t 1 && $(tput colors 2>/dev/null) -ge 8 ]]; then
         tput civis 2>/dev/null || true
         while kill -0 "$pid" 2>/dev/null; do
-            local color=${colors[$color_idx]}
-            echo -ne "\r$message [$color${spinstr:$i:1}$reset]"
-            ((i = (i + 1) % ${#spinstr}))
-            ((color_idx = (color_idx + 1) % ${#colors}))
+            local num_bars=$((i % (max_bars + 1))) # Nombre de barres (0 à max_bars)
+            local color=${colors[$((i % ${#colors[@]}))]}
+            # Construire la chaîne : barres + flèche
+            local bars=""
+            for ((j=0; j<num_bars; j++)); do
+                bars="$bars$bar_char"
+            done
+            local current_char="$bars$arrow"
+            # Calculer les espaces pour aligner à gauche dans la barre
+            local spaces_before=0
+            local spaces_after=$((width - ${#current_char}))
+            [ $spaces_after -lt 0 ] && spaces_after=0
+            local display=$(printf "%*s%s%*s" "$spaces_before" "" "$current_char" "$spaces_after" "")
+            echo -ne "\r$message $color$display$reset"
+            ((i++))
             sleep "$delay"
         done
         tput cnorm 2>/dev/null || true
     else
-        # Version sans couleurs
         while kill -0 "$pid" 2>/dev/null; do
-            echo -ne "\r$message [${spinstr:$i:1}]"
-            ((i = (i + 1) % ${#spinstr}))
+            local num_bars=$((i % (max_bars + 1)))
+            local bars=""
+            for ((j=0; j<num_bars; j++)); do
+                bars="$bars$bar_char"
+            done
+            local current_char="$bars$arrow"
+            local spaces_before=0
+            local spaces_after=$((width - ${#current_char}))
+            [ $spaces_after -lt 0 ] && spaces_after=0
+            local display=$(printf "%*s%s%*s" "$spaces_before" "" "$current_char" "$spaces_after" "")
+            echo -ne "\r$message $display"
+            ((i++))
             sleep "$delay"
         done
     fi
     wait "$pid"
     local exit_code=$?
-    echo -ne "\r$(printf '%*s' "${#message + ${#spinstr} + 10}" '')\r"
+    echo -ne "\r$(printf '%*s' "$(( ${#message} + width + 2 ))" '')\r"
     return $exit_code
 }
 
@@ -290,10 +312,10 @@ function startlogo {
 function donations {
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$GREEN	Donations are welcome at wallets below:							$COL_RESET"
-    echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA btcdons	$COL_RESET"
-    echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA ltcdons	$COL_RESET"
-    echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA ethdons	$COL_RESET"
-    echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bchdons	$COL_RESET"
+    echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA bc1qt8g9l6agk7qrzlztzuz7quwhgr3zlu4gc5qcuk	$COL_RESET"
+    echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA MGyth7od68xVqYnRdHQYes22fZW2b6h3aj	$COL_RESET"
+    echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA 0xc4e42e92ef8a196eef7cc49456c786a41d7daa01	$COL_RESET"
+    echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bitcoincash:qp9ltentq3rdcwlhxtn8cc2rr49ft5zwdv7k7e04df	$COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     log_message "Displayed donation addresses"
 }
