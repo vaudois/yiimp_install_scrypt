@@ -168,6 +168,27 @@ function hide_output {
     rm -f "$output_file"
 }
 
+function simple_hide_output {
+    local message="$1"
+    shift
+    local output_file=$(mktemp)
+    log_message "Running command: $@"
+    "$@" &> "$output_file" &
+    local pid=$!
+    spinner "$pid" "$message"
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        echo -e "${RED}FAILED: $@${COL_RESET}"
+        echo -e "${RED}-----------------------------------------${COL_RESET}"
+        cat "$output_file"
+        echo -e "${RED}-----------------------------------------${COL_RESET}"
+        log_message "Command failed: $@"
+        rm -f "$output_file"
+        exit $exit_code
+    fi
+    rm -f "$output_file"
+}
+
 function apt_get_quiet {
     local message="Installing packages..."
     DEBIAN_FRONTEND=noninteractive hide_output "$message" sudo apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" "$@"
