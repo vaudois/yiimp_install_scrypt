@@ -385,7 +385,7 @@ clear
         elif [[ "$DISTRO" == "22" ]]; then
             apt_install php8.3-mysql
         fi
-        hide_output service nginx restart
+		hide_output sudo systemctl restart nginx.service
         log_message "Fixed DB connection issue"
         echo -e "$GREEN Done$COL_RESET"
         
