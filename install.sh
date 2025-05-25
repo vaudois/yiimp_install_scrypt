@@ -385,7 +385,11 @@ clear
         elif [[ "$DISTRO" == "22" ]]; then
             apt_install php8.3-mysql
         fi
-		hide_output sudo systemctl restart nginx.service
+		if systemctl is-active --quiet nginx.service; then
+			hide_output "Restarting nginx..." sudo systemctl restart nginx.service
+		else
+			hide_output "Starting nginx..." sudo systemctl start nginx.service
+		fi
         log_message "Fixed DB connection issue"
         echo -e "$GREEN Done$COL_RESET"
         
@@ -696,8 +700,16 @@ clear
             confnginxnotssl "${server_name}" "${PHPVERSION}"
             sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
             sudo ln -s /var/web /var/www/$server_name/html
-            hide_output sudo systemctl restart nginx.service
-            hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+			if systemctl is-active --quiet nginx.service; then
+				hide_output "Restarting nginx..." sudo systemctl restart nginx.service
+			else
+				hide_output "Starting nginx..." sudo systemctl start nginx.service
+			fi
+			if systemctl is-active --quiet php${PHPVERSION}-fpm.service; then
+				hide_output "Restarting php${PHPVERSION}-fpm..." sudo systemctl restart php${PHPVERSION}-fpm.service
+			else
+				hide_output "Starting php${PHPVERSION}-fpm..." sudo systemctl start php${PHPVERSION}-fpm.service
+			fi
             log_message "Configured Nginx without subdomain"
             echo -e "$GREEN Done...$COL_RESET"
 
@@ -709,8 +721,16 @@ clear
                 apt_install certbot python3-certbot-nginx
                 sudo certbot --nginx --email "$EMAIL" --agree-tos --no-eff-email -d "$server_name" -d www."$server_name"
                 sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-                hide_output sudo systemctl restart nginx.service
-                hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+				if systemctl is-active --quiet nginx.service; then
+					hide_output "Restarting nginx..." sudo systemctl restart nginx.service
+				else
+					hide_output "Starting nginx..." sudo systemctl start nginx.service
+				fi
+				if systemctl is-active --quiet php${PHPVERSION}-fpm.service; then
+					hide_output "Restarting php${PHPVERSION}-fpm..." sudo systemctl restart php${PHPVERSION}-fpm.service
+				else
+					hide_output "Starting php${PHPVERSION}-fpm..." sudo systemctl start php${PHPVERSION}-fpm.service
+				fi
                 log_message "Installed SSL without subdomain"
                 echo -e "$GREEN Done...$COL_RESET"
             fi
@@ -718,8 +738,16 @@ clear
             confnginxnotsslsub "${server_name}" "${sub_domain}" "${PHPVERSION}"
             sudo ln -s /etc/nginx/sites-available/$server_name.conf /etc/nginx/sites-enabled/$server_name.conf
             sudo ln -s /var/web /var/www/$server_name/html
-            hide_output sudo systemctl restart nginx.service
-            hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+			if systemctl is-active --quiet nginx.service; then
+				hide_output "Restarting nginx..." sudo systemctl restart nginx.service
+			else
+				hide_output "Starting nginx..." sudo systemctl start nginx.service
+			fi
+			if systemctl is-active --quiet php${PHPVERSION}-fpm.service; then
+				hide_output "Restarting php${PHPVERSION}-fpm..." sudo systemctl restart php${PHPVERSION}-fpm.service
+			else
+				hide_output "Starting php${PHPVERSION}-fpm..." sudo systemctl start php${PHPVERSION}-fpm.service
+			fi
             log_message "Configured Nginx with subdomain"
             echo -e "$GREEN Done...$COL_RESET"
         
@@ -730,8 +758,16 @@ clear
                 apt_install certbot python3-certbot-nginx
                 sudo certbot --nginx --email "$EMAIL" --agree-tos --no-eff-email -d "$server_name" -d "$sub_domain.$server_name"
                 sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-                hide_output sudo systemctl restart nginx.service
-                hide_output sudo systemctl restart php${PHPVERSION}-fpm.service
+				if systemctl is-active --quiet nginx.service; then
+					hide_output "Restarting nginx..." sudo systemctl restart nginx.service
+				else
+					hide_output "Starting nginx..." sudo systemctl start nginx.service
+				fi
+				if systemctl is-active --quiet php${PHPVERSION}-fpm.service; then
+					hide_output "Restarting php${PHPVERSION}-fpm..." sudo systemctl restart php${PHPVERSION}-fpm.service
+				else
+					hide_output "Starting php${PHPVERSION}-fpm..." sudo systemctl start php${PHPVERSION}-fpm.service
+				fi
                 log_message "Installed SSL with subdomain"
                 echo -e "$GREEN Done...$COL_RESET"
             fi
