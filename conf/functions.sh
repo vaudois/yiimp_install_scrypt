@@ -173,7 +173,7 @@ function simple_hide_output {
     shift
     local output_file=$(mktemp)
     log_message "Running command: $@"
-    "$@" &> "$output_file" &
+    sudo "$@" &> "$output_file" &  # Ajout explicite de sudo
     local pid=$!
     spinner "$pid" "$message"
     local exit_code=$?
