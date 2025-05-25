@@ -261,7 +261,9 @@ clear
         fi
 
         apt_install nginx
-        hide_output sudo rm /etc/nginx/sites-enabled/default
+		if [ -f /etc/nginx/sites-enabled/default ]; then
+			hide_output sudo rm /etc/nginx/sites-enabled/default
+		fi
         hide_output sudo systemctl start nginx.service
         hide_output sudo systemctl enable nginx.service
         hide_output sudo systemctl start cron.service
