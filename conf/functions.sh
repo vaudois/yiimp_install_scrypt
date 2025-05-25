@@ -31,7 +31,25 @@ function check_and_install_dependencies {
     fi
 }
 
-check_and_install_dependencies
+# Rafraîchir le cache sudo pour éviter l'expiration
+function refresh_sudo_cache {
+    sudo -n true 2>/dev/null || {
+        echo -e "${RED}Error: Sudo cache expired or not available. Please re-run with sudo or configure NOPASSWD.${COL_RESET}"
+        log_message "Sudo cache refresh failed"
+        exit 1
+    }
+    log_message "Sudo cache refreshed"
+}
+
+# Vérification initiale des privilèges sudo
+function check_sudo_privileges {
+    if ! sudo -n true 2>/dev/null; then
+        echo -e "${RED}Error: This script requires sudo privileges. Please run with sudo or configure NOPASSWD.${COL_RESET}"
+        log_message "Sudo privileges check failed"
+        exit 1
+    fi
+    log_message "Sudo privileges verified"
+}
 
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
@@ -49,7 +67,6 @@ LOG_FILE="/var/log/yiimp_install.log"
 function log_message {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | sudo tee -a "$LOG_FILE" >/dev/null
 }
-
 
 function spinner {
     local pid=$1
@@ -107,36 +124,46 @@ function spinner {
     return $exit_code
 }
 
-# Hide_output amélioré
+# Hide_output amélioré pour gérer sudo
 function hide_output {
     local message=${1:-"Processing command..."}
     shift
     local output_file
     local exit_code
+    local cmd=("$@")
 
     output_file=$(mktemp) || {
         echo -e "${RED}Error: Failed to create temporary file${COL_RESET}"
-        log_message "Failed to create temporary file for command: $@"
+        log_message "Failed to create temporary file for command: ${cmd[*]}"
         exit 1
     }
 
-    log_message "Running command: $@"
-    "$@" &> "$output_file" &
+    log_message "Running command: ${cmd[*]}"
+    # Rafraîchir le cache sudo avant d'exécuter
+    refresh_sudo_cache
+    # Exécuter la commande avec sudo si nécessaire
+    if [[ "${cmd[0]}" == "sudo" ]]; then
+        shift
+        sudo -n "$@" &> "$output_file" &
+    else
+        "$@" &> "$output_file" &
+    fi
     local pid=$!
-    spinner "$pid" "$message" || exit_code=$?
+    spinner "$pid" "$message"
+    exit_code=$?
 
     if [[ $exit_code -ne 0 ]]; then
         echo
-        echo -e "${RED}FAILED: $@${COL_RESET}"
+        echo -e "${RED}FAILED: ${cmd[*]}${COL_RESET}"
         echo -e "${RED}-----------------------------------------${COL_RESET}"
         cat "$output_file"
         echo -e "${RED}-----------------------------------------${COL_RESET}"
-        log_message "Command failed: $@"
+        log_message "Command failed: ${cmd[*]}"
         rm -f "$output_file"
         exit $exit_code
     fi
 
-    log_message "Command succeeded: $@"
+    log_message "Command succeeded: ${cmd[*]}"
     rm -f "$output_file"
 }
 
@@ -321,3 +348,4 @@ function donations {
 }
 
 check_and_install_dependencies
+check_sudo_privileges
