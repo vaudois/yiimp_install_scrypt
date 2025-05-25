@@ -53,33 +53,35 @@ function log_message {
 function spinner {
     local pid=$1
     local message=${2:-"Traitement..."}
-    local delay=${3:-0.05} # Plus rapide pour un effet dynamique
+    local delay=${3:-0.05} # Rapide pour un effet dynamique
     local spinstr='→↘↓↙←↖↑↗*' # Caractères ASCII cool : flèches et étoile
-    local colors=("$YELLOW" "$GREEN" "$CYAN" "$MAGENTA" "$BLUE" "$RED") # Plus de couleurs
+    local colors=("\033[33m" "\033[32m" "\033[36m" "\033[35m" "\033[34m" "\033[31m") # Jaune, Vert, Cyan, Magenta, Bleu, Rouge
+    local reset="\033[0m"
     local color_idx=0
     local i=0
 
+    # Vérifier si le terminal est interactif et supporte les couleurs
     if [[ -t 1 && $(tput colors 2>/dev/null) -ge 8 ]]; then
         tput civis 2>/dev/null || true
         while kill -0 "$pid" 2>/dev/null; do
             local color=${colors[$color_idx]}
-            stdbuf -oL printf "\r%s [%s%s%s]" "$message" "$color" "${spinstr:$i:1}" "$COL_RESET"
+            echo -ne "\r$message [$color${spinstr:$i:1}$reset]"
             ((i = (i + 1) % ${#spinstr}))
             ((color_idx = (color_idx + 1) % ${#colors}))
             sleep "$delay"
         done
         tput cnorm 2>/dev/null || true
     else
-        # Version sans couleurs pour terminaux non compatibles
+        # Version sans couleurs
         while kill -0 "$pid" 2>/dev/null; do
-            stdbuf -oL printf "\r%s [%s]" "$message" "${spinstr:$i:1}"
+            echo -ne "\r$message [${spinstr:$i:1}]"
             ((i = (i + 1) % ${#spinstr}))
             sleep "$delay"
         done
     fi
     wait "$pid"
     local exit_code=$?
-    printf "\r%-*s\r" "${#message + ${#spinstr} + 10}" ""
+    echo -ne "\r$(printf '%*s' "${#message + ${#spinstr} + 10}" '')\r"
     return $exit_code
 }
 
