@@ -403,6 +403,8 @@ clear
         echo -e "$GREEN Done...$COL_RESET"
         sleep 3
 
+        clear
+        term_art_server
         # Installing Package to compile crypto currency
         echo
         echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
@@ -488,12 +490,12 @@ clear
         fi
 
         apt_install ufw
-        hide_output sudo ufw default deny incoming
-        hide_output sudo ufw default allow outgoing
-        hide_output sudo ufw allow ssh
-        hide_output sudo ufw allow http
-        hide_output sudo ufw allow https
-        hide_output sudo ufw --force enable
+        simple_hide_output sudo ufw default deny incoming
+        simple_hide_output sudo ufw default allow outgoing
+        simple_hide_output sudo ufw allow ssh
+        simple_hide_output sudo ufw allow http
+        simple_hide_output sudo ufw allow https
+        simple_hide_output sudo ufw --force enable
         sleep 3
         sudo systemctl status ufw | sed -n "1,3p"
         log_message "Installed and configured UFW"
