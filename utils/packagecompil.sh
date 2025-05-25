@@ -35,15 +35,22 @@ function package_compile_crypto
     apt_install libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev
     apt_install libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev
     apt_install libboost-system-dev libboost-thread-dev
-    apt_install default-libmysqlclient-dev librtmp-dev libssh2-1-dev libldap2-dev
+    apt_install libmariadb-dev librtmp-dev libssh2-1-dev libldap2-dev  # Remplacé default-libmysqlclient-dev par libmariadb-dev
     apt_install libbrotli-dev libssh-dev libnghttp2-dev libpsl-dev
-    apt_install python3 ccache doxygen graphviz libmysqlclient-dev
+    apt_install python3 ccache doxygen graphviz  # Retiré libmysqlclient-dev
 
     # Paquets spécifiques à Ubuntu 20.04 ou 22.04
     if [[ "$DISTRO" == "20" ]]; then
         apt_install libcurl4-gnutls-dev libidn11-dev
     elif [[ "$DISTRO" == "22" ]]; then
         apt_install libcurl4-openssl-dev libidn2-dev
+    fi
+
+    # Créer un lien symbolique pour mariadb_config -> mysql_config pour compatibilité avec les scripts de compilation
+    if [ -f /usr/bin/mariadb_config ] && [ ! -f /usr/bin/mysql_config ]; then
+        echo " >--> Creating symbolic link for mariadb_config to mysql_config..."
+        sudo ln -sf /usr/bin/mariadb_config /usr/bin/mysql_config
+        log_message "Created symbolic link /usr/bin/mariadb_config -> /usr/bin/mysql_config"
     fi
 
     # Vérifier les paquets essentiels (non bloquant)
