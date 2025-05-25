@@ -339,11 +339,11 @@ clear
 
         apt_install software-properties-common
 
-        if [ ! -f /etc/apt/sources.list.d/ondrej-php.list ]; then
-            hide_output sudo add-apt-repository -y ppa:ondrej/php
-            hide_output sudo apt -y update
-            log_message "Added ondrej/php PPA"
-        fi
+		if [ ! -f /etc/apt/sources.list.d/ondrej-php.list ]; then
+			simple_hide_output "Adding ondrej/php PPA..." sudo add-apt-repository -y ppa:ondrej/php
+			simple_hide_output "Updating apt..." sudo apt -y update
+			log_message "Added ondrej/php PPA"
+		fi
         echo -e "$YELLOW >--> Installing php...$COL_RESET"
         if [[ "$DISTRO" == "20" ]]; then
             apt_install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
