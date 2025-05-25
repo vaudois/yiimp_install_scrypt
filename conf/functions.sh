@@ -139,14 +139,15 @@ function hide_output {
     }
 
     log_message "Running command: ${cmd[*]}"
-    # Rafraîchir le cache sudo avant d'exécuter
-    refresh_sudo_cache
-    # Exécuter la commande avec sudo si nécessaire
     if [[ "${cmd[0]}" == "sudo" ]]; then
-        shift
-        sudo -n "$@" &> "$output_file" &
+        if sudo -n true 2>/dev/null; then
+            shift
+            sudo -n "$@" &> "$output_file" &
+        else
+            "${cmd[@]}" &> "$output_file" &
+        fi
     else
-        "$@" &> "$output_file" &
+        "${cmd[@]}" &> "$output_file" &
     fi
     local pid=$!
     spinner "$pid" "$message"
