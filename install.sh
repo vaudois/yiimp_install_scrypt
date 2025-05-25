@@ -113,8 +113,7 @@ clear
         source utils/packagecompil.sh
         source conf/configs.sh
     else
-	sudo cp -r conf/functions.sh /etc/
- 	source /etc/functions.sh
+        source conf/functions.sh
         source conf/prerequisite.sh
         sleep 3
         source conf/getip.sh
@@ -262,13 +261,34 @@ clear
         fi
 
         apt_install nginx
-		if [ -f /etc/nginx/sites-enabled/default ]; then
-			hide_output sudo rm /etc/nginx/sites-enabled/default
+
+		# Remove /etc/nginx/repos-enabled/default.conf if it exists
+		if [ -f /etc/nginx/repos-enabled/default.conf ]; then
+			hide_output "Removing default configuration file..." sudo rm -f /etc/nginx/repos-enabled/default.conf
 		fi
-        hide_output sudo systemctl start nginx.service
-        hide_output sudo systemctl enable nginx.service
-        hide_output sudo systemctl start cron.service
-        hide_output sudo systemctl enable cron.service
+
+		# Manage nginx.service
+		if systemctl is-active --quiet nginx.service; then
+			hide_output "Restarting nginx..." sudo systemctl restart nginx.service
+		else
+			hide_output "Starting nginx..." sudo systemctl start nginx.service
+		fi
+
+		if ! systemctl is-enabled --quiet nginx.service; then
+			hide_output "Enabling nginx..." sudo systemctl enable nginx.service
+		fi
+
+		# Manage cron.service
+		if systemctl is-active --quiet cron.service; then
+			hide_output "Restarting cron..." sudo systemctl restart cron.service
+		else
+			hide_output "Starting cron..." sudo systemctl start cron.service
+		fi
+
+		if ! systemctl is-enabled --quiet cron.service; then
+			hide_output "Enabling cron..." sudo systemctl enable cron.service
+		fi
+
         sudo systemctl status nginx | sed -n "1,3p"
         log_message "Installed and started Nginx"
         echo -e "$GREEN Done...$COL_RESET"
