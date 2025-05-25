@@ -12,6 +12,27 @@ absolutepath=absolutepathserver
 installtoserver=installpath
 daemonname=daemonnameserver
 
+# Forcer le terminal et l'encodage
+export TERM=xterm-256color
+export LC_ALL=C.UTF-8
+
+# Vérifier et installer ncurses-bin et dialog en silence
+function check_and_install_dependencies {
+    local packages="ncurses-bin dialog"
+    local missing_packages=""
+
+    for pkg in $packages; do
+        dpkg -s "$pkg" >/dev/null 2>&1 || missing_packages="$missing_packages $pkg"
+    done
+
+    if [ -n "$missing_packages" ]; then
+        apt_get_quiet install $missing_packages
+        [ $? -ne 0 ] && exit 1
+    fi
+}
+
+check_and_install_dependencies
+
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 RED=$ESC_SEQ"31;01m"
@@ -29,26 +50,35 @@ function log_message {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | sudo tee -a "$LOG_FILE" >/dev/null
 }
 
-# Spinner amélioré
 function spinner {
     local pid=$1
-    local message=${2:-"Processing..."}
-    local delay=${3:-0.1}
-    local spinstr=${4:-'⠁⠉⠙⠚⠒⠂⠂⠒⠲⢲⢳⢱⢹⢸⢸⢹⢱⢣⢣⢣⢣⢇⢇⢇⢇⢏⢏⢏⢏⢎⢎⢎⢎⢆⢆⢆⢆⢂'}
-    local colors=("$YELLOW" "$GREEN" "$CYAN" "$MAGENTA" "$BLUE")
+    local message=${2:-"Traitement..."}
+    local delay=${3:-0.05} # Plus rapide pour un effet dynamique
+    local spinstr='→↘↓↙←↖↑↗*' # Caractères ASCII cool : flèches et étoile
+    local colors=("$YELLOW" "$GREEN" "$CYAN" "$MAGENTA" "$BLUE" "$RED") # Plus de couleurs
     local color_idx=0
     local i=0
-    tput civis
-    while kill -0 "$pid" 2>/dev/null; do
-        local color=${colors[$color_idx]}
-        printf "\r%s [%s%s%s]" "$message" "$color" "${spinstr:$i:1}" "$COL_RESET"
-        ((i = (i + 1) % ${#spinstr}))
-        ((color_idx = (color_idx + 1) % ${#colors}))
-        sleep "$delay"
-    done
+
+    if [[ -t 1 && $(tput colors 2>/dev/null) -ge 8 ]]; then
+        tput civis 2>/dev/null || true
+        while kill -0 "$pid" 2>/dev/null; do
+            local color=${colors[$color_idx]}
+            stdbuf -oL printf "\r%s [%s%s%s]" "$message" "$color" "${spinstr:$i:1}" "$COL_RESET"
+            ((i = (i + 1) % ${#spinstr}))
+            ((color_idx = (color_idx + 1) % ${#colors}))
+            sleep "$delay"
+        done
+        tput cnorm 2>/dev/null || true
+    else
+        # Version sans couleurs pour terminaux non compatibles
+        while kill -0 "$pid" 2>/dev/null; do
+            stdbuf -oL printf "\r%s [%s]" "$message" "${spinstr:$i:1}"
+            ((i = (i + 1) % ${#spinstr}))
+            sleep "$delay"
+        done
+    fi
     wait "$pid"
     local exit_code=$?
-    tput cnorm
     printf "\r%-*s\r" "${#message + ${#spinstr} + 10}" ""
     return $exit_code
 }
