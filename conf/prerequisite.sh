@@ -1,13 +1,11 @@
 #!/bin/bash
-#####################################################
-# Source : https://mailinabox.email/ https://github.com/mail-in-a-box/mailinabox
-# Mis à jour par cryptopool.builders pour un usage crypto
-# Modifié par Vaudois
-# Compatible avec Ubuntu 22.04, support Ubuntu 18.04 supprimé
-# Adapté pour l'architecture ARM
-#####################################################
+#########################################################
+# Updated by Vaudois
+# Compatible with Ubuntu 20/22, Ubuntu 18 support removed
+# Adapted for ARM architectures
+#########################################################
 
-# Définition des codes de couleur pour l'affichage
+# Color codes for output
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 RED=$ESC_SEQ"31;01m"
@@ -17,61 +15,43 @@ BLUE=$ESC_SEQ"34;01m"
 MAGENTA=$ESC_SEQ"35;01m"
 CYAN=$ESC_SEQ"36;01m"
 
-# Fichier de journalisation pour le débogage
-LOG_FILE="/var/log/yiimp_install.log"
-
-# Fonction pour enregistrer les messages dans le journal
-log_message() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | sudo tee -a "$LOG_FILE" >/dev/null
-}
-
 echo
-echo -e "$CYAN => Vérification des prérequis : $COL_RESET"
-log_message "Démarrage des vérifications des prérequis"
+echo -e "$CYAN => Checking prerequisites: $COL_RESET"
 
-# Vérification de la version d'Ubuntu
+# Check Ubuntu version
 DISTRO=""
 if [[ "$(lsb_release -d | sed 's/.*:\s*//' | sed 's/20\.04\.[0-9]/20.04/')" == "Ubuntu 20.04 LTS" ]]; then
     DISTRO=20
     sudo chmod g-w /etc /etc/default /usr
-    log_message "Ubuntu 20.04 détecté (DISTRO=20)"
 elif [[ "$(lsb_release -d | sed 's/.*:\s*//' | sed 's/22\.04\.[0-9]/22.04/')" == "Ubuntu 22.04 LTS" ]]; then
     DISTRO=22
     sudo chmod g-w /etc /etc/default /usr
-    log_message "Ubuntu 22.04 détecté (DISTRO=22)"
 elif [[ "$(lsb_release -d | sed 's/.*:\s*//' | sed 's/16\.04\.[0-9]/16.04/')" == "Ubuntu 16.04 LTS" ]]; then
-    echo -e "$RED Ce script ne prend pas en charge Ubuntu 16.04. Versions supportées : Ubuntu 20.04 et 22.04$COL_RESET"
-    echo -e "$RED Arrêt de l'installation !$COL_RESET"
-    log_message "Ubuntu 16.04 non supporté détecté, arrêt"
+    echo -e "$RED This script does not support Ubuntu 16.04. Supported versions: Ubuntu 20.04 and 22.04$COL_RESET"
+    echo -e "$RED Stopping installation!$COL_RESET"
     exit 1
 elif [[ "$(lsb_release -d | sed 's/.*:\s*//' | sed 's/18\.04\.[0-9]/18.04/')" == "Ubuntu 18.04 LTS" ]]; then
-    echo -e "$RED Ce script ne prend plus en charge Ubuntu 18.04 (fin du support standard). Veuillez passer à Ubuntu 20.04 ou 22.04$COL_RESET"
-    echo -e "$RED Arrêt de l'installation !$COL_RESET"
-    log_message "Ubuntu 18.04 non supporté détecté, arrêt"
+    echo -e "$RED This script no longer supports Ubuntu 18.04 (end of standard support). Please upgrade to Ubuntu 20.04 or 22.04$COL_RESET"
+    echo -e "$RED Stopping installation!$COL_RESET"
     exit 1
 else
-    echo -e "$RED Version d'Ubuntu non supportée. Ce script prend en charge uniquement Ubuntu 20.04 et 22.04$COL_RESET"
-    echo -e "$RED Arrêt de l'installation !$COL_RESET"
-    log_message "Version d'Ubuntu non supportée détectée : $(lsb_release -d), arrêt"
+    echo -e "$RED Unsupported Ubuntu version. This script supports only Ubuntu 20.04 and 22.04$COL_RESET"
+    echo -e "$RED Stopping installation!$COL_RESET"
     exit 1
 fi
 
-# Vérification de l'architecture
+# Check architecture
 ARCHITECTURE=$(uname -m)
-if [[ "$ARCHITECTURE" != "x86_64" && "$ARCHITECTURE" != "arm64" ]]; then
-    echo -e "$RED Le script d'installation Yiimp prend en charge uniquement les architectures x86_64 et ARM.$COL_RESET"
-    echo -e "$RED Votre architecture est $ARCHITECTURE$COL_RESET"
-    log_message "Architecture non supportée détectée : $ARCHITECTURE, arrêt"
+if [[ "$ARCHITECTURE" != "x86_64" && ! "$ARCHITECTURE" =~ ^arm ]]; then
+    echo -e "$RED Yiimp installation script supports only x86_64 and ARM (all variants) architectures.$COL_RESET"
+    echo -e "$RED Your architecture is $ARCHITECTURE$COL_RESET"
     exit 1
 fi
-log_message "Architecture détectée : $ARCHITECTURE"
 
-# Vérification de la commande lsb_release
+# Check lsb_release command
 if ! command -v lsb_release >/dev/null 2>&1; then
-    echo -e "$RED La commande lsb_release est introuvable. Veuillez installer le paquet lsb-release.$COL_RESET"
-    log_message "Commande lsb_release introuvable, arrêt"
+    echo -e "$RED The lsb_release command is not found. Please install the lsb-release package.$COL_RESET"
     exit 1
 fi
 
-echo -e "$GREEN Terminé...$COL_RESET"
-log_message "Vérifications des prérequis terminées avec succès"
+echo -e "$GREEN Done...$COL_RESET"
