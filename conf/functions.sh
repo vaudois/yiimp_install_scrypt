@@ -1,12 +1,12 @@
 #!/bin/bash
-#####################################################
+########################################################
 # Modified by Vaudois for crypto use...
 # Updated for Ubuntu 22.04 compatibility with PHP 8.3
 # Changes:
 # - Added support for DISTRO=22 with PHP 8.3
 # - Improved error handling and logging
-# - Maintained compatibility with Ubuntu 18.04 (PHP 7.3) and 20.04 (PHP 8.2)
-#####################################################
+# - Maintained compatibility with Ubuntu 20.04 (PHP 8.2)
+########################################################
 
 absolutepath=absolutepathserver
 installtoserver=installpath
@@ -29,41 +29,66 @@ function log_message {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | sudo tee -a "$LOG_FILE" >/dev/null
 }
 
+# Spinner amélioré
 function spinner {
-    local pid=$!
-    local delay=0.75
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
+    local pid=$1
+    local message=${2:-"Processing..."}
+    local delay=${3:-0.1}
+    local spinstr=${4:-'⠁⠉⠙⠚⠒⠂⠂⠒⠲⢲⢳⢱⢹⢸⢸⢹⢱⢣⢣⢣⢣⢇⢇⢇⢇⢏⢏⢏⢏⢎⢎⢎⢎⢆⢆⢆⢆⢂'}
+    local colors=("$YELLOW" "$GREEN" "$CYAN" "$MAGENTA" "$BLUE")
+    local color_idx=0
+    local i=0
+    tput civis
+    while kill -0 "$pid" 2>/dev/null; do
+        local color=${colors[$color_idx]}
+        printf "\r%s [%s%s%s]" "$message" "$color" "${spinstr:$i:1}" "$COL_RESET"
+        ((i = (i + 1) % ${#spinstr}))
+        ((color_idx = (color_idx + 1) % ${#colors}))
+        sleep "$delay"
     done
-    printf "    \b\b\b\b"
+    wait "$pid"
+    local exit_code=$?
+    tput cnorm
+    printf "\r%-*s\r" "${#message + ${#spinstr} + 10}" ""
+    return $exit_code
 }
 
+# Hide_output amélioré
 function hide_output {
-    OUTPUT=$(mktemp)
+    local message=${1:-"Processing command..."}
+    shift
+    local output_file
+    local exit_code
+
+    output_file=$(mktemp) || {
+        echo -e "${RED}Error: Failed to create temporary file${COL_RESET}"
+        log_message "Failed to create temporary file for command: $@"
+        exit 1
+    }
+
     log_message "Running command: $@"
-    $@ &> "$OUTPUT" & spinner
-    E=$?
-    if [ $E != 0 ]; then
+    "$@" &> "$output_file" &
+    local pid=$!
+    spinner "$pid" "$message" || exit_code=$?
+
+    if [[ $exit_code -ne 0 ]]; then
         echo
         echo -e "${RED}FAILED: $@${COL_RESET}"
         echo -e "${RED}-----------------------------------------${COL_RESET}"
-        cat "$OUTPUT"
+        cat "$output_file"
         echo -e "${RED}-----------------------------------------${COL_RESET}"
         log_message "Command failed: $@"
-        rm -f "$OUTPUT"
-        exit $E
+        rm -f "$output_file"
+        exit $exit_code
     fi
+
     log_message "Command succeeded: $@"
-    rm -f "$OUTPUT"
+    rm -f "$output_file"
 }
 
 function apt_get_quiet {
-    DEBIAN_FRONTEND=noninteractive hide_output sudo apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" "$@"
+    local message="Installing packages..."
+    DEBIAN_FRONTEND=noninteractive hide_output "$message" sudo apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" "$@"
 }
 
 function apt_install {
@@ -81,7 +106,7 @@ function apt_install {
 function ufw_allow {
     if [ -z "$DISABLE_FIREWALL" ]; then
         log_message "Allowing port $1 in UFW"
-        sudo ufw allow "$1" >/dev/null
+        hide_output "Allowing port $1 in UFW..." sudo ufw allow "$1"
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to allow port $1 in UFW${COL_RESET}"
             log_message "Failed to allow port $1 in UFW"
@@ -93,7 +118,7 @@ function ufw_allow {
 
 function restart_service {
     log_message "Restarting service $1"
-    hide_output sudo service "$1" restart
+    hide_output "Restarting $1..." sudo service "$1" restart
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to restart service $1${COL_RESET}"
         log_message "Failed to restart service $1"
@@ -109,9 +134,6 @@ function message_box {
 }
 
 function input_box {
-    # input_box "title" "prompt" "defaultvalue" VARIABLE
-    # The user's input will be stored in the variable VARIABLE.
-    # The exit code from dialog will be stored in VARIABLE_EXITCODE.
     declare -n result=$4
     declare -n result_code=$4_EXITCODE
     result=$(dialog --stdout --title "$1" --inputbox "$2" 0 0 "$3")
@@ -120,9 +142,6 @@ function input_box {
 }
 
 function input_menu {
-    # input_menu "title" "prompt" "tag item tag item" VARIABLE
-    # The user's input will be stored in the variable VARIABLE.
-    # The exit code from dialog will be stored in VARIABLE_EXITCODE.
     declare -n result=$4
     declare -n result_code=$4_EXITCODE
     local IFS=^$'\n'
@@ -132,13 +151,6 @@ function input_menu {
 }
 
 function get_publicip_from_web_service {
-    # This seems to be the most reliable way to determine the
-    # machine's public IP address: asking a very nice web API
-    # for how they see us. Thanks go out to icanhazip.com.
-    # See: https://major.io/icanhazip-com-faq/
-    #
-    # Pass '4' or '6' as an argument to this function to specify
-    # what type of address to get (IPv4, IPv6).
     log_message "Fetching public IP (IPv$1)"
     local ip=$(curl -$1 --fail --silent --max-time 15 icanhazip.com 2>/dev/null)
     if [ $? -ne 0 ]; then
@@ -151,11 +163,6 @@ function get_publicip_from_web_service {
 }
 
 function get_default_privateip {
-    # Return the IP address of the network interface connected
-    # to the Internet.
-    #
-    # Pass '4' or '6' as an argument to this function to specify
-    # what type of address to get (IPv4, IPv6).
     target=8.8.8.8
     if [ "$1" == "6" ]; then target=2001:4860:4860::8888; fi
     log_message "Fetching default private IP (IPv$1)"
@@ -175,8 +182,7 @@ function get_default_privateip {
 }
 
 # Terminal art start screen.
-function term_art_server
-{
+function term_art_server {
     if [[ "${DISTRO}" == "22" ]]; then
         PHPINSTALL=8.3
     elif [[ "${DISTRO}" == "20" ]]; then
@@ -199,8 +205,7 @@ function term_art_server
     log_message "Displayed term_art_server for DISTRO=$DISTRO, PHP=$PHPINSTALL"
 }
 
-function install_end_message
-{
+function install_end_message {
     clear
     echo
     figlet -f slant -w 100 " Complete!"
@@ -236,8 +241,7 @@ function install_end_message
     cd ~
 }
 
-function startlogo
-{
+function startlogo {
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo "																							"
     echo "  ░██████╗███████╗██████╗░██╗░░░██╗███████╗██████╗░  ██╗░░░██╗██╗██╗███╗░░░███╗██████╗░	"
@@ -251,8 +255,7 @@ function startlogo
     log_message "Displayed start logo"
 }
 
-function donations
-{
+function donations {
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$GREEN	Donations are welcome at wallets below:							$COL_RESET"
     echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA btcdons	$COL_RESET"
