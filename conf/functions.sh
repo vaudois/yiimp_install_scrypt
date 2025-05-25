@@ -31,8 +31,6 @@ function check_and_install_dependencies {
     fi
 }
 
-check_and_install_dependencies
-
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 RED=$ESC_SEQ"31;01m"
@@ -295,3 +293,5 @@ function donations {
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     log_message "Displayed donation addresses"
 }
+
+check_and_install_dependencies
