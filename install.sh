@@ -113,6 +113,7 @@ clear
         source utils/packagecompil.sh
         source conf/configs.sh
     else
+		sudo cp -r conf/functions.sh /etc/
         source conf/functions.sh
         source conf/prerequisite.sh
         sleep 3
