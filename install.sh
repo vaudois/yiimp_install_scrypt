@@ -114,7 +114,7 @@ clear
         source conf/configs.sh
     else
 	sudo cp -r conf/functions.sh /etc/
- 	source etc/functions.sh
+ 	source /etc/functions.sh
         source conf/prerequisite.sh
         sleep 3
         source conf/getip.sh
