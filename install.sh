@@ -353,8 +353,8 @@ clear
 			sudo phpenmod -v 8.2 mbstring
 			sudo phpenmod -v 8.2 memcache memcached
             apt_install php8.2-gettext
-			hide_output sudo update-alternatives --set php /usr/bin/php8.2
-            hide_output sudo systemctl start php8.2-fpm
+			simple_hide_output sudo update-alternatives --set php /usr/bin/php8.2
+            simple_hide_output sudo systemctl start php8.2-fpm
             sudo systemctl status php8.2-fpm | sed -n "1,3p"
             PHPVERSION=8.2
             log_message "Installed PHP 8.2 and dependencies"
@@ -367,8 +367,8 @@ clear
 			sudo phpenmod -v 8.3 mbstring
 			sudo phpenmod -v 8.3 memcache memcached
 			apt_install php8.3-gettext
-			hide_output sudo update-alternatives --set php /usr/bin/php8.3
-            hide_output sudo systemctl start php8.3-fpm
+			simple_hide_output sudo update-alternatives --set php /usr/bin/php8.3
+            simple_hide_output sudo systemctl start php8.3-fpm
             sudo systemctl status php8.3-fpm | sed -n "1,3p"
             PHPVERSION=8.3
             log_message "Installed PHP 8.3 and dependencies"
