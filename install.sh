@@ -535,11 +535,11 @@ clear
 		fi
 		sleep 1
 
-        # Modify Files (Admin_panel), Wallets path, Web Path footer
-        sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
-        sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
-        sudo sed -i 's@domain:@<?=YAAMP_SITE_URL ?>:@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
-        sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
+		# Modify Files (Admin_panel), Wallets path, Web Path footer
+		sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
+		sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
+		sudo sed -i 's@domain:@<?=YAAMP_SITE_URL ?>:@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
+		sudo sed -i 's@domain@<?=YAAMP_SITE_NAME ?>@' ${absolutepath}/yiimp/web/yaamp/modules/site/index.php
 		if [[ -f ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php ]]; then
 			sudo sed -i 's@(real)@@' ${absolutepath}/yiimp/web/yaamp/modules/site/memcached.php
 		fi
@@ -547,6 +547,14 @@ clear
 			sudo sed -i 's@/home/yiimp-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
 			sudo sed -i 's@/home/crypto-data/yiimp/site/stratum/blocknotify@blocknotify.sh@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
 			sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
+		fi
+		if [[ -f ${absolutepath}/yiimp/web/index.php ]]; then
+			if grep -q "require_once.*serverconfig\.php" ${absolutepath}/yiimp/web/index.php; then
+				sudo sed -i "/require_once.*serverconfig\.php/d" ${absolutepath}/yiimp/web/index.php
+				sudo sh -c "echo \"require_once('serverconfig.php');\" >> ${absolutepath}/yiimp/web/index.php"
+			else
+				sudo sh -c "echo \"require_once('serverconfig.php');\" >> ${absolutepath}/yiimp/web/index.php"
+			fi
 		fi
 
         log_message "Modified Yiimp configuration files"
@@ -1076,12 +1084,12 @@ clear
 	cd ${absolutepath}/yiimp/stratum
 	sudo make clean
 	if [[ ! -f ${absolutepath}/yiimp/stratum/install.log ]]; then
-		sudo rm install.log
+		sudo rm ${absolutepath}/yiimp/stratum/install.log
 	fi
 	cd ${absolutepath}/stratum
 	sudo make clean
 	if [[ ! -f ${absolutepath}/stratum/install.log ]]; then
-		sudo rm install.log
+		sudo rm ${absolutepath}/stratum/install.log
 	fi
 
 	sudo mv -r ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_${yiimpver}
