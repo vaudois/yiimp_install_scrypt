@@ -315,8 +315,18 @@ clear
         rootpasswd=$(openssl rand -base64 12)
         export DEBIAN_FRONTEND="noninteractive"
         apt_install mariadb-server
-        hide_output sudo systemctl start mysql
-        hide_output sudo systemctl enable mysql
+
+		# Manage mysql.service
+		if systemctl is-active --quiet mysql.service; then
+			hide_output "Restarting mysql..." sudo systemctl restart mysql.service
+		else
+			hide_output "Starting mysql..." sudo systemctl start mysql.service
+		fi
+
+		if ! systemctl is-enabled --quiet mysql.service; then
+			hide_output "Enabling mysql..." sudo systemctl enable mysql.service
+		fi
+
         sleep 5
         sudo systemctl status mysql | sed -n "1,3p"
         log_message "Installed and started MariaDB"
