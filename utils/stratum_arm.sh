@@ -1154,4 +1154,4 @@ else
         exit 1
     fi
 fi
-sleep 3
+sleep 1
