@@ -589,12 +589,10 @@ clear
 			sudo sed -i 's@".YAAMP_STRATUM_URL.":@@' ${absolutepath}/yiimp/web/yaamp/modules/site/coin_form.php
 		fi
 		if [[ -f ${absolutepath}/yiimp/web/index.php ]]; then
-			if grep -q "require_once.*serverconfig\.php" ${absolutepath}/yiimp/web/index.php; then
-				sudo sed -i "/require_once.*serverconfig\.php/d" ${absolutepath}/yiimp/web/index.php
-				sudo sh -c "echo \"require_once('serverconfig.php');\" >> ${absolutepath}/yiimp/web/index.php"
-			else
-				sudo sh -c "echo \"require_once('serverconfig.php');\" >> ${absolutepath}/yiimp/web/index.php"
-			fi
+			# Supprimer toute ligne contenant require_once avec serverconfig.php
+			sudo sed -i '/require_once.*serverconfig\.php/d' ${absolutepath}/yiimp/web/index.php
+			# Insérer require_once('serverconfig.php'); après <?php
+			sudo sed -i '/^<?php/a require_once('\''serverconfig.php'\'');' ${absolutepath}/yiimp/web/index.php
 		fi
 
         log_message "Modified Yiimp configuration files"
