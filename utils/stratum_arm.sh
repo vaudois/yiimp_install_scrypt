@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Couleurs pour les messages
@@ -38,7 +39,9 @@ sudo make clean > /dev/null 2>&1
 
 # Détecter l'architecture
 ARCH=$(dpkg --print-architecture)
-if [ "$ARCH" = "arm64" ]; then
+ARCH_KERNEL=$(uname -m)
+if [[ "$ARCH" =~ ^(arm|arm64|armhf)$ || "$ARCH_KERNEL" =~ ^(arm|aarch64|armv[0-9]+l)$ ]]; then
+echo -e "${GREEN}ARM detected, Patcht & running compilation Stratum${COL_RESET}"
     # Modifier automatiquement le Makefile dans algos
     ALGO_MAKEFILE="${pathstratuminstall}/algos/makefile"
     if sudo grep -q "CFLAGS" "$ALGO_MAKEFILE"; then
@@ -1138,6 +1141,7 @@ EOF
 	export CFLAGS="-DNO_SIMD -march=armv8-a -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
 else
     export CFLAGS="-DNO_SIMD"
+	echo -e "${GREEN}Running compilation Straum${COL_RESET}"
 fi
 
 # Compiler
@@ -1145,13 +1149,6 @@ if sudo make; then
     echo " >--> Compiled stratum successfully"
 else
     echo -e "$YELLOW Warning: Failed to compile stratum, check install.log for details...$COL_RESET"
-    sudo sed -i 's/\(ar2\/opt\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
-    sudo sed -i 's/\($(CC) $(CFLAGS) -c ar2\/opt\.c -o ar2\/opt\.o\)/# \1/' "$ALGO_MAKEFILE"
-    if sudo make; then
-        echo " >--> Compiled stratum successfully after disabling ar2/opt.o"
-    else
-        echo -e "$YELLOW Error: Compilation still failed after disabling ar2/opt.o, check install.log for details...$COL_RESET"
-        exit 1
-    fi
+    exit 1
 fi
 sleep 1
