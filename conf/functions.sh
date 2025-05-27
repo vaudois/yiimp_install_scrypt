@@ -12,12 +12,22 @@ absolutepath=/home/vaudois
 installtoserver=coin-setup
 daemonname=coinbuild
 
+ESC_SEQ="\x1b["
+COL_RESET=$ESC_SEQ"39;49;00m"
+RED=$ESC_SEQ"31;01m"
+GREEN=$ESC_SEQ"32;01m"
+YELLOW=$ESC_SEQ"33;01m"
+BLUE=$ESC_SEQ"34;01m"
+MAGENTA=$ESC_SEQ"35;01m"
+CYAN=$ESC_SEQ"36;01m"
+
 # Forcer le terminal et l'encodage
 export TERM=xterm-256color
 export LC_ALL=C.UTF-8
 
 # Vérifier et installer ncurses-bin et dialog en silence total
 function check_and_install_dependencies {
+    echo "${MAGENTAC}heck and install dependencies${COL_RESET}"
     local packages="ncurses-bin dialog"
     local missing_packages=""
 
@@ -50,15 +60,6 @@ function check_sudo_privileges {
     fi
     log_message "Sudo privileges verified"
 }
-
-ESC_SEQ="\x1b["
-COL_RESET=$ESC_SEQ"39;49;00m"
-RED=$ESC_SEQ"31;01m"
-GREEN=$ESC_SEQ"32;01m"
-YELLOW=$ESC_SEQ"33;01m"
-BLUE=$ESC_SEQ"34;01m"
-MAGENTA=$ESC_SEQ"35;01m"
-CYAN=$ESC_SEQ"36;01m"
 
 # Log file for debugging
 LOG_FILE="/var/log/yiimp_install.log"
