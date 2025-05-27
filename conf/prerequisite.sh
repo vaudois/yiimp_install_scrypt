@@ -42,8 +42,7 @@ fi
 
 # Check architecture
 ARCHITECTURE=$(uname -m)
-if [[ "$ARCHITECTURE" != "x86_64" && ! "$ARCHITECTURE" =~ ^arm ]]; then
-    echo -e "$RED Yiimp installation script supports only x86_64 and ARM (all variants) architectures.$COL_RESET"
+if [[ "$ARCHITECTURE" != "x86_64" && ! "$ARCHITECTURE" =~ ^arm && ! "$ARCHITECTURE" =~ ^aarch ]]; then
     echo -e "$RED Your architecture is $ARCHITECTURE$COL_RESET"
     exit 1
 fi
