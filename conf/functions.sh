@@ -26,7 +26,7 @@ function check_and_install_dependencies {
     done
 
     if [ -n "$missing_packages" ]; then
-        DEBIAN_FRONTEND=noninteractive apt install -y -qq $missing_packages >/dev/null 2>&1
+        DEBIAN_FRONTEND=noninteractive sudo apt install -y -qq $missing_packages >/dev/null 2>&1
         [ $? -ne 0 ] && exit 1
     fi
 }
