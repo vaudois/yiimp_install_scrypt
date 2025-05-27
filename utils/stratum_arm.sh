@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Couleurs pour les messages
@@ -7,6 +6,19 @@ COL_RESET='\033[0m'
 
 # Définir le chemin d'installation : utiliser $1 si fourni, sinon valeur par défaut
 pathstratuminstall="${1:-$HOME/yiimp/stratum}"
+
+# Enlever le slash final de pathstratuminstall
+pathstratuminstall=$(echo "$pathstratuminstall" | sed 's/\/$//')
+
+# Définir le chemin d'installation : utiliser $1 si fourni, sinon valeur par défaut
+pathstratuminstall="${1:-$HOME/yiimp/stratum}"
+
+# Convertir en chemin absolu
+if [[ "$pathstratuminstall" != /* ]]; then
+    # Si chemin relatif, le préfixer avec $HOME
+    pathstratuminstall="$HOME/$pathstratuminstall"
+fi
+pathstratuminstall=$(realpath "$pathstratuminstall" 2>/dev/null || echo "$pathstratuminstall")
 
 # Enlever le slash final de pathstratuminstall
 pathstratuminstall=$(echo "$pathstratuminstall" | sed 's/\/$//')
@@ -35,17 +47,64 @@ fi
 
 # Compile Stratum
 cd ${pathstratuminstall}
+
+sudo chmod -R u+rwX "${pathstratuminstall}"
+sudo chown -R $(whoami):$(whoami) "${pathstratuminstall}"
+
 sudo make clean > /dev/null 2>&1
 
 # Détecter l'architecture
 ARCH=$(dpkg --print-architecture)
 ARCH_KERNEL=$(uname -m)
+
+# Vérifier que l'architecture est 64 bits (aarch64/arm64)
+if [[ "$ARCH" != "arm64" || "$ARCH_KERNEL" != "aarch64" ]]; then
+    echo -e "${YELLOW}Error: This script requires a 64-bit ARM architecture (aarch64/arm64). Detected: ARCH=$ARCH, ARCH_KERNEL=$ARCH_KERNEL${COL_RESET}"
+    exit 1
+fi
+
 if [[ "$ARCH" =~ ^(arm|arm64|armhf)$ || "$ARCH_KERNEL" =~ ^(arm|aarch64|armv[0-9]+l)$ ]]; then
-echo -e "${GREEN}ARM detected, Patcht & running compilation Stratum${COL_RESET}"
+echo -e "${YELLOW}ARM detected, Patcht & running compilation Stratum${COL_RESET}"
+
+	# Détecter l'architecture ARM et définir $cpu
+	cpu=""
+	arch=$(uname -m)
+	if [[ "$arch" =~ ^armv7 ]]; then
+		cpu="armv7-a"
+		fpu="vfpv3"
+		float_abi="softfp"
+		sudo sed -i '/#endif/i #if defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7__)\ntypedef unsigned long long uint128_t __attribute__((mode(TI)));\n#endif' "$pathstratuminstall/sha3/sph_types.h"
+	elif [[ "$arch" == "aarch64" ]]; then
+		cpu="armv8-a"
+		fpu="neon"
+		float_abi="hard"
+		sudo sed -i '/#endif/i #if defined(__aarch64__)\ntypedef unsigned __int128 uint128_t;\n#endif' "$pathstratuminstall/sha3/sph_types.h"
+	elif [[ "$arch" =~ ^armv6 ]]; then
+		cpu="armv6"
+		fpu="vfp"
+		float_abi="soft"
+	else
+		echo -e "${YELLOW}Error: Unsupported architecture $arch${COL_RESET}"
+		exit 1
+	fi
+	
+	echo -e "${YELLOW}Detected CPU architecture: $cpu${COL_RESET}"
+	sleep 3
     # Modifier automatiquement le Makefile dans algos
-    ALGO_MAKEFILE="${pathstratuminstall}/algos/makefile"
+	if [ -f "${pathstratuminstall}/algos/makefile" ]; then
+		ALGO_MAKEFILE="${pathstratuminstall}/algos/makefile"
+	elif [ -f "${pathstratuminstall}/algos/Makefile" ]; then
+		ALGO_MAKEFILE="${pathstratuminstall}/algos/Makefile"
+	fi
+	# Vérifier si le Makefile a été trouvé
+	if [ -z "$ALGO_MAKEFILE" ]; then
+		echo -e "${YELLOW}Error: Neither makefile nor Makefile found at ${pathstratuminstall}/algos/${COL_RESET}"
+		exit 1
+	fi
     if sudo grep -q "CFLAGS" "$ALGO_MAKEFILE"; then
-        sudo sed -i 's/-march=native/-march=armv8-a/' "$ALGO_MAKEFILE"
+		sudo sed -i "s/-march=native/-march=$cpu -mfpu=$fpu/" "$ALGO_MAKEFILE"
+		sudo sed -i 's/-mfloat-abi=hard/-mfloat-abi='$float_abi'/' "$ALGO_MAKEFILE"
+		sudo sed -i 's/-mfloat-abi=softfp/-mfloat-abi='$float_abi'/' "$ALGO_MAKEFILE"
         if ! sudo grep -q "\-DNO_SIMD" "$ALGO_MAKEFILE"; then
             sudo sed -i '/CFLAGS/s/$/ -DNO_SIMD/' "$ALGO_MAKEFILE"
         fi
@@ -234,7 +293,7 @@ EOF
 		if [ "$opening_braces" -ne "$closing_braces" ]; then
 			exit 1
 		fi
-		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=armv8-a -DNO_SIMD -DNO_AES_NI -std=gnu99 "$XELISV2_FILE"; then
+		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=$cpu -mfpu=$fpu -DNO_SIMD -DNO_AES_NI -std=gnu99 "$XELISV2_FILE"; then
 			sudo sed -i 's/\(xelisv2\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
 			sudo sed -i 's/\($(CC) $(CFLAGS) -c xelisv2\.c -o xelisv2\.o\)/# \1/' "$ALGO_MAKEFILE"
 		fi
@@ -472,10 +531,10 @@ void aurum_hash(const char *input, char *output, uint32_t len)
 EOF
             sudo chmod 666 "$AURUM_FILE"
         fi
-        if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=armv8-a -DNO_SIMD -std=gnu99 "$AURUM_FILE" 2>/dev/null; then
-            sudo sed -i 's/\(aurum\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
-            sudo sed -i 's/\($(CC) $(CFLAGS) -c aurum\.c -o aurum\.o\)/# \1/' "$ALGO_MAKEFILE"
-        fi
+		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=$cpu -mfpu=$fpu -DNO_SIMD -std=gnu99 "$AURUM_FILE" 2>/dev/null; then
+			sudo sed -i 's/\(aurum\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
+			sudo sed -i 's/\($(CC) $(CFLAGS) -c aurum\.c -o aurum\.o\)/# \1/' "$ALGO_MAKEFILE"
+		fi
     fi
     
 	# Patche yespower/yespower-blake2b.c
@@ -499,9 +558,8 @@ EOF
 		sudo sed -i '/#if defined(__x86_64__)/N;/#if defined(__x86_64__)\n.*yespower_b2b/d' "$YESPOWER_FILE"
 		sudo sed -i '/#endif/N;/#endif\n.*yespower_b2b/d' "$YESPOWER_FILE"
 		# Vérifier la balance des #if/#endif
-		if [ $(sudo grep -c "#if\|#ifdef\|#ifndef" "$YESPOWER_FILE") -ne $(sudo grep -c "#endif" "$YESPOWER_FILE") ] || ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=armv8-a -DNO_SIMD -std=gnu99 "$YESPOWER_FILE" 2>/dev/null; then
+		if [ $(sudo grep -c "#if\|#ifdef\|#ifndef" "$YESPOWER_FILE") -ne $(sudo grep -c "#endif" "$YESPOWER_FILE") ] || ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=$cpu -mfpu=$fpu -DNO_SIMD -std=gnu99 "$YESPOWER_FILE" 2>/dev/null; then
 			echo -e "$YELLOW Warning: Unbalanced preprocessor directives or syntax error in $YESPOWER_FILE, rewriting with generic implementation$COL_RESET"
-			# Réécrire avec une implémentation générique complète pour ARM64
 			sudo bash -c "cat > $YESPOWER_FILE" << 'EOF'
 #include <errno.h>
 #include <stdint.h>
@@ -1012,8 +1070,8 @@ void fill_segment(const argon2_instance_t *instance, argon2_position_t position)
 }
 EOF
         fi
-        if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=armv8-a -DNO_SIMD -std=gnu99 "$ARGON2_FILE" 2>/dev/null; then
-            sudo bash -c "cat > $ARGON2_FILE" << 'EOF'
+		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=$cpu -mfpu=$fpu -DNO_SIMD -std=gnu99 "$ARGON2_FILE" 2>/dev/null; then
+			sudo bash -c "cat > $ARGON2_FILE" << 'EOF'
 #include <uint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1138,10 +1196,10 @@ EOF
         \nvoid PBKDF2_SHA256_Y(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt, size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);' "$YESCRYPT_HEADER"
     fi
     
-	export CFLAGS="-DNO_SIMD -march=armv8-a -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
+	export CFLAGS="-DNO_SIMD -march=$cpu -mfpu=$fpu -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
 else
     export CFLAGS="-DNO_SIMD"
-	echo -e "${GREEN}Running compilation Straum${COL_RESET}"
+	echo -e "${YELLOW}Running compilation Straum${COL_RESET}"
 fi
 
 # Compiler
