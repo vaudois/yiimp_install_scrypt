@@ -593,7 +593,6 @@ clear
 		# Detection system
 		ARCH=$(dpkg --print-architecture)
 		if [ "$ARCH" = "arm64" ]; then
-			echo "ARM64 detected, run script file stratum_arm.sh..."
 			sudo chmod +x ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh
 			sudo ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum
 		else
