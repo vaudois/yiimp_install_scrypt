@@ -27,7 +27,7 @@ export LC_ALL=C.UTF-8
 
 # Vérifier et installer ncurses-bin et dialog en silence total
 function check_and_install_dependencies {
-    echo "${MAGENTAC}heck and install dependencies${COL_RESET}"
+    echo "${MAGENTA} Check and install dependencies${COL_RESET}"
     local packages="ncurses-bin dialog"
     local missing_packages=""
 
@@ -44,7 +44,7 @@ function check_and_install_dependencies {
 # Rafraîchir le cache sudo pour éviter l'expiration
 function refresh_sudo_cache {
     sudo -n true 2>/dev/null || {
-        echo -e "${RED}Error: Sudo cache expired or not available. Please re-run with sudo or configure NOPASSWD.${COL_RESET}"
+        echo -e "${RED} Error: Sudo cache expired or not available. Please re-run with sudo or configure NOPASSWD.${COL_RESET}"
         log_message "Sudo cache refresh failed"
         exit 1
     }
@@ -54,7 +54,7 @@ function refresh_sudo_cache {
 # Vérification initiale des privilèges sudo
 function check_sudo_privileges {
     if ! sudo -n true 2>/dev/null; then
-        echo -e "${RED}Error: This script requires sudo privileges. Please run with sudo or configure NOPASSWD.${COL_RESET}"
+        echo -e "${RED} Error: This script requires sudo privileges. Please run with sudo or configure NOPASSWD.${COL_RESET}"
         log_message "Sudo privileges check failed"
         exit 1
     fi
@@ -127,14 +127,14 @@ function spinner {
 
 # Hide_output amélioré pour gérer sudo
 function hide_output {
-    local message=${1:-"Processing command..."}
+    local message=${1:-" Processing command..."}
     shift
     local output_file
     local exit_code
     local cmd=("$@")
 
     output_file=$(mktemp) || {
-        echo -e "${RED}Error: Failed to create temporary file${COL_RESET}"
+        echo -e "${RED} Error: Failed to create temporary file${COL_RESET}"
         log_message "Failed to create temporary file for command: ${cmd[*]}"
         exit 1
     }
@@ -156,10 +156,10 @@ function hide_output {
 
     if [[ $exit_code -ne 0 ]]; then
         echo
-        echo -e "${RED}FAILED: ${cmd[*]}${COL_RESET}"
-        echo -e "${RED}-----------------------------------------${COL_RESET}"
-        cat "$output_file"
-        echo -e "${RED}-----------------------------------------${COL_RESET}"
+        echo -e "${RED} FAILED: ${cmd[*]}${COL_RESET}"
+        echo -e "${RED} -----------------------------------------${COL_RESET}"
+        cat " $output_file"
+        echo -e "${RED} -----------------------------------------${COL_RESET}"
         log_message "Command failed: ${cmd[*]}"
         rm -f "$output_file"
         exit $exit_code
@@ -179,10 +179,10 @@ function simple_hide_output {
     spinner "$pid" "$message"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        echo -e "${RED}FAILED: $@${COL_RESET}"
-        echo -e "${RED}-----------------------------------------${COL_RESET}"
-        cat "$output_file"
-        echo -e "${RED}-----------------------------------------${COL_RESET}"
+        echo -e "${RED} FAILED: $@${COL_RESET}"
+        echo -e "${RED} -----------------------------------------${COL_RESET}"
+        cat " $output_file"
+        echo -e "${RED} -----------------------------------------${COL_RESET}"
         log_message "Command failed: $@"
         rm -f "$output_file"
         exit $exit_code
@@ -200,7 +200,7 @@ function apt_install {
     log_message "Installing packages: $PACKAGES"
     apt_get_quiet install $PACKAGES
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to install packages: $PACKAGES${COL_RESET}"
+        echo -e "${RED} Failed to install packages: $PACKAGES ${COL_RESET}"
         log_message "Failed to install packages: $PACKAGES"
         exit 1
     fi
@@ -212,7 +212,7 @@ function ufw_allow {
         log_message "Allowing port $1 in UFW"
         hide_output "Allowing port $1 in UFW..." sudo ufw allow "$1"
         if [ $? -ne 0 ]; then
-            echo -e "${RED}Failed to allow port $1 in UFW${COL_RESET}"
+            echo -e "${RED} Failed to allow port $1 in UFW${COL_RESET}"
             log_message "Failed to allow port $1 in UFW"
             exit 1
         fi
@@ -222,9 +222,9 @@ function ufw_allow {
 
 function restart_service {
     log_message "Restarting service $1"
-    hide_output "Restarting $1..." sudo service "$1" restart
+    hide_output " Restarting $1..." sudo service "$1" restart
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to restart service $1${COL_RESET}"
+        echo -e "${RED} Failed to restart service $1${COL_RESET}"
         log_message "Failed to restart service $1"
         exit 1
     fi
@@ -258,7 +258,7 @@ function get_publicip_from_web_service {
     log_message "Fetching public IP (IPv$1)"
     local ip=$(curl -$1 --fail --silent --max-time 15 icanhazip.com 2>/dev/null)
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to fetch public IP${COL_RESET}"
+        echo -e "${RED} Failed to fetch public IP${COL_RESET}"
         log_message "Failed to fetch public IP"
         exit 1
     fi
@@ -272,7 +272,7 @@ function get_default_privateip {
     log_message "Fetching default private IP (IPv$1)"
     route=$(ip -$1 -o route get $target | grep -v unreachable)
     if [ -z "$route" ]; then
-        echo -e "${RED}Failed to fetch route for $target${COL_RESET}"
+        echo -e "${RED} Failed to fetch route for $target${COL_RESET}"
         log_message "Failed to fetch route for $target"
         exit 1
     fi
@@ -302,7 +302,6 @@ function term_art_server {
     echo -e "$GREEN  Architecture:$MAGENTA ${ARCHITECTURE}$GREEN CPU:$MAGENTA ${CPU_TYPE}    $COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.			$COL_RESET"
-    echo -e "$YELLOW  It will also install a MySQL database and a Web server.				$COL_RESET"
     echo -e "$YELLOW  MariaDB is used for the database.							$COL_RESET"
     echo -e "$YELLOW  Nginx is used for the Web server, PHP$MAGENTA ${PHPINSTALL}$YELLOW is also installed.	$COL_RESET"
     echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
