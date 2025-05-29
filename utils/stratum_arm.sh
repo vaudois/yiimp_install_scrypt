@@ -1195,6 +1195,13 @@ EOF
         sudo sed -i '$a\
         \nvoid PBKDF2_SHA256_Y(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt, size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);' "$YESCRYPT_HEADER"
     fi
+
+	# Update Makefile to use -lmariadb (optional)
+ 	LMYSQLCLIENT="${pathstratuminstall}/Makefile"
+	if grep -q "\-lmysqlclient" "$LMYSQLCLIENT"; then
+	    echo -e "${CYAN}Processing: Updating Makefile to use -lmariadb...${COL_RESET}"
+	    sudo sed -i 's/-lmysqlclient/-lmariadb/' "$LMYSQLCLIENT"
+	fi
     
 	export CFLAGS="-DNO_SIMD -march=$cpu ${fpu:+-mfpu=$fpu} -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
 else
