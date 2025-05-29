@@ -556,36 +556,36 @@ clear
         # Download Version of Yiimp and stratum
         cd ~
         if [[ ("$yiimpver" == "1" || "$yiimpver" == "") ]]; then
-            hide_output sudo git clone $githubrepoKudaraidee
+            hide_output "Clone Yiimp seletcted 1" sudo git clone $githubrepoKudaraidee
         elif [[ "$yiimpver" == "2" ]]; then
-            hide_output sudo git clone $githubyiimptpruvot
+            hide_output "Clone Yiimp seletcted 2" sudo git clone $githubyiimptpruvot
         elif [[ "$yiimpver" == "3" ]]; then
-            hide_output sudo git clone $githubrepoAfinielTech
+            hide_output "Clone Yiimp seletcted 3" sudo git clone $githubrepoAfinielTech
         elif [[ "$yiimpver" == "4" ]]; then
-            hide_output sudo git clone $githubrepoAfiniel -b next
+            hide_output "Clone Yiimp seletcted 4" sudo git clone $githubrepoAfiniel -b next
         elif [[ "$yiimpver" == "5" ]]; then
-            hide_output sudo git clone $githubrepoSabiasQue
+            hide_output "Clone Yiimp seletcted 5" sudo git clone $githubrepoSabiasQue
         elif [[ "$yiimpver" == "6" ]]; then
-            hide_output sudo git clone $githubrepoTpfuemp
+            hide_output "Clone Yiimp seletcted 6" sudo git clone $githubrepoTpfuemp
         else
-            hide_output sudo git clone $githubrepoTpfuemp
+            hide_output "Clone Default Yiimp" sudo git clone $githubrepoTpfuemp
         fi
 
         clear
         term_art_server
-        hide_output sudo git clone $githubstratum
+        hide_output "Clone Default Yiimp" sudo git clone $githubstratum
         log_message "Cloned Yiimp and stratum repositories"
 
         # Compile Blocknotify
         cd ${absolutepath}/stratum/blocknotify
         sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
-        hide_output sudo make
+        hide_output "Compile Blocknotify" sudo make
         log_message "Compiled blocknotify"
         sleep 1
 
         # Compile iniparser
         cd ${absolutepath}/yiimp/stratum/iniparser
-        hide_output sudo make
+        hide_output "Compile iniparser" sudo make
         log_message "Compiled iniparser"
         sleep 1
 
