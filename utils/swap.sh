@@ -111,52 +111,72 @@ function make_swap
                     fi
                 fi
     
-                # Create new swap file using dd
+                # Try to create new swap file using fallocate, fall back to dd if fallocate is not supported
                 echo "Creating new swap file of ${NEEDED_SWAP}MB at ${SWAP_FILE}..."
-                sudo dd if=/dev/zero of="$SWAP_FILE" bs=512 count=$((NEEDED_SWAP * 2048)) 2>&1 | tee dd_error.log
-                if [[ $? -ne 0 || ! -f "$SWAP_FILE" || $(stat -c %s "$SWAP_FILE" 2>/dev/null) -lt $((NEEDED_SWAP * 1024 * 1024)) ]]; then
-                    echo "Error: Failed to create or verify swap file at ${SWAP_FILE}. Details:"
-                    cat dd_error.log
-                    sudo rm -f dd_error.log
-                    # If RAM >= 1GB, continue with a warning
-                    if [[ "$TOTAL_RAM" -ge 1000 ]]; then
-                        echo "Warning: Failed to create swap file, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail!"
+                if ! command -v fallocate >/dev/null || ! sudo fallocate -l 1M /test_fallocate 2>/dev/null; then
+                    echo "fallocate not supported, falling back to dd..."
+                    sudo rm -f /test_fallocate
+                    sudo dd if=/dev/zero of="$SWAP_FILE" bs=512 count=$((NEEDED_SWAP * 2048)) 2>&1 | tee dd_error.log
+                    if [[ $? -ne 0 || ! -f "$SWAP_FILE" || $(stat -c %s "$SWAP_FILE" 2>/dev/null) -lt $((NEEDED_SWAP * 1024 * 1024)) ]]; then
+                        echo "Error: Failed to create or verify swap file at ${SWAP_FILE}. Details:"
+                        cat dd_error.log
+                        sudo rm -f dd_error.log
+                        if [[ "$TOTAL_RAM" -ge 1000 ]]; then
+                            echo "Warning: Failed to create swap file, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail!"
+                        else
+                            echo "Error: Insufficient RAM (${TOTAL_RAM}MB) < 1GB and unable to create swap. Installation impossible."
+                            echo "Please use a server with more resources (minimum 1GB RAM or 4GB disk space for swap)."
+                            exit 1
+                        fi
                     else
-                        # If RAM < 1GB, stop
-                        echo "Error: Insufficient RAM (${TOTAL_RAM}MB) < 1GB and unable to create swap. Installation impossible."
-                        echo "Please use a server with more resources (minimum 1GB RAM or 4GB disk space for swap)."
-                        exit 1
+                        sudo rm -f dd_error.log
                     fi
                 else
-                    sudo rm -f dd_error.log
-                    # Continue with swap configuration
-                    sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
-                    if [[ $? -ne 0 ]]; then
-                        echo "Error: Failed to set swap file permissions."
-                        exit 1
+                    sudo rm -f /test_fallocate
+                    sudo fallocate -l "${NEEDED_SWAP}M" "$SWAP_FILE" 2>&1 | tee fallocate_error.log
+                    if [[ $? -ne 0 || ! -f "$SWAP_FILE" || $(stat -c %s "$SWAP_FILE" 2>/dev/null) -lt $((NEEDED_SWAP * 1024 * 1024)) ]]; then
+                        echo "Error: Failed to create or verify swap file at ${SWAP_FILE}. Details:"
+                        cat fallocate_error.log
+                        sudo rm -f fallocate_error.log
+                        if [[ "$TOTAL_RAM" -ge 1000 ]]; then
+                            echo "Warning: Failed to create swap file, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail!"
+                        else
+                            echo "Error: Insufficient RAM (${TOTAL_RAM}MB) < 1GB and unable to create swap. Installation impossible."
+                            echo "Please use a server with more resources (minimum 1GB RAM or 4GB disk space for swap)."
+                            exit 1
+                        fi
+                    else
+                        sudo rm -f fallocate_error.log
                     fi
-                    sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
-                    if [[ $? -ne 0 ]]; then
-                        echo "Error: Failed to format swap file."
-                        exit 1
-                    fi
-                    sudo swapon "$SWAP_FILE" >/dev/null 2>&1
-                    if [[ $? -ne 0 ]]; then
-                        echo "Error: Failed to enable swap file."
-                        exit 1
-                    fi
-                    CREATED_SWAP=true
-                    echo "New swap file created and enabled successfully."
-    
-                    # Make swap persistent
-                    echo "Adding swap file to /etc/fstab for persistence..."
-                    echo "$SWAP_FILE none swap sw 0 0" | sudo tee -a /etc/fstab >/dev/null
-                    if [[ $? -ne 0 ]]; then
-                        echo "Error: Unable to add swap file to /etc/fstab."
-                        exit 1
-                    fi
-                    echo "Swap file added to /etc/fstab for persistence."
                 fi
+                
+                # Continue with swap configuration
+                sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
+                if [[ $? -ne 0 ]]; then
+                    echo "Error: Failed to set swap file permissions."
+                    exit 1
+                fi
+                sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
+                if [[ $? -ne 0 ]]; then
+                    echo "Error: Failed to format swap file."
+                    exit 1
+                fi
+                sudo swapon "$SWAP_FILE" >/dev/null 2>&1
+                if [[ $? -ne 0 ]]; then
+                    echo "Error: Failed to enable swap file."
+                    exit 1
+                fi
+                CREATED_SWAP=true
+                echo "New swap file created and enabled successfully."
+    
+                # Make swap persistent
+                echo "Adding swap file to /etc/fstab for persistence..."
+                echo "$SWAP_FILE none swap sw 0 0" | sudo tee -a /etc/fstab >/dev/null
+                if [[ $? -ne 0 ]]; then
+                    echo "Error: Unable to add swap file to /etc/fstab."
+                    exit 1
+                fi
+                echo "Swap file added to /etc/fstab for persistence."
             fi
         else
             echo "Swap space is sufficient (${SWAP_TOTAL}MB >= ${MIN_SWAP_MB}MB). No changes needed."
