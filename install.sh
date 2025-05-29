@@ -293,8 +293,8 @@ clear
         echo -e "$CYAN => Installing base system packages for Yiimp :$COL_RESET"
         sleep 3
 
-		simple_hide_output "Updating apt..." sudo apt -y update
-		simple_hide_output "Upgrading apt..." sudo apt -y upgrade
+		simple_hide_output "Updating apt..." apt -y update
+		simple_hide_output "Upgrading apt..." apt -y upgrade
         apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
         apt_install figlet curl jq update-motd pwgen
         log_message "Installed base system packages"
@@ -410,29 +410,29 @@ clear
 		fi
         echo -e "$YELLOW >--> Installing php...$COL_RESET"
         if [[ "$DISTRO" == "20" ]]; then
-            simple_hide_output "Installing php8.2 step 1"apt_install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
-            simple_hide_output "Installing php8.2 step 2"apt_install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
-            simple_hide_output "Installing php8.2 step 3"apt_install php8.2-sqlite3 php8.2-tidy php8.2-xml php8.2-zip
-            simple_hide_output "Installing php8.2 step 4"apt_install php8.2-mbstring php8.2-memcache php8.2-memcached memcached php-memcache php-memcached
+            simple_hide_output "Installing php8.2 step 1" apt install -y php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
+            simple_hide_output "Installing php8.2 step 2" apt install -y php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
+            simple_hide_output "Installing php8.2 step 3" apt install -y php8.2-sqlite3 php8.2-tidy php8.2-xml php8.2-zip
+            simple_hide_output "Installing php8.2 step 4" apt install -y php8.2-mbstring php8.2-memcache php8.2-memcached memcached php-memcache php-memcached
 			sudo phpenmod -v 8.2 mbstring
 			sudo phpenmod -v 8.2 memcache memcached
-            simple_hide_output "Installing php8.2 gettext" apt_install php8.2-gettext
+            simple_hide_output "Installing php8.2 gettext" apt install -y php8.2-gettext
 			simple_hide_output "Update alternatives php8.2" sudo update-alternatives --set php /usr/bin/php8.2
             simple_hide_output "Restart php8.2" sudo systemctl start php8.2-fpm
             sudo systemctl status php8.2-fpm | sed -n "1,3p"
             PHPVERSION=8.2
             log_message "Installed PHP 8.2 and dependencies"
         elif [[ "$DISTRO" == "22" ]]; then
-            simple_hide_output "Installing php8.3 step 1" apt_install php8.3-fpm php8.3-opcache php8.3 php8.3-common php8.3-gd php8.3-mysql php8.3-imap php8.3-cli
-            simple_hide_output "Installing php8.3 step 2" apt_install php8.3-cgi php8.3-curl php8.3-intl php8.3-pspell
-            simple_hide_output "Installing php8.3 step 3"apt_install php8.3-sqlite3 php8.3-tidy php8.3-xml php8.3-zip
-            simple_hide_output "Installing php8.3 step 4"apt_install php8.3-mbstring php8.3-memcache php8.3-memcached memcached php-memcache php-memcached
+            simple_hide_output "Installing php8.3 step 1" apt install -y php8.3-fpm php8.3-opcache php8.3 php8.3-common php8.3-gd php8.3-mysql php8.3-imap php8.3-cli
+            simple_hide_output "Installing php8.3 step 2" apt install -y php8.3-cgi php8.3-curl php8.3-intl php8.3-pspell
+            simple_hide_output "Installing php8.3 step 3" apt install -y php8.3-sqlite3 php8.3-tidy php8.3-xml php8.3-zip
+            simple_hide_output "Installing php8.3 step 4" apt install -y php8.3-mbstring php8.3-memcache php8.3-memcached memcached php-memcache php-memcached
 			# Activer les modules nécessaires pour PHP 8.3
 			sudo phpenmod -v 8.3 mbstring
 			sudo phpenmod -v 8.3 memcache memcached
-			simple_hide_output "Installing php8.3 gettext" apt_install php8.3-gettext
-			simple_hide_output "Update alternatives php8.3" sudo update-alternatives --set php /usr/bin/php8.3
-            simple_hide_output "Restart php8.3" sudo systemctl start php8.3-fpm
+			simple_hide_output "Installing php8.3 gettext" apt install -y php8.3-gettext
+			simple_hide_output "Update alternatives php8.3" update-alternatives --set php /usr/bin/php8.3
+            simple_hide_output "Restart php8.3" systemctl start php8.3-fpm
             sudo systemctl status php8.3-fpm | sed -n "1,3p"
             PHPVERSION=8.3
             log_message "Installed PHP 8.3 and dependencies"
@@ -517,12 +517,12 @@ clear
         fi
 
         apt_install ufw
-        simple_hide_output "ufw set default deny incoming" sudo ufw default deny incoming
-        simple_hide_output "ufw set default outgoing" sudo ufw default allow outgoing
-        simple_hide_output "ufw set ssh" sudo ufw allow ssh
-        simple_hide_output "ufw set http" sudo ufw allow http
-        simple_hide_output "ufw set https" sudo ufw allow https
-        simple_hide_output "ufw enable" sudo ufw --force enable
+        simple_hide_output "ufw set default deny incoming" ufw default deny incoming
+        simple_hide_output "ufw set default outgoing" ufw default allow outgoing
+        simple_hide_output "ufw set ssh" ufw allow ssh
+        simple_hide_output "ufw set http" ufw allow http
+        simple_hide_output "ufw set https" ufw allow https
+        simple_hide_output "ufw enable" ufw --force enable
         sleep 3
         sudo systemctl status ufw | sed -n "1,3p"
         log_message "Installed and configured UFW"
