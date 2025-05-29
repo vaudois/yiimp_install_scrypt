@@ -507,8 +507,8 @@ gzip_types text/plain text/css text/xml application/json application/javascript 
 
 function getserverconfig
 {
-    if [[ -z "$1" || -z "$2" || -z "$3" || -z "$4" ]]; then
-        echo -e "$RED Error: Missing parameters for Yiimp serverconfig.php (password, domain, email, or admin IP).$COL_RESET"
+    if [[ -z "$1" || -z "$2" || -z "$3" || -z "$4" || -z "$5"  ]]; then
+        echo -e "$RED Error: Missing parameters for Yiimp serverconfig.php (password, domain, email, admin login or admin IP).$COL_RESET"
         exit 1
     fi
     # Make config file
@@ -517,6 +517,7 @@ ini_set('"'"'date.timezone'"'"', '"'"'UTC'"'"');
 define('"'"'YAAMP_LOGS'"'"', '"'"'/var/log/yiimp'"'"');
 define('"'"'YAAMP_HTDOCS'"'"', '"'"'/var/web'"'"');
 define('"'"'YIIMP_MYSQLDUMP_PATH'"'"', '"'"''"/var/yiimp/sauv"''"'"');
+define('"'"'YIIMP_ADMIN_LOGIN'"'"', '"'"''"$5"''"'"');
 
 define('"'"'YAAMP_BIN'"'"', '"'"'/var/bin'"'"');
 define('"'"'YAAMP_DBHOST'"'"', '"'"'localhost'"'"');
