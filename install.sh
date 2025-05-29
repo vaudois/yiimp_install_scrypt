@@ -828,7 +828,7 @@ clear
         sleep 3
 
         # Make config file
-        getserverconfig "${password}" "${server_name}" "${EMAIL}" "${Public}" 
+        getserverconfig "${password}" "${server_name}" "${EMAIL}" "${Public}" "${admin_panel}"
 
         if [[ "$yiimpver" == "5" ]]; then
             addmoreserverconfig5
