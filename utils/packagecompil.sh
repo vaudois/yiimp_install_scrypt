@@ -98,14 +98,7 @@ function package_compile_crypto
 	    log_message "ERROR: No suitable MariaDB/MySQL client library found"
 	    exit 1
 	fi
-	
-	# Update Makefile to use -lmariadb (optional)
-	if grep -q "\-lmysqlclient" ~/yiimp/stratum/Makefile; then
-	    echo -e "${CYAN}Processing: Updating Makefile to use -lmariadb...${COL_RESET}"
-	    sudo sed -i 's/-lmysqlclient/-lmariadb/' ~/yiimp/stratum/Makefile
-	fi
-
-
+ 
     # Vérifier les paquets essentiels (non bloquant)
     for pkg in build-essential libc6-dev libgcc-11-dev; do
         if ! dpkg -l | grep -q $pkg; then
