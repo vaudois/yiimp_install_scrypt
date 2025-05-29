@@ -14,8 +14,8 @@ function package_compile_crypto
     # Activer le dépôt universe si nécessaire
     echo " >--> Ensuring universe repository is enabled..."
     sudo add-apt-repository universe -y > /dev/null 2>&1
-    sudo apt -y update && sudo apt -y upgrade -qq > /dev/null 2>&1
-    sudo apt -y autoremove -qq > /dev/null 2>&1
+	simple_hide_output "Updating apt..." sudo apt -y update
+	simple_hide_output "Upgrading apt..." sudo apt -y upgrade
 
     # Paquets de base pour la compilation
     apt_install build-essential libc6-dev libgcc-11-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
