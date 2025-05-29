@@ -596,9 +596,10 @@ clear
 		ARCH=$(dpkg --print-architecture)
 		STRCOMPILED="N"
 		STRDEFAULT="N"
+		STRCPUARM="N"
 		if [ "$ARCH" = "arm64" ]; then
 			sudo chmod +x ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh
-			${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum/
+			source ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum/
 			if [[ $STRCOMPILED == "N" ]]; then
 				echo
 				echo -e "$RED => Error Stratum not compiled $COL_RESET"
@@ -606,7 +607,7 @@ clear
 				echo
 				sleep 3
 				log_message "ERROR Compilation of Straum try again by default"
-				${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/stratum/
+				source ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/stratum/
 				STRDEFAULT="Y"
 			fi
 			if [[ $STRCOMPILED == "N" ]]; then
@@ -620,6 +621,7 @@ clear
 				echo -e "$GREEN => Stratum compiled $COL_RESET"
 				log_message "Compiled Straum"
 			fi
+			STRCPUARM="Y"
 		else
 			cd ${absolutepath}/yiimp/stratum
 			sudo make
@@ -676,33 +678,45 @@ clear
         sudo mkdir -p /var/stratum
         sudo chgrp ${whoami} /var/stratum
         sudo chown ${whoami} /var/stratum
-		
-		if [[ $STRCOMPILED == "Y" ]]; then
-			if [[ $STRDEFAULT == "Y" ]]; then
-				cd ${absolutepath}/stratum
-				sudo cp -a config.sample/. /var/stratum/config/
-				if [[ -f stratum ]]; then
-					sudo cp -r stratum /var/stratum/
-					log_message "Copied stratum directory to /var/stratum/"
-					echo -e "$YELLOW => Copied Default Stratum $COL_RESET"
+
+		if [[ $STRCPUARM == "Y" ]]; then
+			if [[ $STRCOMPILED == "Y" ]]; then
+				if [[ $STRDEFAULT == "Y" ]]; then
+					cd ${absolutepath}/stratum
+					sudo cp -a config.sample/. /var/stratum/config/
+					if [[ -f stratum ]]; then
+						sudo cp -r stratum /var/stratum/
+						log_message "Copied stratum directory to /var/stratum/"
+						echo -e "$YELLOW => Copied Default Stratum $COL_RESET"
+					else
+						echo -e "$RED => Not Possible to copy Default Stratum...$COL_RESET"
+					fi
 				else
-					echo -e "$RED => Not Possible to copy Default Stratum...$COL_RESET"
+					cd ${absolutepath}/yiimp/stratum
+					sudo cp -a config.sample/. /var/stratum/config/
+					if [[ -f stratum ]]; then
+						sudo cp -r stratum /var/stratum/
+						log_message "Copied stratum directory to /var/stratum/"
+						echo -e "$YELLOW => Copied Stratum $COL_RESET"
+					else
+						echo -e "$RED => Not Possible to copy Stratum...$COL_RESET"
+					fi
 				fi
 			else
 				cd ${absolutepath}/yiimp/stratum
 				sudo cp -a config.sample/. /var/stratum/config/
-				if [[ -f stratum ]]; then
-					sudo cp -r stratum /var/stratum/
-					log_message "Copied stratum directory to /var/stratum/"
-					echo -e "$YELLOW => Copied Stratum $COL_RESET"
-				else
-					echo -e "$RED => Not Possible to copy Stratum...$COL_RESET"
-				fi
+				echo -e "$RED => Not copied Stratum this is not compiled BAD....$COL_RESET"
 			fi
 		else
 			cd ${absolutepath}/yiimp/stratum
-			sudo cp -a config.sample/. /var/stratum/config/
-			echo -e "$RED => Not copied Stratum this is not compiled BAD....$COL_RESET"
+			if [[ -f stratum ]]; then
+				sudo cp -r stratum /var/stratum/
+				log_message "Copied stratum directory to /var/stratum/"
+				echo -e "$YELLOW => Copied Stratum $COL_RESET"
+			else
+				echo -e "$RED => Not Possible to copy Stratum...$COL_RESET"
+			fi
+				sudo cp -a config.sample/. /var/stratum/config/
 		fi
 
         cd ${absolutepath}/yiimp
