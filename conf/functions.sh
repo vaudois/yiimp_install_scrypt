@@ -327,7 +327,10 @@ function install_end_message {
     echo -e "$YELLOW   Edit this: $RED/var/web/yaamp/modules/site/SiteController.php				$COL_RESET"
     echo -e "$YELLOW   On line 11 => change it to your preference.							$COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------		$COL_RESET"
-    echo -e "$YELLOW   Please make sure to change your$RED public keys and your wallet addresses in:		$COL_RESET"
+    if [[ "$yiimpver" == "6" ]]; then
+        echo -e "$YELLOW   Please make change your$RED ADMIN USER, ADMIN PASSWORD 		$COL_RESET"
+    fi
+    echo -e "$YELLOW   And make sure to change your$RED public keys and your wallet addresses in:		$COL_RESET"
     echo -e "$RED   	/var/web/serverconfig.php								$COL_RESET"
     echo -e "$YELLOW   Your change private keys in the$RED /etc/yiimp/keys.php$YELLOW file.	$COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------		$COL_RESET"
