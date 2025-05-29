@@ -298,7 +298,8 @@ function term_art_server {
     echo
     startlogo
     echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!				$COL_RESET"
-    echo -e "$GREEN  Version:$COL_RESET$MAGENTA ${TAG}$GREEN Installation on Distro ${MAGENTA}${DISTRO}	$COL_RESET"
+    echo -e "$GREEN  Version:$MAGENTA ${TAG}$GREEN Installation on Distro ${MAGENTA}${DISTRO}	$COL_RESET"
+    echo -e "$GREEN  Architecture:$MAGENTA ${ARCHITECTURE}$GREEN CPU:$MAGENTA ${CPU_TYPE}    $COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.			$COL_RESET"
     echo -e "$YELLOW  It will also install a MySQL database and a Web server.				$COL_RESET"
