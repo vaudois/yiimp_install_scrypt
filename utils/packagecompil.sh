@@ -62,14 +62,12 @@ function package_compile_crypto
     if [ -f /usr/bin/mariadb_config ] && [ ! -f /usr/bin/mysql_config ]; then
         echo " >--> Creating symbolic link for mariadb_config to mysql_config..."
         sudo ln -sf /usr/bin/mariadb_config /usr/bin/mysql_config
-        log_message "Created symbolic link /usr/bin/mariadb_config -> /usr/bin/mysql_config"
     fi
 
     # Vérifier les paquets essentiels (non bloquant)
     for pkg in build-essential libc6-dev libgcc-11-dev; do
         if ! dpkg -l | grep -q $pkg; then
             echo -e "$YELLOW Warning: Failed to install $pkg, continuing...$COL_RESET"
-            log_message "Warning: Failed to install $pkg, continuing"
         fi
     done
 
