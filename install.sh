@@ -14,6 +14,36 @@ fi
 
 NPROC=$(nproc)
 
+# Check and manage swap for compilation
+TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
+MIN_SWAP_MB=4096  # Minimum swap required (4GB)
+SWAP_FILE="/swapfile_yiimp"
+CREATED_SWAP=false
+
+if [[ "$TOTAL_RAM" -lt 4000 ]]; then
+	log_message "Low RAM detected ($TOTAL_RAM MB). Checking swap configuration."
+	if [[ "$SWAP_TOTAL" -lt "$MIN_SWAP_MB" ]]; then
+		NEEDED_SWAP=$((MIN_SWAP_MB - SWAP_TOTAL))
+		log_message "Insufficient swap ($SWAP_TOTAL MB, need $MIN_SWAP_MB MB). Creating ${NEEDED_SWAP}MB swap file at $SWAP_FILE."
+		# Ensure no existing /swapfile_yiimp conflicts
+		if [[ -f "$SWAP_FILE" ]]; then
+			sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
+			sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
+		fi
+		sudo fallocate -l "${NEEDED_SWAP}M" "$SWAP_FILE" >/dev/null 2>&1
+		sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
+		sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
+		sudo swapon "$SWAP_FILE" >/dev/null 2>&1
+		CREATED_SWAP=true
+		log_message "Created and enabled ${NEEDED_SWAP}MB swap file at $SWAP_FILE"
+	else
+		log_message "Sufficient swap detected ($SWAP_TOTAL MB). No additional swap needed."
+	fi
+else
+	log_message "Sufficient RAM detected ($TOTAL_RAM MB). No swap changes needed."
+fi
+
 clear
 
     ### Variable ###
@@ -410,46 +440,9 @@ clear
         echo -e "$CYAN => Installing Package to compile crypto currency $COL_RESET"
         sleep 3
 
-		# Check and manage swap for compilation
-		TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
-		SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
-		MIN_SWAP_MB=2048  # Minimum swap required (2GB)
-		SWAP_FILE="/swapfile_yiimp"
-		CREATED_SWAP=false
-
-		if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-			log_message "Low RAM detected ($TOTAL_RAM MB). Checking swap configuration."
-			if [[ "$SWAP_TOTAL" -lt "$MIN_SWAP_MB" ]]; then
-				NEEDED_SWAP=$((MIN_SWAP_MB - SWAP_TOTAL))
-				log_message "Insufficient swap ($SWAP_TOTAL MB, need $MIN_SWAP_MB MB). Creating ${NEEDED_SWAP}MB swap file at $SWAP_FILE."
-				# Ensure no existing /swapfile_yiimp conflicts
-				if [[ -f "$SWAP_FILE" ]]; then
-					sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-					sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-				fi
-				sudo fallocate -l "${NEEDED_SWAP}M" "$SWAP_FILE" >/dev/null 2>&1
-				sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
-				sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
-				sudo swapon "$SWAP_FILE" >/dev/null 2>&1
-				CREATED_SWAP=true
-				log_message "Created and enabled ${NEEDED_SWAP}MB swap file at $SWAP_FILE"
-			else
-				log_message "Sufficient swap detected ($SWAP_TOTAL MB). No additional swap needed."
-			fi
-		else
-			log_message "Sufficient RAM detected ($TOTAL_RAM MB). No swap changes needed."
-		fi
-
 		package_compile_crypto
 		log_message "Compiled cryptocurrency packages"
 		echo -e "$GREEN Done...$COL_RESET"
-
-		# Remove temporary swap file if created
-		if [[ "$CREATED_SWAP" == "true" ]]; then
-			sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-			sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-			log_message "Removed temporary swap file $SWAP_FILE after compilation"
-		fi
 
         # Generating Random Passwords
         password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
@@ -1120,36 +1113,6 @@ clear
 
     # Misc
     log_message "Starting miscellaneous cleanup and service configuration"
-
-	# Check and manage swap for services
-	TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
-	SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
-	MIN_SWAP_MB=2048  # Minimum swap required (2GB)
-	SWAP_FILE="/swapfile_yiimp_services"
-	CREATED_SWAP=false
-
-	if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-		log_message "Low RAM detected ($TOTAL_RAM MB). Checking swap configuration for services."
-		if [[ "$SWAP_TOTAL" -lt "$MIN_SWAP_MB" ]]; then
-			NEEDED_SWAP=$((MIN_SWAP_MB - SWAP_TOTAL))
-			log_message "Insufficient swap ($SWAP_TOTAL MB, need $MIN_SWAP_MB MB). Creating ${NEEDED_SWAP}MB swap file at $SWAP_FILE."
-			# Ensure no existing /swapfile_yiimp_services conflicts
-			if [[ -f "$SWAP_FILE" ]]; then
-				sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-				sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-			fi
-			sudo fallocate -l "${NEEDED_SWAP}M" "$SWAP_FILE" >/dev/null 2>&1
-			sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
-			sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
-			sudo swapon "$SWAP_FILE" >/dev/null 2>&1
-			CREATED_SWAP=true
-			log_message "Created and enabled ${NEEDED_SWAP}MB swap file at $SWAP_FILE"
-		else
-			log_message "Sufficient swap detected ($SWAP_TOTAL MB). No additional swap needed for services."
-		fi
-	else
-		log_message "Sufficient RAM detected ($TOTAL_RAM MB). No swap changes needed for services."
-	fi
 
 	cd ${absolutepath}/yiimp/stratum
 	sudo make clean
