@@ -8,9 +8,6 @@
 
 function package_compile_crypto
 {
-    echo " >--> Installing needed packages to compile cryptocurrency"
-    sleep 3
-
     # Activer le dépôt universe si nécessaire
     echo " >--> Ensuring universe repository is enabled..."
     sudo add-apt-repository universe -y > /dev/null 2>&1
@@ -21,9 +18,14 @@ function package_compile_crypto
     apt_install build-essential libc6-dev libgcc-11-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
     apt_install libssl-dev libevent-dev libseccomp-dev libcap-dev libminiupnpc-dev libboost-all-dev zlib1g-dev
     apt_install libgmp-dev libmariadb-dev libkrb5-dev gnutls-dev screen
-	
+
+	echo -e "$GREEN Done...$COL_RESET"
+ 	sleep 3
+  
 	clear
 	term_art_server
+ 	echo -e "$YELLOW => Installing Package to compile crypto currency$YELLOW step 2 $COL_RESET"
+ 	sleep 3
 	
     # Berkeley DB pour la compatibilité avec les portefeuilles de cryptomonnaies
     apt_install libdb5.3-dev libdb5.3++-dev
@@ -32,8 +34,13 @@ function package_compile_crypto
     apt_install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
     apt_install libcanberra-gtk-module libqrencode-dev
 
+	echo -e "$GREEN Done...$COL_RESET"
+ 	sleep 3
+  
 	clear
 	term_art_server
+ 	echo -e "$YELLOW => Installing Package to compile crypto currency$YELLOW step 3 $COL_RESET"
+ 	sleep 3
 
     # Dépendances réseau et autres
     apt_install libunbound-dev libsodium-dev libunwind-dev liblzma-dev libreadline-dev libldns-dev libexpat1-dev
@@ -45,8 +52,13 @@ function package_compile_crypto
     apt_install libbrotli-dev libssh-dev libnghttp2-dev libpsl-dev
     apt_install python3 ccache doxygen graphviz  # Retiré libmysqlclient-dev
 
+	echo -e "$GREEN Done...$COL_RESET"
+ 	sleep 3
+  
 	clear
 	term_art_server
+ 	echo -e "$YELLOW => Installing Package to compile crypto currency$YELLOW step 4 $COL_RESET"
+ 	sleep 3
 
     # Paquets spécifiques à Ubuntu 20.04 ou 22.04
     if [[ "$DISTRO" == "20" ]]; then
@@ -55,21 +67,30 @@ function package_compile_crypto
         apt_install libcurl4-openssl-dev libidn2-dev
     fi
 
+	echo -e "$GREEN Done...$COL_RESET"
+ 	sleep 3
+  
 	clear
 	term_art_server
+ 	echo -e "$YELLOW => Modify DB for Stratum $COL_RESET"
+ 	sleep 3
 
-    # Créer un lien symbolique pour mariadb_config -> mysql_config pour compatibilité avec les scripts de compilation
-    if [ -f /usr/bin/mariadb_config ] && [ ! -f /usr/bin/mysql_config ]; then
-        echo " >--> Creating symbolic link for mariadb_config to mysql_config..."
-        sudo ln -sf /usr/bin/mariadb_config /usr/bin/mysql_config
-    fi
+	# Create symbolic link for mariadb_config
+	if [ -f /usr/bin/mariadb_config ] && [ ! -f /usr/bin/mysql_config ]; then
+	    echo -e "${CYAN}Processing: Creating symbolic link for mariadb_config to mysql_config...${COL_RESET}"
+	    sudo ln -sf /usr/bin/mariadb_config /usr/bin/mysql_config
+	fi
+	
+	# Create symbolic link for mariadb headers
+	if [ -d /usr/include/mariadb ] && [ ! -d /usr/include/mysql ]; then
+	    echo -e "${CYAN}Processing: Creating symbolic link for /usr/include/mysql to /usr/include/mariadb...${COL_RESET}"
+	    sudo ln -sf /usr/include/mariadb /usr/include/mysql
+	fi
 
     # Vérifier les paquets essentiels (non bloquant)
     for pkg in build-essential libc6-dev libgcc-11-dev; do
         if ! dpkg -l | grep -q $pkg; then
-            echo -e "$YELLOW Warning: Failed to install $pkg, continuing...$COL_RESET"
+            echo -e "$RED Warning: Failed to install $pkg, continuing...$COL_RESET"
         fi
     done
-
-    echo -e "$GREEN Done...$COL_RESET"
 }
