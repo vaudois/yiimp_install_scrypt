@@ -302,8 +302,8 @@ function term_art_server {
     echo -e "$GREEN  Architecture:$MAGENTA ${ARCHITECTURE}$GREEN CPU:$MAGENTA ${CPU_TYPE}    $COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.			$COL_RESET"
-    echo -e "$YELLOW  MariaDB is used for the database.							$COL_RESET"
-    echo -e "$YELLOW  Nginx is used for the Web server, PHP$MAGENTA ${PHPINSTALL}$YELLOW is also installed.	$COL_RESET"
+    echo -e "$MAGENTA  MariaDB$GREEN is used for the database.							$COL_RESET"
+    echo -e "$MAGENTA  Nginx$GREEN is used for the Web server, PHP$MAGENTA ${PHPINSTALL}$YELLOW is also installed.	$COL_RESET"
     echo -e "$CYAN  ------------------------------------------------------------------------------------	$COL_RESET"
     echo
     log_message "Displayed term_art_server for DISTRO=$DISTRO, PHP=$PHPINSTALL"
