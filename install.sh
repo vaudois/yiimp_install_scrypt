@@ -236,6 +236,8 @@ clear
         echo -e "$CYAN => Installing base system packages for Yiimp :$COL_RESET"
         sleep 3
 
+	simple_hide_output "Updating apt..." sudo apt -y update
+	simple_hide_output "Upgrading apt..." sudo apt -y upgrade
         apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
         apt_install figlet curl jq update-motd pwgen
         log_message "Installed base system packages"
