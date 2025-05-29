@@ -40,10 +40,28 @@ else
     exit 1
 fi
 
-# Check architecture
+# Check architecture and detect CPU type
 ARCHITECTURE=$(uname -m)
-if [[ "$ARCHITECTURE" != "x86_64" && ! "$ARCHITECTURE" =~ ^arm && ! "$ARCHITECTURE" =~ ^aarch ]]; then
+CPU_TYPE=""
+
+if [[ "$ARCHITECTURE" == "x86_64" ]]; then
+    CPU_TYPE="x86_64"
+    echo -e "$GREEN Detected CPU: x86_64 (Intel/AMD 64-bit)$COL_RESET"
+elif [[ "$ARCHITECTURE" =~ ^arm || "$ARCHITECTURE" =~ ^aarch ]]; then
+    # Check for ARM-specific details in /proc/cpuinfo
+    if grep -q "Raspberry Pi" /proc/cpuinfo; then
+        CPU_TYPE=$(grep "Model" /proc/cpuinfo | sed 's/.*: //')
+        echo -e "$GREEN Detected CPU: Raspberry Pi ($CPU_TYPE)$COL_RESET"
+    elif grep -q "armv" /proc/cpuinfo; then
+        CPU_TYPE=$(grep "model name" /proc/cpuinfo | head -1 | sed 's/.*: //')
+        echo -e "$GREEN Detected CPU: ARM ($CPU_TYPE)$COL_RESET"
+    else
+        CPU_TYPE="ARM (Unknown model)"
+        echo -e "$YELLOW Detected CPU: ARM (Unknown model)$COL_RESET"
+    fi
+else
     echo -e "$RED Your architecture is $ARCHITECTURE$COL_RESET"
+    echo -e "$RED Unsupported architecture. Supported: x86_64, ARM (armv*, aarch*)$COL_RESET"
     exit 1
 fi
 
