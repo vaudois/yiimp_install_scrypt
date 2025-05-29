@@ -116,6 +116,7 @@ else
     echo "RAM is sufficient (${TOTAL_RAM}MB >= 4000MB). No swap adjustments needed."
 fi
 
+sleep 3
 clear
 
     ### Variable ###
