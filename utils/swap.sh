@@ -20,7 +20,7 @@ function make_swap
     sudo swapoff -a 2>/dev/null
     
     # Check available disk space (in MB) in the root directory
-    DISK_SPACE=$(df -m / | awk 'NR>1 {print $4}')
+    DISK_SPACE=$(df -m / | awk 'NR==2 {print $4}' 2>/dev/null || echo 0)
     
     echo "Checking RAM and swap memory..."
     echo "Total RAM: ${TOTAL_RAM}MB, Swap: ${SWAP_TOTAL}MB, Minimum required: ${MIN_SWAP_MB}MB"
@@ -50,7 +50,7 @@ function make_swap
                 # Disk space is sufficient, proceed with swap creation
                 if [[ -f "$SWAP_FILE" ]]; then
                     # Check file size
-                    FILE_SIZE=$(stat -c %s "$SWAP_FILE" 2>/dev/null) || echo 0)
+                    FILE_SIZE=$(stat -c %s "$SWAP_FILE" 2>/dev/null || echo 0)
                     echo "Existing swap file found at ${SWAP_FILE} with size ${FILE_SIZE} bytes."
                     # Check if the file is an active swap
                     if sudo swapon --show | grep -q "$SWAP_FILE"; then
@@ -99,32 +99,32 @@ function make_swap
                 fi
     
                 # Re-check disk space after deletion
-                DISK_SPACE=$(df -m / | awk 'NR>1 {print $4}') 2>/dev/null)
+                DISK_SPACE=$(df -m / | awk 'NR==2 {print $4}' 2>/dev/null || echo 0)
                 if [[ "$DISK_SPACE" -lt "$NEEDED_SWAP" ]]; then
                     echo "Error: Insufficient disk space after deletion (${DISK_SPACE}MB available, ${NEEDED_SWAP}MB required)."
                     if [[ "$TOTAL_RAM" -ge 1000 ]]; then
-                        echo "Warning: Not enough disk space to create swap, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail."
+                        echo "Warning: Not enough disk space to create swap, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail!"
                     else
                         echo "Error: Insufficient RAM (${TOTAL_RAM}MB) < 1GB and unable to create swap. Installation impossible."
-                        echo "Please use a server with more resources (e.g., minimum 1GB RAM or 4GB disk space for swap)."
+                        echo "Please use a server with more resources (minimum 1GB RAM or 4GB disk space for swap)."
                         exit 1
                     fi
                 fi
     
                 # Create new swap file using dd
-                echo "Creating new swap file of ${NEEDED_SWAPP}MB at ${SWAP_FILE}..."
-                sudo dd if=/dev/zero of="$SWAP_FILE" bs=512 count=$((NEEDED_SWAP * 1024)) 2>&1 | tee dd_error.log
+                echo "Creating new swap file of ${NEEDED_SWAP}MB at ${SWAP_FILE}..."
+                sudo dd if=/dev/zero of="$SWAP_FILE" bs=512 count=$((NEEDED_SWAP * 2048)) 2>&1 | tee dd_error.log
                 if [[ $? -ne 0 || ! -f "$SWAP_FILE" || $(stat -c %s "$SWAP_FILE" 2>/dev/null) -lt $((NEEDED_SWAP * 1024 * 1024)) ]]; then
                     echo "Error: Failed to create or verify swap file at ${SWAP_FILE}. Details:"
                     cat dd_error.log
-                    sudo rm -f -f error.log
+                    sudo rm -f dd_error.log
                     # If RAM >= 1GB, continue with a warning
                     if [[ "$TOTAL_RAM" -ge 1000 ]]; then
-                        echo "Warning: Failed to create swap file, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail."
+                        echo "Warning: Failed to create swap file, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail!"
                     else
                         # If RAM < 1GB, stop
                         echo "Error: Insufficient RAM (${TOTAL_RAM}MB) < 1GB and unable to create swap. Installation impossible."
-                        echo "Please use a server with more resources (e.g., minimum 1GB RAM or 4GB disk space for swap)."
+                        echo "Please use a server with more resources (minimum 1GB RAM or 4GB disk space for swap)."
                         exit 1
                     fi
                 else
@@ -138,7 +138,8 @@ function make_swap
                     sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
                     if [[ $? -ne 0 ]]; then
                         echo "Error: Failed to format swap file."
-                        exit  fi
+                        exit 1
+                    fi
                     sudo swapon "$SWAP_FILE" >/dev/null 2>&1
                     if [[ $? -ne 0 ]]; then
                         echo "Error: Failed to enable swap file."
@@ -158,10 +159,9 @@ function make_swap
                 fi
             fi
         else
-            echo "Swap space is sufficient (${SWAP_TOTAL}MB >= ${MIN_SWAPP}MB). No changes needed."
+            echo "Swap space is sufficient (${SWAP_TOTAL}MB >= ${MIN_SWAP_MB}MB). No changes needed."
         fi
-    fi
     else
-        echo "RAM is sufficient (${TOTAL_RAM}MB >= ${MIN_swap}MB). No swap adjustments needed."
+        echo "RAM is sufficient (${TOTAL_RAM}MB >= 4000MB). No swap adjustments needed."
     fi
 }
