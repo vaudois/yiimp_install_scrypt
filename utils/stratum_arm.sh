@@ -59,12 +59,12 @@ ARCH_KERNEL=$(uname -m)
 
 # Vérifier que l'architecture est 64 bits (aarch64/arm64)
 if [[ "$ARCH" != "arm64" || "$ARCH_KERNEL" != "aarch64" ]]; then
-    echo -e "${YELLOW}Error: This script requires a 64-bit ARM architecture (aarch64/arm64). Detected: ARCH=$ARCH, ARCH_KERNEL=$ARCH_KERNEL${COL_RESET}"
+    echo -e "${YELLOW} Error: This script requires a 64-bit ARM architecture (aarch64/arm64). Detected: ARCH=$ARCH, ARCH_KERNEL=$ARCH_KERNEL${COL_RESET}"
     exit 1
 fi
 
 if [[ "$ARCH" =~ ^(arm|arm64|armhf)$ || "$ARCH_KERNEL" =~ ^(arm|aarch64|armv[0-9]+l)$ ]]; then
-echo -e "${YELLOW}ARM detected, Patcht & running compilation Stratum${COL_RESET}"
+echo -e "${YELLOW} ARM detected, Patcht & running compilation Stratum${COL_RESET}"
 
 	# Détecter l'architecture ARM et définir $cpu
 	cpu=""
@@ -84,11 +84,11 @@ echo -e "${YELLOW}ARM detected, Patcht & running compilation Stratum${COL_RESET}
 		fpu="vfp"
 		float_abi="soft"
 	else
-		echo -e "${YELLOW}Error: Unsupported architecture $arch${COL_RESET}"
+		echo -e "${YELLOW} Error: Unsupported architecture $arch${COL_RESET}"
 		exit 1
 	fi
 	
-	echo -e "${YELLOW}Detected CPU architecture: $cpu${COL_RESET}"
+	echo -e "${YELLOW} Detected CPU architecture: $cpu${COL_RESET}"
 	sleep 3
     # Modifier automatiquement le Makefile dans algos
 	if [ -f "${pathstratuminstall}/algos/makefile" ]; then
@@ -98,7 +98,7 @@ echo -e "${YELLOW}ARM detected, Patcht & running compilation Stratum${COL_RESET}
 	fi
 	# Vérifier si le Makefile a été trouvé
 	if [ -z "$ALGO_MAKEFILE" ]; then
-		echo -e "${YELLOW}Error: Neither makefile nor Makefile found at ${pathstratuminstall}/algos/${COL_RESET}"
+		echo -e "${YELLOW} Error: Neither makefile nor Makefile found at ${pathstratuminstall}/algos/${COL_RESET}"
 		exit 1
 	fi
     if sudo grep -q "CFLAGS" "$ALGO_MAKEFILE"; then
@@ -223,7 +223,7 @@ EOF
 	correct_file() {
 		local FILE="$1"
 		if [ -f "$FILE" ]; then
-			echo "Processing $FILE"
+			echo " Processing $FILE"
 			sudo chmod 666 "$FILE"
 			
 			# Ajouter #include <stdint.h> si absent
@@ -253,7 +253,7 @@ EOF
 		# Ajouter swap32 dans sha3/sph_types.h si absent
 		SPH_TYPES_FILE="$pathstratuminstall/sha3/sph_types.h"
 		if [ -f "$SPH_TYPES_FILE" ]; then
-			echo "Ajout de swap32 dans $SPH_TYPES_FILE"
+			echo " Ajout de swap32 dans $SPH_TYPES_FILE"
 			sudo chmod 666 "$SPH_TYPES_FILE"
 			if ! grep -q "#include <stdint.h>" "$SPH_TYPES_FILE"; then
 				sudo sed -i '1i #include <stdint.h>' "$SPH_TYPES_FILE"
@@ -1199,14 +1199,14 @@ EOF
 	# Update Makefile to use -lmariadb (optional)
  	LMYSQLCLIENT="${pathstratuminstall}/Makefile"
 	if grep -q "\-lmysqlclient" "$LMYSQLCLIENT"; then
-	    echo -e "${CYAN}Processing: Updating Makefile to use -lmariadb...${COL_RESET}"
+	    echo -e "${CYAN} Processing: Updating Makefile to use -lmariadb...${COL_RESET}"
 	    sudo sed -i 's/-lmysqlclient/-lmariadb/' "$LMYSQLCLIENT"
 	fi
     
 	export CFLAGS="-DNO_SIMD -march=$cpu ${fpu:+-mfpu=$fpu} -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
 else
     export CFLAGS="-DNO_SIMD"
-	echo -e "${YELLOW}Running compilation Straum${COL_RESET}"
+	echo -e "${YELLOW} Running compilation Straum${COL_RESET}"
 fi
 
 # Compiler
@@ -1214,6 +1214,6 @@ if sudo make; then
     echo " >--> Compiled stratum successfully"
 else
     echo -e "$YELLOW Warning: Failed to compile stratum, check install.log for details...$COL_RESET"
-    exit 1
+    sleep 4
 fi
 sleep 1
