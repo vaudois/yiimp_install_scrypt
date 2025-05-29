@@ -518,6 +518,8 @@ define('"'"'YAAMP_LOGS'"'"', '"'"'/var/log/yiimp'"'"');
 define('"'"'YAAMP_HTDOCS'"'"', '"'"'/var/web'"'"');
 define('"'"'YIIMP_MYSQLDUMP_PATH'"'"', '"'"''"/var/yiimp/sauv"''"'"');
 define('"'"'YIIMP_ADMIN_LOGIN'"'"', '"'"''"$5"''"'"');
+define('"'"'YAAMP_ADMIN_USER'"'"', '"'"''"$5"''"'"');
+define('"'"'YAAMP_ADMIN_PASS'"'"', '"'"''"$5"''"'"');
 
 define('"'"'YAAMP_BIN'"'"', '"'"'/var/bin'"'"');
 define('"'"'YAAMP_DBHOST'"'"', '"'"'localhost'"'"');
