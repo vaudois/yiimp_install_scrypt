@@ -159,11 +159,40 @@ clear
         echo
         echo -e "$RED Make sure you double check before hitting enter! Only one shot at these! $COL_RESET"
         echo
-        read -e -p "Domain Name (no https:// or www. just : example.com or ${PUBLIC_IP}) : " server_name
+		while true; do
+			read -e -p "Enter domain name or IP (e.g., example.com, example.local, or ${PUBLIC_IP}): " server_name
+			if [[ -n "$server_name" && "$server_name" =~ ^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$ || "$server_name" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ || "$server_name" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.local$ ]]; then
+				if [[ "$server_name" =~ ^(https?://|www\.) ]]; then
+					echo "Error: Do not include 'https://' or 'www.' in the domain name."
+				else
+					break
+				fi
+			else
+				echo "Error: Please enter a valid domain (e.g., example.com, example.local) or IP (e.g., ${PUBLIC_IP})."
+			fi
+		done
         read -e -p "Enter subdomain for stratum connections (e.g. europe) [N => not subdomain] : " sub_domain
-        read -e -p "Enter support email (e.g. admin@example.com) : " EMAIL
-        read -e -p "Admin panel: desired customized name Admin url (e.g. myAdminpanel) : " admin_panel
-        read -e -p "Enter the Public IP of the system you will use to access the admin panel : " Public
+		while true; do
+			read -e -p "Enter support email (e.g., admin@example.com): " EMAIL
+			if [[ -n "$EMAIL" && "$EMAIL" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+				break
+			else
+				echo "Error: Please enter a valid email address (e.g., admin@example.com)."
+			fi
+		done
+        read -e -p "Admin panel: enter custom URL name (press Enter for default: myAdminpanel): " admin_panel
+		admin_panel=${admin_panel:-myAdminpanel}
+		while true; do
+			read -e -p "Enter IP for admin panel access (Enter for default: 0.0.0.0/0): " Public
+			Public=${Public:-0.0.0.0/0}
+			
+			# Validate IP or CIDR format (basic regex)
+			if [[ "$Public" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]{1,2})?$ || "$Public" == "0.0.0.0/0" ]]; then
+				break
+			else
+				echo "Error: Invalid IP or CIDR. Use format like 192.168.1.100 or 10.0.0.0/24."
+			fi
+		done
         read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
         read -e -p "Install SSL? IMPORTANT! Have your domain name pointed to this server prior! [Y/n]: " ssl_install
         read -e -p "Install Wireguard for future remote stratums??? [y/N]: " wg_install
@@ -172,7 +201,35 @@ clear
         else
             wg_ip=""
         fi
-        read -e -p "Desired Yiimp install?(1=Kudaraidee(error white page),2=tpruvot,3=Afiniel-Tech,4=Afiniel,5=SabiasQue,6=Tpfuemp) [6 by default] : " yiimpver
+
+		# Stylish prompt for Yiimp version selection
+		echo -e "${CYAN}======================================${COL_RESET}"
+		echo -e "${CYAN}      Select Yiimp Install Version     ${COL_RESET}"
+		echo -e "${CYAN}======================================${COL_RESET}"
+		echo -e "${GREEN}  1. Kudaraidee (error white page)    ${COL_RESET}"
+		echo -e "${GREEN}  2. tpruvot                         ${COL_RESET}"
+		echo -e "${GREEN}  3. Afiniel-Tech                    ${COL_RESET}"
+		echo -e "${GREEN}  4. Afiniel                         ${COL_RESET}"
+		echo -e "${GREEN}  5. SabiasQue                       ${COL_RESET}"
+		echo -e "${GREEN}  6. Tpfuemp (default)               ${COL_RESET}"
+		echo -e "${CYAN}======================================${COL_RESET}"
+
+		while true; do
+			echo -en "${YELLOW}Enter your choice (1-6) [6 by default]: ${COL_RESET}"
+			read yiimpver
+			# Set default to 6 if empty
+			yiimpver=${yiimpver:-6}
+			# Check if input is a number between 1 and 6
+			if [[ "$yiimpver" =~ ^[1-6]$ ]]; then
+				break
+			else
+				echo -e "${RED}--------------------------------------${COL_RESET}"
+				echo -e "${RED}Error: Please enter a number between 1 and 6.${COL_RESET}"
+				echo -e "${RED}--------------------------------------${COL_RESET}"
+			fi
+		done
+
+		echo -e "${BLUE}Selected Yiimp version: $yiimpver${COL_RESET}"
 
         clear
         term_art_server
