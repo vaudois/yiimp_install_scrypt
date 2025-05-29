@@ -27,7 +27,7 @@ export LC_ALL=C.UTF-8
 
 # Vérifier et installer ncurses-bin et dialog en silence total
 function check_and_install_dependencies {
-    echo "${MAGENTA} Check and install dependencies${COL_RESET}"
+    echo "Check and install dependencies"
     local packages="ncurses-bin dialog"
     local missing_packages=""
 
