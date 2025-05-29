@@ -14,6 +14,8 @@ fi
 
 NPROC=$(nproc)
 
+clear
+
 # Check and manage swap for compilation
 TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
 SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
@@ -52,15 +54,34 @@ if [[ "$TOTAL_RAM" -lt 4000 ]]; then
             # Disk space is sufficient, proceed with swap creation
             if [[ -f "$SWAP_FILE" ]]; then
                 echo "Existing swap file found at ${SWAP_FILE}. Deleting it..."
-                sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-                if [[ $? -ne 0 ]]; then
-                    echo "Error: Failed to disable existing swap."
-                    exit 1
-                fi
-                sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-                if [[ $? -ne 0 ]]; then
-                    echo "Error: Failed to delete existing swap file."
-                    exit 1
+                # Check if the file is an active swap
+                if sudo swapon --show | grep -q "$SWAP_FILE"; then
+                    sudo swapoff "$SWAP_FILE" 2>&1 | tee swapoff_error.log
+                    if [[ $? -ne 0 ]]; then
+                        echo "Error: Failed to disable existing swap. Details:"
+                        cat swapoff_error.log
+                        rm -f swapoff_error.log
+                        echo "Forcing deletion of swap file..."
+                        sudo rm -f "$SWAP_FILE"
+                        if [[ $? -ne 0 ]]; then
+                            echo "Error: Failed to force delete swap file at ${SWAP_FILE}."
+                            exit 1
+                        fi
+                    else
+                        rm -f swapoff_error.log
+                        sudo rm -f "$SWAP_FILE"
+                        if [[ $? -ne 0 ]]; then
+                            echo "Error: Failed to delete swap file at ${SWAP_FILE}."
+                            exit 1
+                        fi
+                    fi
+                else
+                    echo "File exists but is not an active swap. Forcing deletion..."
+                    sudo rm -f "$SWAP_FILE"
+                    if [[ $? -ne 0 ]]; then
+                        echo "Error: Failed to force delete swap file at ${SWAP_FILE}."
+                        exit 1
+                    fi
                 fi
             fi
 
