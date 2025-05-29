@@ -1221,7 +1221,7 @@ clear
 
 	sudo mv ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_${yiimpver}
 	sudo chown ${whoami} ${absolutepath}/stratum_${yiimpver}
-	sudo mv ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_default
+	sudo mv ${absolutepath}/stratum ${absolutepath}/stratum_default
 	sudo chown ${whoami} ${absolutepath}/stratum_default
     sudo rm -rf ${absolutepath}/yiimp
     sudo rm -rf ${absolutepath}/${nameofinstall}
