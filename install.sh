@@ -571,6 +571,8 @@ clear
             hide_output sudo git clone $githubrepoTpfuemp
         fi
 
+        clear
+        term_art_server
         hide_output sudo git clone $githubstratum
         log_message "Cloned Yiimp and stratum repositories"
 
@@ -592,15 +594,38 @@ clear
 
 		# Detection system
 		ARCH=$(dpkg --print-architecture)
+		STRCOMPILED="N"
 		if [ "$ARCH" = "arm64" ]; then
 			sudo chmod +x ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh
-			sudo ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum
+			${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum/
+			if [[ "STRCOMPILED" == "N" ]]; then
+				echo
+				echo -e "$RED => Error Stratum not compiled $COL_RESET"
+				echo -e "$CYAN => Try again With default Stratum $COL_RESET"
+				echo
+				sleep 3
+				log_message "ERROR Compilation of Straum try again by default"
+				${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/stratum/
+			fi
+			if [[ "STRCOMPILED" == "N" ]]; then
+				echo
+				echo -e "$RED => Error Default Stratum not compiled BAD ....$COL_RESET"
+				echo
+				log_message "ERROR Compilation of Straum"
+				sleep 3
+			fi
+			if [[ "STRCOMPILED" == "Y" ]]; then
+				echo -e "$GREEN => Stratum compiled $COL_RESET"
+				log_message "Compiled Straum"
+			fi
 		else
 			cd ${absolutepath}/yiimp/stratum
 			sudo make
 		fi
-		sleep 1
+		sleep 3
 
+        clear
+        term_art_server
 		# Modify Files (Admin_panel), Wallets path, Web Path footer
 		sudo sed -i 's/myadmin/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
 		sudo sed -i 's/AdminRights/'$admin_panel'/' ${absolutepath}/yiimp/web/yaamp/modules/site/SiteController.php
@@ -713,6 +738,8 @@ clear
         log_message "Set timezone to UTC"
         echo -e "$GREEN Done...$COL_RESET"
 
+        clear
+        term_art_server
         # Creating webserver initial config file
         echo
         echo -e "$CYAN => Creating webserver initial config file $COL_RESET"
