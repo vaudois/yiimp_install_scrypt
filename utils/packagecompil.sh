@@ -45,6 +45,7 @@ function package_compile_crypto
     apt_install libmariadb-dev librtmp-dev libssh2-1-dev libldap2-dev  # Remplacé default-libmysqlclient-dev par libmariadb-dev
     apt_install libbrotli-dev libssh-dev libnghttp2-dev libpsl-dev
     apt_install python3 ccache doxygen graphviz  # Retiré libmysqlclient-dev
+	apt_install libzstd-dev
 
 	echo -e "$GREEN Done...$COL_RESET"
  	sleep 3
