@@ -410,27 +410,27 @@ clear
 		fi
         echo -e "$YELLOW >--> Installing php...$COL_RESET"
         if [[ "$DISTRO" == "20" ]]; then
-            apt_install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
-            apt_install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
-            apt_install php8.2-sqlite3 php8.2-tidy php8.2-xml php8.2-zip
-            apt_install php8.2-mbstring php8.2-memcache php8.2-memcached memcached php-memcache php-memcached
+            simple_hide_output "Installing php8.2 step 1"apt_install php8.2-fpm php8.2-opcache php8.2 php8.2-common php8.2-gd php8.2-mysql php8.2-imap php8.2-cli
+            simple_hide_output "Installing php8.2 step 2"apt_install php8.2-cgi php8.2-curl php8.2-intl php8.2-pspell
+            simple_hide_output "Installing php8.2 step 3"apt_install php8.2-sqlite3 php8.2-tidy php8.2-xml php8.2-zip
+            simple_hide_output "Installing php8.2 step 4"apt_install php8.2-mbstring php8.2-memcache php8.2-memcached memcached php-memcache php-memcached
 			sudo phpenmod -v 8.2 mbstring
 			sudo phpenmod -v 8.2 memcache memcached
-            apt_install php8.2-gettext
+            simple_hide_output "Installing php8.2 gettext" apt_install php8.2-gettext
 			simple_hide_output "Update alternatives php8.2" sudo update-alternatives --set php /usr/bin/php8.2
             simple_hide_output "Restart php8.2" sudo systemctl start php8.2-fpm
             sudo systemctl status php8.2-fpm | sed -n "1,3p"
             PHPVERSION=8.2
             log_message "Installed PHP 8.2 and dependencies"
         elif [[ "$DISTRO" == "22" ]]; then
-            apt_install php8.3-fpm php8.3-opcache php8.3 php8.3-common php8.3-gd php8.3-mysql php8.3-imap php8.3-cli
-            apt_install php8.3-cgi php8.3-curl php8.3-intl php8.3-pspell
-            apt_install php8.3-sqlite3 php8.3-tidy php8.3-xml php8.3-zip
-            apt_install php8.3-mbstring php8.3-memcache php8.3-memcached memcached php-memcache php-memcached
+            simple_hide_output "Installing php8.3 step 1" apt_install php8.3-fpm php8.3-opcache php8.3 php8.3-common php8.3-gd php8.3-mysql php8.3-imap php8.3-cli
+            simple_hide_output "Installing php8.3 step 2" apt_install php8.3-cgi php8.3-curl php8.3-intl php8.3-pspell
+            simple_hide_output "Installing php8.3 step 3"apt_install php8.3-sqlite3 php8.3-tidy php8.3-xml php8.3-zip
+            simple_hide_output "Installing php8.3 step 4"apt_install php8.3-mbstring php8.3-memcache php8.3-memcached memcached php-memcache php-memcached
 			# Activer les modules nécessaires pour PHP 8.3
 			sudo phpenmod -v 8.3 mbstring
 			sudo phpenmod -v 8.3 memcache memcached
-			apt_install php8.3-gettext
+			simple_hide_output "Installing php8.3 gettext" apt_install php8.3-gettext
 			simple_hide_output "Update alternatives php8.3" sudo update-alternatives --set php /usr/bin/php8.3
             simple_hide_output "Restart php8.3" sudo systemctl start php8.3-fpm
             sudo systemctl status php8.3-fpm | sed -n "1,3p"
