@@ -22,10 +22,8 @@ SWAP_FILE="/swapfile_yiimp"
 CREATED_SWAP=false
 
 if [[ "$TOTAL_RAM" -lt 4000 ]]; then
-	log_message "Low RAM detected ($TOTAL_RAM MB). Checking swap configuration."
 	if [[ "$SWAP_TOTAL" -lt "$MIN_SWAP_MB" ]]; then
 		NEEDED_SWAP=$((MIN_SWAP_MB - SWAP_TOTAL))
-		log_message "Insufficient swap ($SWAP_TOTAL MB, need $MIN_SWAP_MB MB). Creating ${NEEDED_SWAP}MB swap file at $SWAP_FILE."
 		# Ensure no existing /swapfile_yiimp conflicts
 		if [[ -f "$SWAP_FILE" ]]; then
 			sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
@@ -36,12 +34,7 @@ if [[ "$TOTAL_RAM" -lt 4000 ]]; then
 		sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
 		sudo swapon "$SWAP_FILE" >/dev/null 2>&1
 		CREATED_SWAP=true
-		log_message "Created and enabled ${NEEDED_SWAP}MB swap file at $SWAP_FILE"
-	else
-		log_message "Sufficient swap detected ($SWAP_TOTAL MB). No additional swap needed."
 	fi
-else
-	log_message "Sufficient RAM detected ($TOTAL_RAM MB). No swap changes needed."
 fi
 
 clear
