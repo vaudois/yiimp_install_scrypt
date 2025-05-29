@@ -75,17 +75,36 @@ function package_compile_crypto
  	echo -e "$YELLOW => Modify DB for Stratum $COL_RESET"
  	sleep 3
 
-	# Create symbolic link for mariadb_config
+	# Setup MariaDB symbolic links
 	if [ -f /usr/bin/mariadb_config ] && [ ! -f /usr/bin/mysql_config ]; then
 	    echo -e "${CYAN}Processing: Creating symbolic link for mariadb_config to mysql_config...${COL_RESET}"
 	    sudo ln -sf /usr/bin/mariadb_config /usr/bin/mysql_config
 	fi
-	
-	# Create symbolic link for mariadb headers
 	if [ -d /usr/include/mariadb ] && [ ! -d /usr/include/mysql ]; then
 	    echo -e "${CYAN}Processing: Creating symbolic link for /usr/include/mysql to /usr/include/mariadb...${COL_RESET}"
 	    sudo ln -sf /usr/include/mariadb /usr/include/mysql
 	fi
+	
+	# Create symbolic link for libmysqlclient dynamically
+	LIB_PATH=$(find /usr/lib -type f \( -name 'libmysqlclient.so.*' -o -name 'libmariadb.so.*' \) -print -quit 2>/dev/null)
+	if [ -n "$LIB_PATH" ]; then
+	    echo -e "${CYAN}Processing: Creating symbolic link for libmysqlclient...${COL_RESET}"
+	    LIB_DIR=$(dirname "$LIB_PATH")
+	    sudo ln -sf "$LIB_PATH" "$LIB_DIR/libmysqlclient.so"
+	    echo -e "${CYAN}Processing: Updating linker cache...${COL_RESET}"
+	    sudo ldconfig
+	else
+	    echo -e "${RED}Error: No suitable MariaDB/MySQL client library found${COL_RESET}"
+	    log_message "ERROR: No suitable MariaDB/MySQL client library found"
+	    exit 1
+	fi
+	
+	# Update Makefile to use -lmariadb (optional)
+	if grep -q "\-lmysqlclient" ~/yiimp/stratum/Makefile; then
+	    echo -e "${CYAN}Processing: Updating Makefile to use -lmariadb...${COL_RESET}"
+	    sudo sed -i 's/-lmysqlclient/-lmariadb/' ~/yiimp/stratum/Makefile
+	fi
+
 
     # Vérifier les paquets essentiels (non bloquant)
     for pkg in build-essential libc6-dev libgcc-11-dev; do
