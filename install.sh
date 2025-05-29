@@ -16,6 +16,7 @@ NPROC=$(nproc)
 
 clear
 
+source utils/swap.sh
 make_swap
 sleep 3
 clear
