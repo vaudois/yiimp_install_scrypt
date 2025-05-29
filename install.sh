@@ -293,8 +293,8 @@ clear
         echo -e "$CYAN => Installing base system packages for Yiimp :$COL_RESET"
         sleep 3
 
-	simple_hide_output "Updating apt..." sudo apt -y update
-	simple_hide_output "Upgrading apt..." sudo apt -y upgrade
+		simple_hide_output "Updating apt..." sudo apt -y update
+		simple_hide_output "Upgrading apt..." sudo apt -y upgrade
         apt_install dialog python3 python3-pip acl nano apt-transport-https update-notifier-common
         apt_install figlet curl jq update-motd pwgen
         log_message "Installed base system packages"
@@ -417,8 +417,8 @@ clear
 			sudo phpenmod -v 8.2 mbstring
 			sudo phpenmod -v 8.2 memcache memcached
             apt_install php8.2-gettext
-			simple_hide_output sudo update-alternatives --set php /usr/bin/php8.2
-            simple_hide_output sudo systemctl start php8.2-fpm
+			simple_hide_output "Update alternatives php8.2" sudo update-alternatives --set php /usr/bin/php8.2
+            simple_hide_output "Restart php8.2" sudo systemctl start php8.2-fpm
             sudo systemctl status php8.2-fpm | sed -n "1,3p"
             PHPVERSION=8.2
             log_message "Installed PHP 8.2 and dependencies"
@@ -431,8 +431,8 @@ clear
 			sudo phpenmod -v 8.3 mbstring
 			sudo phpenmod -v 8.3 memcache memcached
 			apt_install php8.3-gettext
-			simple_hide_output sudo update-alternatives --set php /usr/bin/php8.3
-            simple_hide_output sudo systemctl start php8.3-fpm
+			simple_hide_output "Update alternatives php8.3" sudo update-alternatives --set php /usr/bin/php8.3
+            simple_hide_output "Restart php8.3" sudo systemctl start php8.3-fpm
             sudo systemctl status php8.3-fpm | sed -n "1,3p"
             PHPVERSION=8.3
             log_message "Installed PHP 8.3 and dependencies"
@@ -517,12 +517,12 @@ clear
         fi
 
         apt_install ufw
-        simple_hide_output sudo ufw default deny incoming
-        simple_hide_output sudo ufw default allow outgoing
-        simple_hide_output sudo ufw allow ssh
-        simple_hide_output sudo ufw allow http
-        simple_hide_output sudo ufw allow https
-        simple_hide_output sudo ufw --force enable
+        simple_hide_output "ufw set default deny incoming" sudo ufw default deny incoming
+        simple_hide_output "ufw set default outgoing" sudo ufw default allow outgoing
+        simple_hide_output "ufw set ssh" sudo ufw allow ssh
+        simple_hide_output "ufw set http" sudo ufw allow http
+        simple_hide_output "ufw set https" sudo ufw allow https
+        simple_hide_output "ufw enable" sudo ufw --force enable
         sleep 3
         sudo systemctl status ufw | sed -n "1,3p"
         log_message "Installed and configured UFW"
@@ -1149,18 +1149,18 @@ clear
 
 	cd ${absolutepath}/yiimp/stratum
 	sudo make clean
-	if [[ ! -f ${absolutepath}/yiimp/stratum/install.log ]]; then
+	if [[ -f ${absolutepath}/yiimp/stratum/install.log ]]; then
 		sudo rm ${absolutepath}/yiimp/stratum/install.log
 	fi
 	cd ${absolutepath}/stratum
 	sudo make clean
-	if [[ ! -f ${absolutepath}/stratum/install.log ]]; then
+	if [[ -f ${absolutepath}/stratum/install.log ]]; then
 		sudo rm ${absolutepath}/stratum/install.log
 	fi
 
-	sudo mv -r ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_${yiimpver}
+	sudo mv ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_${yiimpver}
 	sudo chown ${whoami} ${absolutepath}/stratum_${yiimpver}
-	sudo mv -r ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_default
+	sudo mv ${absolutepath}/yiimp/stratum ${absolutepath}/stratum_default
 	sudo chown ${whoami} ${absolutepath}/stratum_default
     sudo rm -rf ${absolutepath}/yiimp
     sudo rm -rf ${absolutepath}/${nameofinstall}
