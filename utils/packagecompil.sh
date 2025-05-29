@@ -21,9 +21,6 @@ function package_compile_crypto
 
 	echo -e "$GREEN Done...$COL_RESET"
  	sleep 3
-  
-	clear
-	term_art_server
  	echo -e "$YELLOW => Installing Package to compile crypto currency$YELLOW step 2 $COL_RESET"
  	sleep 3
 	
@@ -36,9 +33,6 @@ function package_compile_crypto
 
 	echo -e "$GREEN Done...$COL_RESET"
  	sleep 3
-  
-	clear
-	term_art_server
  	echo -e "$YELLOW => Installing Package to compile crypto currency$YELLOW step 3 $COL_RESET"
  	sleep 3
 
@@ -54,9 +48,6 @@ function package_compile_crypto
 
 	echo -e "$GREEN Done...$COL_RESET"
  	sleep 3
-  
-	clear
-	term_art_server
  	echo -e "$YELLOW => Installing Package to compile crypto currency$YELLOW step 4 $COL_RESET"
  	sleep 3
 
