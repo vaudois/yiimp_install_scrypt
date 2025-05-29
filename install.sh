@@ -595,10 +595,11 @@ clear
 		# Detection system
 		ARCH=$(dpkg --print-architecture)
 		STRCOMPILED="N"
+		STRDEFAULT="N"
 		if [ "$ARCH" = "arm64" ]; then
 			sudo chmod +x ${absolutepath}/${nameofinstall}/utils/stratum_arm.sh
 			${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/yiimp/stratum/
-			if [[ "STRCOMPILED" == "N" ]]; then
+			if [[ $STRCOMPILED == "N" ]]; then
 				echo
 				echo -e "$RED => Error Stratum not compiled $COL_RESET"
 				echo -e "$CYAN => Try again With default Stratum $COL_RESET"
@@ -606,15 +607,16 @@ clear
 				sleep 3
 				log_message "ERROR Compilation of Straum try again by default"
 				${absolutepath}/${nameofinstall}/utils/stratum_arm.sh ${absolutepath}/stratum/
+				STRDEFAULT="Y"
 			fi
-			if [[ "STRCOMPILED" == "N" ]]; then
+			if [[ $STRCOMPILED == "N" ]]; then
 				echo
 				echo -e "$RED => Error Default Stratum not compiled BAD ....$COL_RESET"
 				echo
 				log_message "ERROR Compilation of Straum"
 				sleep 3
 			fi
-			if [[ "STRCOMPILED" == "Y" ]]; then
+			if [[ $STRCOMPILED == "Y" ]]; then
 				echo -e "$GREEN => Stratum compiled $COL_RESET"
 				log_message "Compiled Straum"
 			fi
@@ -665,17 +667,42 @@ clear
         log_message "Updated file paths in Yiimp"
  
         # Copy Files (Blocknotify, iniparser, Stratum, web)
+		echo
+        echo -e "$CYAN => Copy Files (Blocknotify, iniparser, Stratum, web) $COL_RESET"
+		sleep 3
+
         cd ${absolutepath}/yiimp
         sudo cp -r ${absolutepath}/yiimp/web/ /var/
         sudo mkdir -p /var/stratum
         sudo chgrp ${whoami} /var/stratum
         sudo chown ${whoami} /var/stratum
-        cd ${absolutepath}/yiimp/stratum
-        sudo cp -a config.sample/. /var/stratum/config/
 		
-		if [[ -d stratum ]]; then
-			sudo cp -r stratum /var/stratum/
-			log_message "Copied stratum directory to /var/stratum/"
+		if [[ $STRCOMPILED == "Y" ]]; then
+			if [[ $STRDEFAULT == "Y" ]]; then
+				cd ${absolutepath}/stratum
+				sudo cp -a config.sample/. /var/stratum/config/
+				if [[ -f stratum ]]; then
+					sudo cp -r stratum /var/stratum/
+					log_message "Copied stratum directory to /var/stratum/"
+					echo -e "$YELLOW => Copied Default Stratum $COL_RESET"
+				else
+					echo -e "$RED => Not Possible to copy Default Stratum...$COL_RESET"
+				fi
+			else
+				cd ${absolutepath}/yiimp/stratum
+				sudo cp -a config.sample/. /var/stratum/config/
+				if [[ -f stratum ]]; then
+					sudo cp -r stratum /var/stratum/
+					log_message "Copied stratum directory to /var/stratum/"
+					echo -e "$YELLOW => Copied Stratum $COL_RESET"
+				else
+					echo -e "$RED => Not Possible to copy Stratum...$COL_RESET"
+				fi
+			fi
+		else
+			cd ${absolutepath}/yiimp/stratum
+			sudo cp -a config.sample/. /var/stratum/config/
+			echo -e "$RED => Not copied Stratum this is not compiled BAD....$COL_RESET"
 		fi
 
         cd ${absolutepath}/yiimp
@@ -737,6 +764,7 @@ clear
         sudo systemctl status rsyslog | sed -n "1,3p"
         log_message "Set timezone to UTC"
         echo -e "$GREEN Done...$COL_RESET"
+		sleep 4
 
         clear
         term_art_server
@@ -765,6 +793,7 @@ clear
 			fi
             log_message "Configured Nginx without subdomain"
             echo -e "$GREEN Done...$COL_RESET"
+			sleep 3
 
             if [[ ("$ssl_install" == "y" || "$ssl_install" == "Y" || "$ssl_install" == "") ]]; then
                 # Install SSL (without SubDomain)
@@ -972,6 +1001,9 @@ clear
     if [[ "$RESUME_MODE" == "true" ]]; then
         clear
         term_art_server
+	else
+        clear
+        term_art_server
     fi
 
     echo
@@ -1035,6 +1067,8 @@ clear
     # Remove parameter file after successful installation
    # sudo rm -f "${absolutepath}/${installtoserver}/resume/install_params.conf" >/dev/null 2>&1
     log_message "Removed installation parameters file"
+	echo -e "$GREEN Done...$COL_RESET"
+	sleep 3
 
     clear
     term_art_server
