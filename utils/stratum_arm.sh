@@ -76,7 +76,7 @@ echo -e "${YELLOW}ARM detected, Patcht & running compilation Stratum${COL_RESET}
 		sudo sed -i '/#endif/i #if defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7__)\ntypedef unsigned long long uint128_t __attribute__((mode(TI)));\n#endif' "$pathstratuminstall/sha3/sph_types.h"
 	elif [[ "$arch" == "aarch64" ]]; then
 		cpu="armv8-a"
-		fpu="neon"
+		fpu=""
 		float_abi="hard"
 		sudo sed -i '/#endif/i #if defined(__aarch64__)\ntypedef unsigned __int128 uint128_t;\n#endif' "$pathstratuminstall/sha3/sph_types.h"
 	elif [[ "$arch" =~ ^armv6 ]]; then
@@ -102,7 +102,7 @@ echo -e "${YELLOW}ARM detected, Patcht & running compilation Stratum${COL_RESET}
 		exit 1
 	fi
     if sudo grep -q "CFLAGS" "$ALGO_MAKEFILE"; then
-		sudo sed -i "s/-march=native/-march=$cpu -mfpu=$fpu/" "$ALGO_MAKEFILE"
+		sudo sed -i "s/-march=native/-march=$cpu ${fpu:+-mfpu=$fpu}/" "$ALGO_MAKEFILE"
 		sudo sed -i 's/-mfloat-abi=hard/-mfloat-abi='$float_abi'/' "$ALGO_MAKEFILE"
 		sudo sed -i 's/-mfloat-abi=softfp/-mfloat-abi='$float_abi'/' "$ALGO_MAKEFILE"
         if ! sudo grep -q "\-DNO_SIMD" "$ALGO_MAKEFILE"; then
@@ -223,7 +223,7 @@ EOF
 	correct_file() {
 		local FILE="$1"
 		if [ -f "$FILE" ]; then
-			echo "Traitement de $FILE"
+			echo "Processing $FILE"
 			sudo chmod 666 "$FILE"
 			
 			# Ajouter #include <stdint.h> si absent
@@ -293,7 +293,7 @@ EOF
 		if [ "$opening_braces" -ne "$closing_braces" ]; then
 			exit 1
 		fi
-		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=$cpu -mfpu=$fpu -DNO_SIMD -DNO_AES_NI -std=gnu99 "$XELISV2_FILE"; then
+		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=$cpu ${fpu:+-mfpu=$fpu} -DNO_SIMD -DNO_AES_NI -std=gnu99 "$XELISV2_FILE"; then
 			sudo sed -i 's/\(xelisv2\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
 			sudo sed -i 's/\($(CC) $(CFLAGS) -c xelisv2\.c -o xelisv2\.o\)/# \1/' "$ALGO_MAKEFILE"
 		fi
@@ -531,7 +531,7 @@ void aurum_hash(const char *input, char *output, uint32_t len)
 EOF
             sudo chmod 666 "$AURUM_FILE"
         fi
-		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=$cpu -mfpu=$fpu -DNO_SIMD -std=gnu99 "$AURUM_FILE" 2>/dev/null; then
+		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=$cpu ${fpu:+-mfpu=$fpu} -DNO_SIMD -std=gnu99 "$AURUM_FILE" 2>/dev/null; then
 			sudo sed -i 's/\(aurum\.o:.*\)/# \1/' "$ALGO_MAKEFILE"
 			sudo sed -i 's/\($(CC) $(CFLAGS) -c aurum\.c -o aurum\.o\)/# \1/' "$ALGO_MAKEFILE"
 		fi
@@ -558,7 +558,7 @@ EOF
 		sudo sed -i '/#if defined(__x86_64__)/N;/#if defined(__x86_64__)\n.*yespower_b2b/d' "$YESPOWER_FILE"
 		sudo sed -i '/#endif/N;/#endif\n.*yespower_b2b/d' "$YESPOWER_FILE"
 		# Vérifier la balance des #if/#endif
-		if [ $(sudo grep -c "#if\|#ifdef\|#ifndef" "$YESPOWER_FILE") -ne $(sudo grep -c "#endif" "$YESPOWER_FILE") ] || ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=$cpu -mfpu=$fpu -DNO_SIMD -std=gnu99 "$YESPOWER_FILE" 2>/dev/null; then
+		if [ $(sudo grep -c "#if\|#ifdef\|#ifndef" "$YESPOWER_FILE") -ne $(sudo grep -c "#endif" "$YESPOWER_FILE") ] || ! gcc -fsyntax-only -I.. -Ialgos/blake2 -march=$cpu ${fpu:+-mfpu=$fpu} -DNO_SIMD -std=gnu99 "$YESPOWER_FILE" 2>/dev/null; then
 			echo -e "$YELLOW Warning: Unbalanced preprocessor directives or syntax error in $YESPOWER_FILE, rewriting with generic implementation$COL_RESET"
 			sudo bash -c "cat > $YESPOWER_FILE" << 'EOF'
 #include <errno.h>
@@ -1070,7 +1070,7 @@ void fill_segment(const argon2_instance_t *instance, argon2_position_t position)
 }
 EOF
         fi
-		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=$cpu -mfpu=$fpu -DNO_SIMD -std=gnu99 "$ARGON2_FILE" 2>/dev/null; then
+		if ! gcc -fsyntax-only -I.. -Ialgos/blake2 -Isha3 -march=$cpu ${fpu:+-mfpu=$fpu} -DNO_SIMD -std=gnu99 "$ARGON2_FILE" 2>/dev/null; then
 			sudo bash -c "cat > $ARGON2_FILE" << 'EOF'
 #include <uint.h>
 #include <string.h>
@@ -1196,7 +1196,7 @@ EOF
         \nvoid PBKDF2_SHA256_Y(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt, size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);' "$YESCRYPT_HEADER"
     fi
     
-	export CFLAGS="-DNO_SIMD -march=$cpu -mfpu=$fpu -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
+	export CFLAGS="-DNO_SIMD -march=$cpu ${fpu:+-mfpu=$fpu} -Ialgos/blake2 -Ialgos/ar2 -I.. -std=gnu99"
 else
     export CFLAGS="-DNO_SIMD"
 	echo -e "${YELLOW}Running compilation Straum${COL_RESET}"
