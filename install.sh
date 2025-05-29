@@ -55,48 +55,48 @@ if [[ "$TOTAL_RAM" -lt 4000 ]]; then
             if [[ -f "$SWAP_FILE" ]]; then
                 echo "Existing swap file found at ${SWAP_FILE}. Deleting it..."
                 # Check if the file is an active swap
-                if swapon --show | grep -q "$SWAP_FILE"; then
-                    swapoff "$SWAP_FILE" 2>&1 | tee swapoff_error.log
+                if sudo swapon --show | grep -q "$SWAP_FILE"; then
+                    sudo swapoff "$SWAP_FILE" 2>&1 | tee swapoff_error.log
                     if [[ $? -ne 0 ]]; then
                         echo "Error: Failed to disable existing swap. Details:"
                         cat swapoff_error.log
-                        rm -f swapoff_error.log
+                        sudo rm -f swapoff_error.log
                         echo "Forcing deletion of swap file..."
                         # Remove immutable attribute if present
-                        chattr -i "$SWAP_FILE" 2>/dev/null
-                        rm -f "$SWAP_FILE" 2>&1 | tee rm_error.log
+                        sudo chattr -i "$SWAP_FILE" 2>/dev/null
+                        sudo rm -f "$SWAP_FILE" 2>&1 | tee rm_error.log
                         if [[ $? -ne 0 ]]; then
                             echo "Error: Failed to force delete swap file at ${SWAP_FILE}. Details:"
                             cat rm_error.log
-                            rm -f rm_error.log
+                            sudo rm -f rm_error.log
                             exit 1
                         fi
-                        rm -f rm_error.log
+                        sudo rm -f rm_error.log
                     else
-                        rm -f swapoff_error.log
+                        sudo rm -f swapoff_error.log
                         # Remove immutable attribute if present
-                        chattr -i "$SWAP_FILE" 2>/dev/null
-                        rm -f "$SWAP_FILE" 2>&1 | tee rm_error.log
+                        sudo chattr -i "$SWAP_FILE" 2>/dev/null
+                        sudo rm -f "$SWAP_FILE" 2>&1 | tee rm_error.log
                         if [[ $? -ne 0 ]]; then
                             echo "Error: Failed to delete swap file at ${SWAP_FILE}. Details:"
                             cat rm_error.log
-                            rm -f rm_error.log
+                            sudo rm -f rm_error.log
                             exit 1
                         fi
-                        rm -f rm_error.log
+                        sudo rm -f rm_error.log
                     fi
                 else
                     echo "File exists but is not an active swap. Forcing deletion..."
                     # Remove immutable attribute if present
-                    chattr -i "$SWAP_FILE" 2>/dev/null
-                    rm -f "$SWAP_FILE" 2>&1 | tee rm_error.log
+                    sudo chattr -i "$SWAP_FILE" 2>/dev/null
+                    sudo rm -f "$SWAP_FILE" 2>&1 | tee rm_error.log
                     if [[ $? -ne 0 ]]; then
                         echo "Error: Failed to force delete swap file at ${SWAP_FILE}. Details:"
                         cat rm_error.log
-                        rm -f rm_error.log
+                        sudo rm -f rm_error.log
                         exit 1
                     fi
-                    rm -f rm_error.log
+                    sudo rm -f rm_error.log
                 fi
             fi
 
@@ -113,13 +113,13 @@ if [[ "$TOTAL_RAM" -lt 4000 ]]; then
                 fi
             fi
 
-            # Create new swap file using dd instead of fallocate
+            # Create new swap file using dd
             echo "Creating new swap file of ${NEEDED_SWAP}MB at ${SWAP_FILE}..."
-            dd if=/dev/zero of="$SWAP_FILE" bs=1M count="$NEEDED_SWAP" 2>&1 | tee dd_error.log
+            sudo dd if=/dev/zero of="$SWAP_FILE" bs=1M count="$NEEDED_SWAP" 2>&1 | tee dd_error.log
             if [[ $? -ne 0 || ! -f "$SWAP_FILE" || $(stat -f -c %s "$SWAP_FILE" 2>/dev/null) -lt $((NEEDED_SWAP * 1024 * 1024)) ]]; then
                 echo "Error: Failed to create swap file at ${SWAP_FILE}. Details:"
                 cat dd_error.log
-                rm -f dd_error.log
+                sudo rm -f dd_error.log
                 # If RAM >= 1GB, continue with a warning
                 if [[ "$TOTAL_RAM" -ge 1000 ]]; then
                     echo "Warning: Failed to create swap, but RAM >= 1GB (${TOTAL_RAM}MB). Installation may fail!"
@@ -130,19 +130,19 @@ if [[ "$TOTAL_RAM" -lt 4000 ]]; then
                     exit 1
                 fi
             else
-                rm -f dd_error.log
+                sudo rm -f dd_error.log
                 # Continue swap configuration
-                chmod 600 "$SWAP_FILE" >/dev/null 2>&1
+                sudo chmod 600 "$SWAP_FILE" >/dev/null 2>&1
                 if [[ $? -ne 0 ]]; then
                     echo "Error: Failed to set swap file permissions."
                     exit 1
                 fi
-                mkswap "$SWAP_FILE" >/dev/null 2>&1
+                sudo mkswap "$SWAP_FILE" >/dev/null 2>&1
                 if [[ $? -ne 0 ]]; then
                     echo "Error: Failed to format swap file."
                     exit 1
                 fi
-                swapon "$SWAP_FILE" >/dev/null 2>&1
+                sudo swapon "$SWAP_FILE" >/dev/null 2>&1
                 if [[ $? -ne 0 ]]; then
                     echo "Error: Failed to enable swap file."
                     exit 1
@@ -152,7 +152,7 @@ if [[ "$TOTAL_RAM" -lt 4000 ]]; then
 
                 # Make swap persistent
                 echo "Adding swap file to /etc/fstab for persistence..."
-                echo "$SWAP_FILE none swap sw 0 0" | tee -a /etc/fstab >/dev/null
+                echo "$SWAP_FILE none swap sw 0 0" | sudo tee -a /etc/fstab >/dev/null
                 if [[ $? -ne 0 ]]; then
                     echo "Error: Failed to add swap to /etc/fstab."
                     exit 1
