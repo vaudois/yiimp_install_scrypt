@@ -1212,8 +1212,10 @@ fi
 # Compiler
 if sudo make; then
     echo " >--> Compiled stratum successfully"
+	STRCOMPILED="Y"
 else
     echo -e "$YELLOW Warning: Failed to compile stratum, check install.log for details...$COL_RESET"
     sleep 4
+	STRCOMPILED="N"
 fi
 sleep 1
