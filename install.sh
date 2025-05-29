@@ -1210,13 +1210,6 @@ clear
         fi
     done
 
-	# Remove temporary swap file if created
-	if [[ "$CREATED_SWAP" == "true" ]]; then
-		sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
-		sudo rm -f "$SWAP_FILE" >/dev/null 2>&1
-		log_message "Removed temporary swap file $SWAP_FILE"
-	fi
-
     echo -e "$GREEN Done...$COL_RESET"
     log_message "Completed miscellaneous setup and service restarts"
     sleep 3
