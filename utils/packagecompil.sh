@@ -11,11 +11,11 @@ function package_compile_crypto
     # Activer le dépôt universe si nécessaire
     echo " >--> Ensuring universe repository is enabled..."
     sudo add-apt-repository universe -y > /dev/null 2>&1
-	simple_hide_output "Updating apt..." sudo apt -y update
-	simple_hide_output "Upgrading apt..." sudo apt -y upgrade
+	simple_hide_output "Updating apt..." apt -y update
+	simple_hide_output "Upgrading apt..." apt -y upgrade
 
     # Paquets de base pour la compilation
-    apt_install build-essential libc6-dev libgcc-11-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
+    apt_install build-essential libc6-dev libtool gettext bsdmainutils git cmake autotools-dev automake pkg-config libzmq3-dev
     apt_install libssl-dev libevent-dev libseccomp-dev libcap-dev libminiupnpc-dev libboost-all-dev zlib1g-dev
     apt_install libgmp-dev libmariadb-dev libkrb5-dev gnutls-dev screen
 
@@ -54,9 +54,9 @@ function package_compile_crypto
 
     # Paquets spécifiques à Ubuntu 20.04 ou 22.04
     if [[ "$DISTRO" == "20" ]]; then
-        apt_install libcurl4-gnutls-dev libidn11-dev
+        apt_install libcurl4-gnutls-dev libidn11-dev libgcc-10-dev
     elif [[ "$DISTRO" == "22" ]]; then
-        apt_install libcurl4-openssl-dev libidn2-dev
+        apt_install libcurl4-openssl-dev libidn2-dev libgcc-11-dev
     fi
 
 	echo -e "$GREEN Done...$COL_RESET"
