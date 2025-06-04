@@ -377,7 +377,6 @@ clear
 
         # Create random password
         rootpasswd=$(openssl rand -base64 12)
-        export DEBIAN_FRONTEND="noninteractive"
         apt_install mariadb-server
 
 		# Manage mysql.service
