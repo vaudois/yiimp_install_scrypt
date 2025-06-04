@@ -4,12 +4,12 @@
 #
 # Program:
 #   Install yiimp on Ubuntu 20.04 & 22.04 running Nginx, MariaDB, and PHP 8.2/8.3
-#   v2.3.6 beta
+#   v2.3.8 beta(for test)
 #   Modified for include ARM compatibility
 #################################################################################
 
 if [ -z "${TAG}" ]; then
-    TAG=v2.3.6
+    TAG=v2.3.8
 fi
 
 NPROC=$(nproc)
