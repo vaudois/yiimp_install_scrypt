@@ -8,9 +8,16 @@
 # - Maintained compatibility with Ubuntu 20.04 (PHP 8.2)
 ########################################################
 
-absolutepath=/home/vaudois
-installtoserver=coin-setup
-daemonname=coinbuild
+absolutepath=absolutepathserver
+installtoserver=installpath
+daemonname=daemonnameserver
+TAGS=versiontag
+btcdon=btcdons
+ltcdon=ltcdons
+ethdon=ethdons
+bchdon=bchdons
+
+ARCHITECTURE=$(uname -m)
 
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
@@ -125,15 +132,67 @@ function spinner {
     return $exit_code
 }
 
+function spinner2 {
+    local pid=$1
+    local message=${2:-"Traitement..."}
+    local delay=${3:-0.1}
+    local width=20
+    local max_bars=12
+    local bar_char="━"
+    local arrow=">"
+    local colors=("\033[38;5;26m" "\033[38;5;27m" "\033[38;5;33m" "\033[38;5;39m" "\033[38;5;45m" "\033[38;5;51m")
+    local reset="\033[0m"
+    local i=0
+
+    if [[ -t 1 && $(tput colors 2>/dev/null) -ge 8 ]]; then
+        tput civis 2>/dev/null || true
+        while kill -0 "$pid" 2>/dev/null || ps -eo ppid,pid | grep "^ *$pid" | awk '{print $2}' | grep -q . || pgrep -f "add-apt-repository" >/dev/null 2>&1; do
+            local num_bars=$((i % (max_bars + 1)))
+            local color=${colors[$((i % ${#colors[@]}))]}
+            local bars=""
+            for ((j=0; j<num_bars; j++)); do
+                bars="$bars$bar_char"
+            done
+            local current_char="$bars$arrow"
+            local spaces_before=0
+            local spaces_after=$((width - ${#current_char}))
+            [ $spaces_after -lt 0 ] && spaces_after=0
+            local display=$(printf "%*s%s%*s" "$spaces_before" "" "$current_char" "$spaces_after" "")
+            stdbuf -oL echo -ne "\r$message $color$display$reset"
+            ((i++))
+            sleep "$delay"
+        done
+        tput cnorm 2>/dev/null || true
+    else
+        while kill -0 "$pid" 2>/dev/null || ps -eo ppid,pid | grep "^ *$pid" | awk '{print $2}' | grep -q . || pgrep -f "add-apt-repository" >/dev/null 2>&1; do
+            local num_bars=$((i % (max_bars + 1)))
+            local bars=""
+            for ((j=0; j<num_bars; j++)); do
+                bars="$bars$bar_char"
+            done
+            local current_char="$bars$arrow"
+            local spaces_before=0
+            local spaces_after=$((width - ${#current_char}))
+            [ $spaces_after -lt 0 ] && spaces_after=0
+            local display=$(printf "%*s%s%*s" "$spaces_before" "" "$current_char" "$spaces_after" "")
+            stdbuf -oL echo -ne "\r$message $display"
+            ((i++))
+            sleep "$delay"
+        done
+    fi
+    wait "$pid" 2>/dev/null || true
+    echo -ne "\r$(printf '%*s' "$(( ${#message} + width + 2 ))" '')\r"
+}
+
 # Hide_output amélioré pour gérer sudo
 function hide_output {
-    local message=${1:-" Processing command..."}
+    local message=${1:-"Processing command..."}
     shift
     local output_file
     local exit_code
     local cmd=("$@")
 
-    output_file=$(mktemp) || {
+    output_file=$(mktemp /tmp/apt_output.XXXXXX) || {
         echo -e "${RED} Error: Failed to create temporary file${COL_RESET}"
         log_message "Failed to create temporary file for command: ${cmd[*]}"
         exit 1
@@ -143,22 +202,30 @@ function hide_output {
     if [[ "${cmd[0]}" == "sudo" ]]; then
         if sudo -n true 2>/dev/null; then
             shift
-            sudo -n "$@" &> "$output_file" &
+            stdbuf -oL sudo DEBIAN_FRONTEND=noninteractive "$@" > "$output_file" 2>&1 &
         else
-            "${cmd[@]}" &> "$output_file" &
+            stdbuf -oL "${cmd[@]}" > "$output_file" 2>&1 &
         fi
     else
-        "${cmd[@]}" &> "$output_file" &
+        stdbuf -oL DEBIAN_FRONTEND=noninteractive "${cmd[@]}" > "$output_file" 2>&1 &
     fi
     local pid=$!
-    spinner "$pid" "$message"
+	if [[ "$ARCHITECTURE" == "x86_64" ]]; then
+		spinner2 "$pid" "$message"
+	elif [[ "$ARCHITECTURE" =~ ^arm || "$ARCHITECTURE" =~ ^aarch ]]; then
+		spinner "$pid" "$message"
+	fi
     exit_code=$?
 
     if [[ $exit_code -ne 0 ]]; then
         echo
         echo -e "${RED} FAILED: ${cmd[*]}${COL_RESET}"
         echo -e "${RED} -----------------------------------------${COL_RESET}"
-        cat " $output_file"
+        if [[ -f "$output_file" ]]; then
+            cat "$output_file"
+        else
+            echo "Erreur : le fichier temporaire $output_file n'existe pas"
+        fi
         echo -e "${RED} -----------------------------------------${COL_RESET}"
         log_message "Command failed: ${cmd[*]}"
         rm -f "$output_file"
@@ -176,7 +243,11 @@ function simple_hide_output {
     log_message "Running command: $@"
     sudo "$@" &> "$output_file" &  # Ajout explicite de sudo
     local pid=$!
-    spinner "$pid" "$message"
+	if [[ "$ARCHITECTURE" == "x86_64" ]]; then
+		spinner2 "$pid" "$message"
+	elif [[ "$ARCHITECTURE" =~ ^arm || "$ARCHITECTURE" =~ ^aarch ]]; then
+		spinner "$pid" "$message"
+	fi
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
         echo -e "${RED} FAILED: $@${COL_RESET}"
@@ -298,7 +369,7 @@ function term_art_server {
     echo
     startlogo
     echo -e "$YELLOW  Welcome to the Yiimp Installer Script , Fork By Vaudois!				$COL_RESET"
-    echo -e "$GREEN  Version:$MAGENTA ${TAG}$GREEN Installation on Distro ${MAGENTA}${DISTRO}	$COL_RESET"
+    echo -e "$GREEN  Version:$MAGENTA ${TAGS}$GREEN Installation on Distro ${MAGENTA}${DISTRO}	$COL_RESET"
     echo -e "$GREEN  Architecture:$MAGENTA ${ARCHITECTURE}$GREEN CPU:$MAGENTA ${CPU_TYPE}    $COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$YELLOW  This script will install all the dependencies and will install Yiimp.			$COL_RESET"
@@ -314,7 +385,7 @@ function install_end_message {
     echo
     figlet -f slant -w 100 " Complete!"
     echo -e "$CYAN  -------------------------------------------------------------------------------------		$COL_RESET"
-    echo -e "$GREEN  |    Version: $MAGENTA ${TAG}    $GREEN|							$COL_RESET"
+    echo -e "$GREEN  |    Version: $MAGENTA ${TAGS}    $GREEN|							$COL_RESET"
     echo -e "$YELLOW   Yiimp Installer Script Fork By Vaudois							$COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------		$COL_RESET"
     echo -e "$YELLOW   Your mysql information (login/Password) is saved in:$RED ~/.my.cnf				$COL_RESET"
@@ -365,10 +436,10 @@ function startlogo {
 function donations {
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     echo -e "$GREEN	Donations are welcome at wallets below:							$COL_RESET"
-    echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA bc1qt8g9l6agk7qrzlztzuz7quwhgr3zlu4gc5qcuk	$COL_RESET"
-    echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA MGyth7od68xVqYnRdHQYes22fZW2b6h3aj	$COL_RESET"
-    echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA 0xc4e42e92ef8a196eef7cc49456c786a41d7daa01	$COL_RESET"
-    echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA bitcoincash:qp9ltentq3rdcwlhxtn8cc2rr49ft5zwdv7k7e04df	$COL_RESET"
+    echo -e "$YELLOW  BTC:$COL_RESET $MAGENTA $btcdon	$COL_RESET"
+    echo -e "$YELLOW  LTC:$COL_RESET $MAGENTA $ltcdon	$COL_RESET"
+    echo -e "$YELLOW  ETH:$COL_RESET $MAGENTA $ethdon	$COL_RESET"
+    echo -e "$YELLOW  BCH:$COL_RESET $MAGENTA $bchdon	$COL_RESET"
     echo -e "$CYAN  -------------------------------------------------------------------------------------	$COL_RESET"
     log_message "Displayed donation addresses"
 }
