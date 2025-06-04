@@ -320,8 +320,8 @@ clear
         
         if [ -f /usr/sbin/apache2 ]; then
             echo -e "Removing apache..."
-            hide_output apt-get -y purge apache2 apache2-*
-            hide_output apt-get -y --purge autoremove
+            hide_output sudo apt-get -y purge apache2 apache2-*
+            hide_output sudo apt-get -y --purge autoremove
             log_message "Removed Apache"
         fi
 
@@ -403,8 +403,8 @@ clear
         apt_install software-properties-common
 
 		if [ ! -f /etc/apt/sources.list.d/ondrej-php.list ]; then
-			simple_hide_output "Adding ondrej/php PPA..." sudo add-apt-repository -y ppa:ondrej/php
-			simple_hide_output "Updating apt..." sudo apt -y update
+			simple_hide_output "Adding ondrej/php PPA..." add-apt-repository -y ppa:ondrej/php
+			simple_hide_output "Updating apt..." apt -y update
 			log_message "Added ondrej/php PPA"
 		fi
         echo -e "$YELLOW >--> Installing php...$COL_RESET"
@@ -416,8 +416,8 @@ clear
 			sudo phpenmod -v 8.2 mbstring
 			sudo phpenmod -v 8.2 memcache memcached
             simple_hide_output "Installing php8.2 gettext" apt install -y php8.2-gettext
-			simple_hide_output "Update alternatives php8.2" sudo update-alternatives --set php /usr/bin/php8.2
-            simple_hide_output "Restart php8.2" sudo systemctl start php8.2-fpm
+			simple_hide_output "Update alternatives php8.2" update-alternatives --set php /usr/bin/php8.2
+            simple_hide_output "Restart php8.2" systemctl start php8.2-fpm
             sudo systemctl status php8.2-fpm | sed -n "1,3p"
             PHPVERSION=8.2
             log_message "Installed PHP 8.2 and dependencies"
